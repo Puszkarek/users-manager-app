@@ -1,6 +1,33 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    /* Strict Type-Checking Options */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "useUnknownInCatchVariables": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    /* Additional Options */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+
+    "exactOptionalPropertyTypes": true,
+
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,

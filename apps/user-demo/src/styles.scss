@@ -1,1 +1,75 @@
-/* You can add global styles to this file, and also import other style files */
+@import './styles/reset.scss';
+@import './styles/variables.scss';
+@import './styles/themes/dark-theme.scss';
+
+html,
+body {
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+button,
+input {
+  &:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 0.2rem;
+  }
+}
+
+a,
+button {
+  &:focus {
+    opacity: 0.8;
+  }
+}
+
+a {
+  color: var(--link);
+}
+
+.mat-snack-bar-container {
+  width: 320px;
+
+  padding: 1rem;
+  margin: 2rem;
+
+  border-radius: var(--radius);
+
+  color: var(--text-primary);
+}
+
+.toast-success {
+  background: var(--green);
+}
+
+.toast-error {
+  background: var(--red);
+}
+
+.toast-warning {
+  background: var(--yellow);
+}
+.toast-info {
+  background: var(--blue);
+}
+
+// * Default styles
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}

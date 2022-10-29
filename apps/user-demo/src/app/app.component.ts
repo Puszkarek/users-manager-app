@@ -16,8 +16,7 @@ export class AppComponent {
     private readonly _notificationService: NotificationService,
     private readonly _usersStore: UsersStore,
   ) {
+    // Inject the ViewContainer into the notification Service
     this._notificationService.setRootViewContainerRef(viewContainerReference);
-
-    this._notificationService.warn('It works');
   }
 }

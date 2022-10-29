@@ -1,8 +1,8 @@
 /* eslint-disable functional/prefer-readonly-type */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { isUser } from '@front/helpers';
-import { LoginResponse, LoginStatus, User } from '@front/interfaces';
+import { isUser, LoginResponse, User } from '@api-interfaces';
+import { LoginStatus } from '@front/interfaces';
 import { toError } from '@front/utils';
 import { Either, isRight, left, right } from 'fp-ts/lib/Either';
 import { isString } from 'lodash-es';

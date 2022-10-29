@@ -1,1 +1,2 @@
-export * from './lib/api-interfaces';
+export * from './lib/guards';
+export * from './lib/interfaces';

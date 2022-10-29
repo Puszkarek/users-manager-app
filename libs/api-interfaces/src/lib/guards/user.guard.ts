@@ -1,6 +1,7 @@
 import { every, isString } from 'lodash';
 import { isArray } from 'lodash-es';
-import { CreatableUser, UpdatableUser, User } from '@front/interfaces';
+
+import { CreatableUser, UpdatableUser, User } from '../interfaces/user.interface';
 
 export const isUser = (value: unknown): value is User => {
   try {
@@ -36,7 +37,7 @@ export const isCreatableUser = (value: unknown): value is CreatableUser => {
 export const isListOfUsers = (value: unknown): value is ReadonlyArray<User> => {
   try {
     const users = <ReadonlyArray<User>>value;
-    return isArray(users) && every(users, (user) => isString(user.id));
+    return isArray(users) && every(users, user => isString(user.id));
   } catch {
     return false;
   }

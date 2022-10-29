@@ -1,21 +1,18 @@
 import { Injectable } from '@angular/core';
+import { User } from '@api-interfaces';
+import { UsersClient } from '@front/clients';
+import { UsersStore } from '@front/stores';
+import { toError } from '@front/utils';
 import { Either, isLeft, left, right } from 'fp-ts/Either';
 import { isNull } from 'lodash';
 import { firstValueFrom } from 'rxjs';
-import { UsersClient } from '@front/clients';
-import { User } from '@front/interfaces';
-import { UsersStore } from '@front/stores';
-import { toError } from '@front/utils';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   // TODO (feature): check if the auth token expires every 5 seconds
-  constructor(
-    private readonly _usersClient: UsersClient,
-    private readonly _usersStore: UsersStore
-  ) {}
+  constructor(private readonly _usersClient: UsersClient, private readonly _usersStore: UsersStore) {}
 
   public async load(): Promise<void> {
     const savedLogin = this._getToken();
@@ -24,10 +21,7 @@ export class AuthService {
       return;
     }
 
-    const either = await this._usersClient.loginOneWithToken(
-      savedLogin.email,
-      savedLogin.token
-    );
+    const either = await this._usersClient.loginOneWithToken(savedLogin.email, savedLogin.token);
 
     if (isLeft(either)) {
       console.error(either.left);
@@ -37,10 +31,7 @@ export class AuthService {
     this._setToken({ email: savedLogin.email, newToken: either.right.token });
   }
 
-  public async login(
-    email: string,
-    password: string
-  ): Promise<Either<Error, User>> {
+  public async login(email: string, password: string): Promise<Either<Error, User>> {
     try {
       const userEither = await this._usersClient.loginOne(email, password);
 
@@ -76,13 +67,7 @@ export class AuthService {
   }
 
   // * Token
-  private _setToken({
-    newToken,
-    email,
-  }: {
-    readonly newToken: string | null;
-    readonly email: string | null;
-  }): void {
+  private _setToken({ newToken, email }: { readonly newToken: string | null; readonly email: string | null }): void {
     if (newToken && email) {
       sessionStorage.setItem('token', newToken);
       sessionStorage.setItem('email', email);

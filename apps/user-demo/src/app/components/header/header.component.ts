@@ -1,11 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-} from '@angular/core';
-import { User } from '@front/interfaces';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { User } from '@api-interfaces';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

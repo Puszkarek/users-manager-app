@@ -1,11 +1,7 @@
 import { NgModule } from '@angular/core';
-import {
-  DefaultDataServiceConfig,
-  EntityDataModule,
-  EntityDataService,
-} from '@ngrx/data';
+import { User } from '@api-interfaces';
 import { UsersDataService } from '@front/data-services';
-import { User } from '@front/interfaces';
+import { DefaultDataServiceConfig, EntityDataModule, EntityDataService } from '@ngrx/data';
 
 import { appEntityMetadata, entityPluralNames } from './app-entity-metadata';
 import { userEntityName } from './entity-names';
@@ -22,16 +18,10 @@ const defaultDataServiceConfig: DefaultDataServiceConfig = {
       pluralNames: entityPluralNames,
     }),
   ],
-  providers: [
-    { provide: DefaultDataServiceConfig, useValue: defaultDataServiceConfig },
-    UsersDataService,
-  ],
+  providers: [{ provide: DefaultDataServiceConfig, useValue: defaultDataServiceConfig }, UsersDataService],
 })
 export class EntityStoreModule {
-  constructor(
-    entityDataService: EntityDataService,
-    usersDataService: UsersDataService
-  ) {
+  constructor(entityDataService: EntityDataService, usersDataService: UsersDataService) {
     entityDataService.registerService<User>(userEntityName, usersDataService);
   }
 }

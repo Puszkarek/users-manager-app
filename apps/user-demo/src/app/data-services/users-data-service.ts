@@ -1,8 +1,8 @@
 /* eslint-disable functional/no-throw-statement */
 /* eslint-disable functional/prefer-readonly-type */
 import { Injectable } from '@angular/core';
+import { User } from '@api-interfaces';
 import { UsersClient } from '@front/clients';
-import { User } from '@front/interfaces';
 import { userEntityName } from '@front/stores';
 import { EntityCollectionDataService, Logger, QueryParams } from '@ngrx/data';
 import { Observable } from 'rxjs';

@@ -1,4 +1,4 @@
-import { User } from './user.interface';
+import { User } from '@api-interfaces';
 
 export type AuthFormEntries = {
   readonly email: string;

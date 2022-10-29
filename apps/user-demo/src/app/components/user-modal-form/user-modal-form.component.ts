@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
+import { isUser, User, USER_ROLE } from '@api-interfaces';
 import { USER_NAME_MIN_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@front/constants';
-import { isUser } from '@front/helpers';
-import { FormStatus, User, USER_ROLE } from '@front/interfaces';
+import { FormStatus } from '@front/interfaces';
 import { NotificationService } from '@front/services/notification';
 import { CUSTOM_VALIDATORS } from '@front/utils';
 import { isNil } from 'lodash';

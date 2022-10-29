@@ -35,7 +35,7 @@
     "baseUrl": ".",
     "paths": {
       "@front/*": ["apps/user-demo/src/app/*"],
-      "@playground/api-interfaces": ["libs/api-interfaces/src/index.ts"]
+      "@api-interfaces": ["libs/api-interfaces/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

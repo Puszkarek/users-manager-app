@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { isCreatableUser } from '@front/helpers/user.guard';
-import { CreatableUser, UpdatableUser, User } from '@front/interfaces';
+import { CreatableUser, isCreatableUser, UpdatableUser, User } from '@api-interfaces';
 import { UsersStore } from '@front/stores';
 import { isLeft } from 'fp-ts/lib/Either';
 import { firstValueFrom, Observable } from 'rxjs';

@@ -1,0 +1,30 @@
+:host {
+  height: 100%;
+  width: 5rem;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: var(--alley);
+
+  background: var(--bg-primary);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: space-evenly;
+
+  .active {
+    color: var(--accent);
+  }
+  a {
+    padding: var(--alley);
+
+    color: var(--text-secondary);
+  }
+}

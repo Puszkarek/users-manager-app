@@ -18,7 +18,8 @@
         "plugin:@typescript-eslint/recommended"
       ],
       "rules": {
-        "@nrwl/nx/enforce-module-boundaries": [
+        // TODO: find a solution and enable it
+        /*  "@nrwl/nx/enforce-module-boundaries": [
           "error",
           {
             "enforceBuildableLibDependency": true,
@@ -30,7 +31,7 @@
               }
             ]
           }
-        ],
+        ], */
 
         "arrow-body-style": "off",
         "prefer-arrow-callback": "off",
@@ -71,14 +72,8 @@
         "id-length": ["error", { "min": 2, "max": 35 }],
         "max-classes-per-file": ["error", 2],
         "max-depth": ["error", 4],
-        "max-lines": [
-          "error",
-          { "max": 300, "skipBlankLines": true, "skipComments": true }
-        ],
-        "max-lines-per-function": [
-          "error",
-          { "max": 65, "skipBlankLines": true, "skipComments": true }
-        ],
+        "max-lines": ["error", { "max": 300, "skipBlankLines": true, "skipComments": true }],
+        "max-lines-per-function": ["error", { "max": 65, "skipBlankLines": true, "skipComments": true }],
         "max-nested-callbacks": ["error", 3],
         "max-params": ["error", 8],
         "max-statements": ["error", 15],
@@ -153,11 +148,7 @@
             "allowObjectStart": true
           }
         ],
-        "lines-between-class-members": [
-          "error",
-          "always",
-          { "exceptAfterSingleLine": true }
-        ],
+        "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
 
         // Import rules
         "simple-import-sort/imports": "error",
@@ -193,11 +184,7 @@
           "warn",
           {
             "default": {
-              "memberTypes": [
-                "instance-field",
-                "constructor",
-                "instance-method"
-              ]
+              "memberTypes": ["instance-field", "constructor", "instance-method"]
             }
           }
         ],
@@ -212,16 +199,13 @@
           }
         ],
         "@typescript-eslint/no-base-to-string": "error",
-        "@typescript-eslint/no-confusing-void-expression": [
-          "error",
-          { "ignoreArrowShorthand": true }
-        ],
+        "@typescript-eslint/no-confusing-void-expression": ["error", { "ignoreArrowShorthand": true }],
         "@typescript-eslint/no-duplicate-enum-values": "error",
         "@typescript-eslint/no-dynamic-delete": "error",
         "no-empty-function": "off",
         "@typescript-eslint/no-empty-function": ["error"],
         "@typescript-eslint/no-explicit-any": "error",
-        "@typescript-eslint/no-floating-promises": "error",
+        //"@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/no-for-in-array": "error",
         "@typescript-eslint/no-inferrable-types": "error",
         "@typescript-eslint/no-invalid-void-type": "error",
@@ -275,10 +259,7 @@
           { "checkParameterProperties": false, "treatMethodsAsReadonly": false }
         ],
         */
-        "@typescript-eslint/prefer-readonly": [
-          "error",
-          { "onlyInlineLambdas": true }
-        ],
+        "@typescript-eslint/prefer-readonly": ["error", { "onlyInlineLambdas": true }],
         "@typescript-eslint/prefer-string-starts-ends-with": "error",
         "@typescript-eslint/promise-function-async": [
           "error",
@@ -373,16 +354,10 @@
         "functional/no-conditional-statement": "off",
 
         // Functional Programming
-        "functional/immutable-data": [
-          "error",
-          { "ignoreClass": true, "ignoreImmediateMutation": true }
-        ],
+        "functional/immutable-data": ["error", { "ignoreClass": true, "ignoreImmediateMutation": true }],
         "functional/no-let": "error",
         "functional/no-method-signature": "error",
-        "functional/prefer-readonly-type": [
-          "error",
-          { "ignoreClass": "fieldsOnly" }
-        ],
+        "functional/prefer-readonly-type": ["error", { "ignoreClass": "fieldsOnly" }],
         "functional/no-mixed-type": "error",
         "functional/no-loop-statement": "error",
         "functional/no-promise-reject": "error",
@@ -394,10 +369,7 @@
     // * HTML Rules
     {
       "files": ["*.html"],
-      "extends": [
-        "plugin:@nrwl/nx/angular-template",
-        "plugin:@angular-eslint/template/recommended"
-      ],
+      "extends": ["plugin:@nrwl/nx/angular-template", "plugin:@angular-eslint/template/recommended"],
       "rules": {
         "@angular-eslint/template/accessibility-alt-text": "error",
         "@angular-eslint/template/accessibility-elements-content": "error",

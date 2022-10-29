@@ -1,0 +1,21 @@
+button {
+  padding: var(--alley) calc(var(--alley) * 2);
+  border-radius: var(--radius);
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.primary {
+  background: var(--green);
+}
+
+.accent {
+  background: var(--accent);
+}
+
+.warn {
+  background: var(--red);
+}

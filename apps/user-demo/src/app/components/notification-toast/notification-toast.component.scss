@@ -1,0 +1,31 @@
+.toast {
+  display: inline-block;
+
+  padding: 20px;
+  border-radius: 10px;
+
+  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.75);
+
+  position: fixed;
+  top: 20px;
+  right: 20px;
+
+  background: var(--bg-tertiary);
+}
+
+// * States
+.success {
+  background: var(--green);
+}
+
+.error {
+  background: var(--red);
+}
+
+.warn {
+  background: var(--yellow);
+}
+
+.info {
+  background: var(--blue);
+}

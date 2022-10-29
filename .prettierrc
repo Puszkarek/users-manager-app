@@ -1,3 +1,10 @@
 {
-  "singleQuote": true
+  "arrowParens": "avoid",
+  "useTabs": false,
+  "bracketSpacing": true,
+  "bracketSameLine": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 120,
+  "htmlWhitespaceSensitivity": "strict"
 }

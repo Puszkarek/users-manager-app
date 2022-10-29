@@ -1,13 +1,23 @@
-import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Message } from '@playground/api-interfaces';
+import { ChangeDetectionStrategy, Component, ViewContainerRef } from '@angular/core';
+import { NotificationService } from '@front/services/notification';
+import { UsersStore } from '@front/stores';
 
 @Component({
-  selector: 'playground-root',
-  templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-root',
   styleUrls: ['./app.component.scss'],
+  templateUrl: './app.component.html',
 })
 export class AppComponent {
-  hello$ = this.http.get<Message>('/api/hello');
-  constructor(private http: HttpClient) {}
+  public readonly isAdmin$ = this._usersStore.isLoggedUserAdmin$;
+
+  constructor(
+    viewContainerReference: ViewContainerRef,
+    private readonly _notificationService: NotificationService,
+    private readonly _usersStore: UsersStore,
+  ) {
+    this._notificationService.setRootViewContainerRef(viewContainerReference);
+
+    this._notificationService.warn('It works');
+  }
 }

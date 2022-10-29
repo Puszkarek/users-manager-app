@@ -1,0 +1,57 @@
+:host {
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  transform: translate(50%, -50%);
+
+  display: flex;
+  flex-direction: column;
+
+  width: 300px;
+
+  text-align: center;
+
+  border-radius: var(--radius);
+
+  background: var(--bg-primary);
+  padding: 2rem var(--alley);
+
+  h2 {
+    margin: 0 0 var(--alley) 0;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+
+    padding: 0 2rem;
+    input {
+      padding: var(--alley);
+
+      border-radius: var(--radius);
+
+      border: none;
+
+      width: 100%;
+    }
+    button {
+      padding: var(--alley);
+
+      border-radius: var(--radius);
+
+      background: var(--accent);
+    }
+
+    .field {
+      height: 6rem;
+    }
+    .error {
+      font-size: var(--small);
+      padding: 0.3rem;
+      margin-top: 0.45rem;
+      border: 1px solid var(--red);
+      color: var(--red);
+
+      text-align: start;
+    }
+  }
+}

@@ -1,0 +1,34 @@
+<div class="toolbar">
+  <!-- TODO (search-input): create a component for search -->
+  <input class="search-input" type="text" placeholder="Search" />
+
+  <div class="actions">
+    <app-button (click)="openUserForm()">New</app-button>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr class="header">
+      <th>Name</th>
+      <th>Email</th>
+    </tr>
+  </thead>
+  <tbody class="main">
+    <tr class="user-card" *ngFor="let user of users$ | async; trackBy: trackByID">
+      <td>
+        {{ user.name }}
+      </td>
+      <td>{{ user.email }}</td>
+      <td class="settings">
+        <button (click)="openUserForm(user)" class="settings-btn">
+          <app-icon>more_vert</app-icon>
+        </button>
+
+        <button (click)="deleteUser(user)" class="settings-btn delete-btn">
+          <app-icon>delete</app-icon>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

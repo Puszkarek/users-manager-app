@@ -1,11 +1,10 @@
-import { every, isString } from 'lodash';
-import { isArray } from 'lodash-es';
+import { every, isArray, isString } from 'lodash';
 
-import { CreatableUser, UpdatableUser, User } from '../interfaces/user.interface';
+import { CreatableUser, LoginRequest, UpdatableUser, User } from '../entities';
 
 export const isUser = (value: unknown): value is User => {
   try {
-    const { id } = <User>value;
+    const { id } = value as User;
 
     return isString(id);
   } catch {
@@ -15,7 +14,7 @@ export const isUser = (value: unknown): value is User => {
 
 export const isUpdatableUser = (value: unknown): value is UpdatableUser => {
   try {
-    const { id } = <UpdatableUser>value;
+    const { id } = value as UpdatableUser;
 
     return isString(id);
   } catch {
@@ -25,7 +24,7 @@ export const isUpdatableUser = (value: unknown): value is UpdatableUser => {
 
 export const isCreatableUser = (value: unknown): value is CreatableUser => {
   try {
-    const { password } = <CreatableUser>value;
+    const { password } = value as CreatableUser;
 
     return isString(password);
   } catch {
@@ -33,11 +32,20 @@ export const isCreatableUser = (value: unknown): value is CreatableUser => {
   }
 };
 
-// TODO: move to guards
 export const isListOfUsers = (value: unknown): value is ReadonlyArray<User> => {
   try {
-    const users = <ReadonlyArray<User>>value;
+    const users = value as ReadonlyArray<User>;
     return isArray(users) && every(users, user => isString(user.id));
+  } catch {
+    return false;
+  }
+};
+
+export const isLoginRequest = (value: unknown): value is LoginRequest => {
+  try {
+    const request = value as LoginRequest;
+
+    return isString(request.email) && isString(request.password);
   } catch {
     return false;
   }

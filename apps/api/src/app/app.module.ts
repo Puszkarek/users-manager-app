@@ -1,11 +1,8 @@
+import { HttpClientModule } from '@angular/common/http';
 import { Module } from '@nestjs/common';
-
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { UsersModule } from '@server/app/controllers/users.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [UsersModule, HttpClientModule],
 })
 export class AppModule {}

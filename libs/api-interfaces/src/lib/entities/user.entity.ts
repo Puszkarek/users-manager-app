@@ -1,3 +1,5 @@
+import { ID } from '../interfaces';
+
 export enum USER_ROLE {
   admin = 'admin',
   manager = 'manager',
@@ -5,14 +7,14 @@ export enum USER_ROLE {
 }
 
 export type User = {
-  readonly id: string;
+  readonly id: ID;
   readonly name: string;
   readonly email: string;
   readonly role: USER_ROLE;
 };
 
 export type UpdatableUser = {
-  readonly id: string;
+  readonly id: ID;
   readonly name?: string;
   readonly email?: string;
   readonly password?: string;
@@ -27,6 +29,11 @@ export type CreatableUser = {
 };
 
 export type UserToken = string;
+
+export type LoginRequest = {
+  readonly email: string;
+  readonly password: string;
+};
 
 export type LoginResponse = {
   readonly loggedUser: User;

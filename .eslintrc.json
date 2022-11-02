@@ -77,7 +77,6 @@
         "max-nested-callbacks": ["error", 3],
         "max-params": ["error", 8],
         "max-statements": ["error", 15],
-        "multiline-comment-style": ["error", "starred-block"],
         "no-alert": "error",
         "no-array-constructor": "error",
         "no-bitwise": "error",
@@ -164,7 +163,7 @@
         "@typescript-eslint/consistent-type-assertions": [
           "error",
           {
-            "assertionStyle": "angle-bracket",
+            "assertionStyle": "as",
             "objectLiteralTypeAssertions": "allow-as-parameter"
           }
         ],
@@ -272,8 +271,8 @@
           }
         ],
         "@typescript-eslint/require-array-sort-compare": "error",
-        "require-await": "off",
-        "@typescript-eslint/require-await": "error"
+        "require-await": "off"
+        //"@typescript-eslint/require-await": "error"
       }
     },
     // * Angular Rules

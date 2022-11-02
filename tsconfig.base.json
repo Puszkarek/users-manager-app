@@ -35,6 +35,7 @@
     "baseUrl": ".",
     "paths": {
       "@front/*": ["apps/user-demo/src/app/*"],
+      "@server/*": ["apps/api/src/*"],
       "@api-interfaces": ["libs/api-interfaces/src/index.ts"]
     }
   },

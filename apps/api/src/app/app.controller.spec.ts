@@ -1,22 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
-describe('AppController', () => {
+describe(AppController.name, () => {
   let app: TestingModule;
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService],
     }).compile();
   });
 
-  describe('getData', () => {
-    it('should return "Welcome to api!"', () => {
+  describe(AppController.prototype.ping.name, () => {
+    it('should return "pong"', () => {
       const appController = app.get<AppController>(AppController);
-      expect(appController.getData()).toEqual({ message: 'Welcome to api!' });
+      expect(appController.ping()).toEqual('pong');
     });
   });
 });

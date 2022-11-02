@@ -6,7 +6,6 @@ import { UsersService } from '@server/infra/services';
 import { UsersController } from './users.controller';
 
 @Module({
-  imports: [],
   controllers: [UsersController],
   providers: [
     {

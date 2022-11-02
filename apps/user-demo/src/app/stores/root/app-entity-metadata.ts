@@ -1,17 +1,17 @@
-import { EntityMetadataMap } from '@ngrx/data';
 import { sortByName } from '@front/utils';
+import { EntityMetadataMap } from '@ngrx/data';
 
-import { userEntityName, userEntityPluralName } from './entity-names';
+import { USER_ENTITY_NAME, USER_ENTITY_PLURAL_NAME } from './entity-names';
 
 export const appEntityMetadata: EntityMetadataMap = {
-  [userEntityName]: {
+  [USER_ENTITY_NAME]: {
     entityDispatcherOptions: { optimisticAdd: true, optimisticUpdate: true },
 
-    entityName: userEntityName,
+    entityName: USER_ENTITY_NAME,
     sortComparer: sortByName,
   },
 };
 
 export const entityPluralNames = {
-  [userEntityName]: userEntityPluralName,
+  [USER_ENTITY_NAME]: USER_ENTITY_PLURAL_NAME,
 };

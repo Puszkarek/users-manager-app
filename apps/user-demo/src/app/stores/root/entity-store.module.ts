@@ -2,9 +2,11 @@ import { NgModule } from '@angular/core';
 import { User } from '@api-interfaces';
 import { UsersDataService } from '@front/data-services';
 import { DefaultDataServiceConfig, EntityDataModule, EntityDataService } from '@ngrx/data';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
 
 import { appEntityMetadata, entityPluralNames } from './app-entity-metadata';
-import { userEntityName } from './entity-names';
+import { USER_ENTITY_NAME } from './entity-names';
 
 const defaultDataServiceConfig: DefaultDataServiceConfig = {
   root: 'http://localhost:3333/api/', // TODO (env): get from environment.ts
@@ -13,6 +15,8 @@ const defaultDataServiceConfig: DefaultDataServiceConfig = {
 
 @NgModule({
   imports: [
+    StoreModule.forRoot([]),
+    EffectsModule.forRoot(),
     EntityDataModule.forRoot({
       entityMetadata: appEntityMetadata,
       pluralNames: entityPluralNames,
@@ -22,6 +26,6 @@ const defaultDataServiceConfig: DefaultDataServiceConfig = {
 })
 export class EntityStoreModule {
   constructor(entityDataService: EntityDataService, usersDataService: UsersDataService) {
-    entityDataService.registerService<User>(userEntityName, usersDataService);
+    entityDataService.registerService<User>(USER_ENTITY_NAME, usersDataService);
   }
 }

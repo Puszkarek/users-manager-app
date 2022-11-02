@@ -11,7 +11,12 @@ import { AppModule } from './app/app.module';
 const DEFAULT_SERVER_PORT = 3333;
 
 const bootstrap = async (): Promise<void> => {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      // TODO: should be dynamic
+      origin: ['http://localhost:4200'],
+    },
+  });
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   const port = process.env['PORT'] ?? DEFAULT_SERVER_PORT;

@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { CreatableUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
 import { UsersClient } from '@front/clients';
 import { IStore, StoreLoadOptions } from '@front/interfaces';
-import { userEntityName } from '@front/stores/root';
+import { USER_ENTITY_NAME } from '@front/stores/root';
 import { isTrue, toError } from '@front/utils';
 import { EntityCollectionServiceBase, EntityCollectionServiceElementsFactory } from '@ngrx/data';
 import { Either, left, right } from 'fp-ts/Either';
@@ -19,7 +19,7 @@ import { distinctUntilChanged, filter, map, shareReplay, takeUntil } from 'rxjs/
  */
 export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, OnDestroy {
   private readonly _entityCollection = new EntityCollectionServiceBase<User>(
-    userEntityName,
+    USER_ENTITY_NAME,
     this._serviceElementsFactory,
   );
 
@@ -69,10 +69,10 @@ export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, O
     this._unsubscribe$.complete();
   }
 
-  public async load({ force = false, clearCache = true }: StoreLoadOptions): Promise<void> {
+  public async load(options?: StoreLoadOptions): Promise<void> {
     const isLoaded = await firstValueFrom(this.loaded$);
-    if (force || !isLoaded) {
-      if (clearCache) {
+    if (options?.force === true || !isLoaded) {
+      if (options?.clearCache === true) {
         this._clearCache();
       }
       await firstValueFrom(this._entityCollection.getAll());

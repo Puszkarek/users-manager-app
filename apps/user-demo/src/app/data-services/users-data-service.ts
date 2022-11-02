@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { User } from '@api-interfaces';
 import { UsersClient } from '@front/clients';
-import { userEntityName } from '@front/stores';
+import { USER_ENTITY_NAME } from '@front/stores';
 import { EntityCollectionDataService, Logger, QueryParams } from '@ngrx/data';
 import { Observable } from 'rxjs';
 
@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
  * TODO (try to delete it): I don't need that, and it's hard to customize, after remove I can import directly from
  */
 export class UsersDataService implements EntityCollectionDataService<Readonly<User>> {
-  public readonly name = userEntityName;
+  public readonly name = USER_ENTITY_NAME;
 
   constructor(private readonly _usersClient: UsersClient, logger: Logger) {
     logger.log('Created custom User EntityDataService');

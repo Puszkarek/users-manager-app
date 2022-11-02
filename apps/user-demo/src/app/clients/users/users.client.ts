@@ -37,7 +37,7 @@ export class UsersClient {
 
   // * Get Methods
   public getAll(): Observable<Array<User>> {
-    return this._http.get<Array<User>>('/');
+    return this._http.get<Array<User>>(`${environment.apiHost}/api/users`);
   }
 
   public getOne(id: string): Observable<User> {

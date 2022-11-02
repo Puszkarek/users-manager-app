@@ -14,7 +14,7 @@ export type IStore<Asset = unknown, UpdatableAsset = unknown, CreatableAsset = u
   readonly loaded$: Observable<boolean>;
   readonly loading$: Observable<boolean>;
 
-  readonly load: (options: StoreLoadOptions) => Promise<void>;
+  readonly load: (options?: StoreLoadOptions) => Promise<void>;
 
   // * Editing operations
   readonly update: (updatableAsset: UpdatableAsset) => Promise<Either<Error, Asset>>;

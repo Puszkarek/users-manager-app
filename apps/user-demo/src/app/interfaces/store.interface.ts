@@ -1,3 +1,4 @@
+import { EntityCollectionServiceBase, EntitySelectors$ } from '@ngrx/data';
 import { Either } from 'fp-ts/lib/Either';
 import { List } from 'immutable';
 import { Observable } from 'rxjs';
@@ -27,3 +28,9 @@ export type IStore<Asset = unknown, UpdatableAsset = unknown, CreatableAsset = u
 
   // TODO: add filters? getManyWithFilter?
 };
+
+/** This project will not use the data-service to create a better environment to fit with fp-ts library, so to avoid mistakes this interface will remove the non-implemented methods from the EntityCollection */
+export type TypedEntityCollectionServiceBase<T> = Omit<
+  EntityCollectionServiceBase<T, EntitySelectors$<T>>,
+  'update' | 'add' | 'delete' | 'getAll' | 'getByKey' | 'getWithQuery'
+>;

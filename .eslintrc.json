@@ -339,14 +339,19 @@
       "plugins": ["unicorn", "functional", "lodash"],
       "extends": ["plugin:lodash/canonical", "plugin:unicorn/recommended"],
       "rules": {
-        // Lodash
+        // Disabled Rules
+        "unicorn/no-null": "off",
         "lodash/prefer-constant": "off",
+        "unicorn/prefer-event-target": "off",
+        "unicorn/no-array-callback-reference": "off",
+        // ! It's doesn't work properly with immutable lib
+        "lodash/prefer-lodash-method": "off",
+
+        // Lodash
+        "lodash/import-scope": ["error", "member"],
 
         // Custom rules
-        "unicorn/no-null": "off",
-        "unicorn/prefer-event-target": "off",
-        "lodash/import-scope": ["error", "member"],
-        "lodash/prefer-lodash-method": "warn",
+
         "functional/no-expression-statement": "off",
         "functional/no-return-void": "off",
         "functional/no-try-statement": "off",

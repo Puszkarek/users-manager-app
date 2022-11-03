@@ -2,29 +2,28 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { CreatableUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
 import { UsersClient } from '@front/clients';
 import { IStore, StoreLoadOptions } from '@front/interfaces';
-import { userEntityName } from '@front/stores/root';
+import { USER_ENTITY_NAME } from '@front/stores/root';
 import { isTrue, toError } from '@front/utils';
 import { EntityCollectionServiceBase, EntityCollectionServiceElementsFactory } from '@ngrx/data';
-import { Either, left, right } from 'fp-ts/Either';
+import { Either } from 'fp-ts/Either';
+import { foldW, isRight } from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
 import { tryCatch } from 'fp-ts/lib/TaskEither';
 import { List } from 'immutable';
 import { combineLatest, firstValueFrom, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, takeUntil } from 'rxjs/operators';
 
+import { TypedEntityCollectionServiceBase } from '../../interfaces/store.interface';
+
 @Injectable({ providedIn: 'root' })
-/*
- * TODO (functional): replace all try catch by fp-ts methods
- * TODO (guard): use a guard to all values receives from users-data-service
- * TODO (docs): write function docs
- */
+// TODO (docs): write function docs
 export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, OnDestroy {
-  private readonly _entityCollection = new EntityCollectionServiceBase<User>(
-    userEntityName,
+  private readonly _entityCollection: TypedEntityCollectionServiceBase<User> = new EntityCollectionServiceBase<User>(
+    USER_ENTITY_NAME,
     this._serviceElementsFactory,
   );
 
   // * Common Decorators
-
   public readonly count$ = this._entityCollection.count$;
 
   public readonly loading$ = this._entityCollection.loading$;
@@ -69,13 +68,20 @@ export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, O
     this._unsubscribe$.complete();
   }
 
-  public async load({ force = false, clearCache = true }: StoreLoadOptions): Promise<void> {
+  public async load(options?: StoreLoadOptions): Promise<void> {
     const isLoaded = await firstValueFrom(this.loaded$);
-    if (force || !isLoaded) {
-      if (clearCache) {
+    if (options?.force === true || !isLoaded) {
+      if (options?.clearCache === true) {
         this._clearCache();
       }
-      await firstValueFrom(this._entityCollection.getAll());
+      const either = await this._usersClient.getAll();
+      pipe(
+        either,
+        foldW(
+          () => void 0,
+          users => this._entityCollection.upsertManyInCache(users),
+        ),
+      );
     }
   }
 
@@ -84,23 +90,27 @@ export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, O
   }
 
   public async create(user: CreatableUser): Promise<Either<Error, User>> {
-    try {
-      const createdAsset = await firstValueFrom(this._entityCollection.add(user, { isOptimistic: false }));
+    // Update user
+    const either = await this._usersClient.createOne(user);
 
-      return right(createdAsset);
-    } catch (error: unknown) {
-      return left(toError(error));
+    // Add to cache
+    if (isRight(either)) {
+      this._entityCollection.upsertOneInCache(either.right);
     }
+
+    return either;
   }
 
   public async update(user: UpdatableUser): Promise<Either<Error, User>> {
-    try {
-      const createdAsset = await firstValueFrom(this._entityCollection.update(user));
+    // Update user
+    const either = await this._usersClient.updateOne(user);
 
-      return right(createdAsset);
-    } catch (error: unknown) {
-      return left(toError(error));
+    // Add to cache
+    if (isRight(either)) {
+      this._entityCollection.upsertOneInCache(either.right);
     }
+
+    return either;
   }
 
   /**
@@ -110,11 +120,16 @@ export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, O
    * @returns a either containing the error or nothing
    */
   public async delete(assetID: string): Promise<Either<Error, string>> {
+    // TODO: idk if `tryCatch` still necessary since we are using a try catch inside the client, but we can discuss that later
     const taskEither = tryCatch(async () => {
-      const response = await firstValueFrom(
-        this._entityCollection.delete(assetID, { isOptimistic: false }).pipe(map(id => id.toString())),
-      );
-      return response;
+      const either = await this._usersClient.deleteOne(assetID);
+
+      // Remove from cache
+      if (isRight(either)) {
+        this._entityCollection.removeOneFromCache(assetID);
+      }
+
+      return assetID;
     }, toError);
 
     return taskEither();

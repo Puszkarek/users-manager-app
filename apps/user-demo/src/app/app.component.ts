@@ -18,5 +18,11 @@ export class AppComponent {
   ) {
     // Inject the ViewContainer into the notification Service
     this._notificationService.setRootViewContainerRef(viewContainerReference);
+
+    this._usersStore.load();
+
+    this._usersStore.getAll().subscribe(result => {
+      console.log(result.toArray());
+    });
   }
 }

@@ -1,10 +1,11 @@
 /* eslint-disable functional/prefer-readonly-type */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { isUser, LoginResponse, User } from '@api-interfaces';
+import { CreatableUser, isUser, LoginResponse, UpdatableUser, User } from '@api-interfaces';
 import { LoginStatus } from '@front/interfaces';
 import { toError } from '@front/utils';
 import { Either, isRight, left, right } from 'fp-ts/lib/Either';
+import { isArray } from 'lodash';
 import { isString } from 'lodash-es';
 import { BehaviorSubject, catchError, firstValueFrom, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -25,19 +26,73 @@ export class UsersClient {
 
   // * Update Methods
 
-  // TODO (create) update method
+  public async updateOne(updatableUser: UpdatableUser): Promise<Either<Error, User>> {
+    // TODO: can it be a websocket?
+    const either = await firstValueFrom(
+      this._http.put<User>(`${environment.apiHost}/api/users`, updatableUser).pipe(
+        map(response => {
+          // TODO: Replace the if by a fp-ts function
+          if (isUser(response)) {
+            return right(response);
+          }
+          console.error('Invalid response', response);
+          return left(new Error('Invalid response'));
+        }),
+        catchError((error: unknown) => of(left(toError(error)))),
+      ),
+    );
 
+    return either;
+  }
   // * Delete Methods
 
-  // TODO (create) delete method
+  public async createOne(creatableUser: CreatableUser): Promise<Either<Error, User>> {
+    const either = await firstValueFrom(
+      this._http.post<User>(`${environment.apiHost}/api/users`, creatableUser).pipe(
+        map(response => {
+          // TODO: Replace the if by a fp-ts function
+          if (isUser(response)) {
+            return right(response);
+          }
+          console.error('Invalid response', response);
+          return left(new Error('Invalid response'));
+        }),
+        catchError((error: unknown) => of(left(toError(error)))),
+      ),
+    );
 
+    return either;
+  }
   // * Create Methods
 
-  // TODO (create) create method
+  public async deleteOne(id: string): Promise<Either<Error, void>> {
+    const either = await firstValueFrom(
+      this._http.delete(`${environment.apiHost}/api/users/${id}`).pipe(
+        map(() => right(void 0)),
+        catchError((error: unknown) => of(left(toError(error)))),
+      ),
+    );
+
+    return either;
+  }
 
   // * Get Methods
-  public getAll(): Observable<Array<User>> {
-    return this._http.get<Array<User>>('/');
+  public async getAll(): Promise<Either<Error, Array<User>>> {
+    // TODO: can it be a websocket?
+    const either = await firstValueFrom(
+      this._http.get<Array<unknown>>(`${environment.apiHost}/api/users`).pipe(
+        map(response => {
+          if (isArray(response) && response.every(isUser)) {
+            return right(response);
+          }
+          console.error('Invalid response', response);
+          return left(new Error('Invalid response'));
+        }),
+        catchError((error: unknown) => of(left(toError(error)))),
+      ),
+    );
+
+    return either;
   }
 
   public getOne(id: string): Observable<User> {

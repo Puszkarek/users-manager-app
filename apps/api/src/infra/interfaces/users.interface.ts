@@ -1,6 +1,8 @@
 import { CreatableUser, ID, LoginResponse, UpdatableUser, User } from '@api-interfaces';
 import { Either } from 'fp-ts/lib/Either';
 
+import { ExceptionError } from './error.interface';
+
 export type IUsersRepository = {
   readonly findByEmail: (email: string) => Promise<User | null>;
   readonly findByID: (id: string) => Promise<User | null>;
@@ -16,24 +18,25 @@ export type IUsersRepository = {
 
 export type IUsersService = {
   readonly create: {
-    readonly one: (data: CreatableUser) => Promise<Either<Error, User>>;
+    readonly one: (data: CreatableUser) => Promise<Either<ExceptionError, User>>;
   };
   readonly delete: {
-    readonly one: (data: ID) => Promise<Either<Error, void>>;
+    readonly one: (data: ID) => Promise<Either<ExceptionError, void>>;
   };
   readonly update: {
-    readonly one: (data: UpdatableUser) => Promise<Either<Error, void>>;
+    readonly one: (data: UpdatableUser) => Promise<Either<ExceptionError, User>>;
   };
   readonly get: {
-    readonly one: (data: ID) => Promise<Either<Error, User>>;
-    readonly all: () => Promise<Either<Error, ReadonlyArray<User>>>;
+    readonly one: (data: ID) => Promise<Either<ExceptionError, User>>;
+    readonly all: () => Promise<Either<ExceptionError, ReadonlyArray<User>>>;
   };
   /** Create a token for the current logged user */
   readonly login: {
     readonly one: (data: {
       readonly email: string;
       readonly password: string;
-    }) => Promise<Either<Error, LoginResponse>>;
+    }) => Promise<Either<ExceptionError, LoginResponse>>;
   };
+
   // TODO: logout
 };

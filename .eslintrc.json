@@ -215,6 +215,7 @@
           "warn",
           {
             "ignore": [1, 0],
+            "ignoreEnums": true,
             "ignoreDefaultValues": true,
             "enforceConst": true,
             "ignoreNumericLiteralTypes": true,

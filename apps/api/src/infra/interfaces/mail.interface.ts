@@ -1,3 +1,5 @@
+import { ExceptionError } from '@server/infra/interfaces/error.interface';
+import { Either } from 'fp-ts/lib/Either';
 type IAddress = {
   readonly email: string;
   readonly name: string;
@@ -11,5 +13,5 @@ export type IMessage = {
 };
 
 export type IMailProvider = {
-  readonly sendMail: (message: IMessage) => Promise<void>;
+  readonly sendMail: (message: IMessage) => Promise<Either<ExceptionError, void>>;
 };

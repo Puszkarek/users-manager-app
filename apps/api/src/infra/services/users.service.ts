@@ -1,5 +1,5 @@
 import { CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
-import { createExceptionError, extractError } from '@server/infra/helpers';
+import { createExceptionError } from '@server/infra/helpers';
 import {
   ExceptionError,
   IMailProvider,
@@ -7,7 +7,9 @@ import {
   IUsersService,
   REQUEST_STATUS,
 } from '@server/infra/interfaces';
-import { Either, left, right } from 'fp-ts/lib/Either';
+import { Either, fromOption, isLeft, left, right } from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
+import { isNone } from 'fp-ts/lib/Option';
 import { isNull, uniqueId } from 'lodash';
 
 // TODO: remove try catch from here
@@ -47,71 +49,65 @@ export class UsersService implements IUsersService {
 
   public delete = {
     one: async (id: ID): Promise<Either<ExceptionError, void>> => {
-      try {
-        await this._usersRepository.delete(id);
-        return right(void 0);
-      } catch (error: unknown) {
-        return left(createExceptionError(extractError(error).message, REQUEST_STATUS.bad));
-      }
+      const either = await this._usersRepository.delete(id);
+      return either;
     },
   };
 
   public get = {
     all: async (): Promise<Either<ExceptionError, ReadonlyArray<User>>> => {
-      return right(await this._usersRepository.all());
+      const either = await this._usersRepository.all();
+      return either;
     },
     one: async (id: ID): Promise<Either<ExceptionError, User>> => {
-      const foundedUser = await this._usersRepository.findByID(id);
+      const userOption = await this._usersRepository.findByID(id);
 
-      if (isNull(foundedUser)) {
-        return left(createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found));
-      }
-
-      return right(foundedUser);
+      return pipe(
+        userOption,
+        fromOption(() => createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found)),
+      );
     },
   };
 
   public login = {
     one: async ({ email, password }: LoginRequest): Promise<Either<ExceptionError, LoginResponse>> => {
-      try {
-        const foundedUser = await this._usersRepository.findByEmail(email);
-        if (!foundedUser) {
-          return left(createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found));
-        }
-
-        const isGivenPasswordValid = await this._usersRepository.isUserPasswordValid(foundedUser.id, password);
-
-        if (!isGivenPasswordValid) {
-          return left(createExceptionError('The given password is wrong', REQUEST_STATUS.bad));
-        }
-
-        return right({
-          loggedUser: foundedUser,
-          token: password,
-        });
-      } catch (error: unknown) {
-        return left(createExceptionError(extractError(error).message, REQUEST_STATUS.bad));
+      // TODO: improve using pipe
+      const userO = await this._usersRepository.findByEmail(email);
+      if (isNone(userO)) {
+        return left(createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found));
       }
+
+      const isPasswordValidE = await this._usersRepository.isUserPasswordValid(userO.value.id, password);
+
+      if (isLeft(isPasswordValidE)) {
+        return left(createExceptionError('The given password is wrong', REQUEST_STATUS.bad));
+      }
+
+      return right({
+        loggedUser: userO.value,
+        token: password,
+      });
     },
   };
 
   public update = {
     one: async (data: UpdatableUser): Promise<Either<ExceptionError, User>> => {
-      try {
-        const { password, ...updatableUser } = data;
-        const currentUser = await this._usersRepository.findByID(updatableUser.id);
-        if (!currentUser) {
-          return left(createExceptionError('No user found with the given email', REQUEST_STATUS.not_found));
-        }
-
-        // TODO: validade the current password
-
-        const updatedUser: User = { ...currentUser, ...updatableUser };
-        await this._usersRepository.update(updatedUser, password);
-        return right(updatedUser);
-      } catch (error: unknown) {
-        return left(createExceptionError(extractError(error).message, REQUEST_STATUS.bad));
+      const { password, ...updatableUser } = data;
+      const userO = await this._usersRepository.findByID(updatableUser.id);
+      if (isNone(userO)) {
+        return left(createExceptionError('No user found with the given email', REQUEST_STATUS.not_found));
       }
+
+      // TODO: validade the current password
+
+      const updatedUser: User = { ...userO.value, ...updatableUser };
+      const updateEither = await this._usersRepository.update(updatedUser, password);
+
+      if (isLeft(updateEither)) {
+        left(createExceptionError('Something gone wrong updating the user', REQUEST_STATUS.bad));
+      }
+
+      return right(updatedUser);
     },
   };
 

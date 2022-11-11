@@ -1,13 +1,14 @@
 import { CreatableUser, UpdatableUser, User } from '@api-interfaces';
-import { Body, Controller, Delete, Get, HttpException, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, Inject, Param, Post, Put } from '@nestjs/common';
+import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
 import { ExceptionError } from '@server/infra/interfaces';
-import { UsersService } from '@server/infra/services';
+import { IUsersService } from '@server/infra/interfaces/users.interface';
 import { Either, foldW } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly _usersService: UsersService) {}
+  constructor(@Inject(USERS_SERVICE_INJECTABLE_TOKEN) private readonly _usersService: IUsersService) {}
 
   // TODO: move to a helper to be available for other services in the future
   private _executeTask<T>(either: Either<ExceptionError, T>): T {

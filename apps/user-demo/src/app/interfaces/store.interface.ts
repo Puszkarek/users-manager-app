@@ -19,7 +19,7 @@ export type IStore<Asset = unknown, UpdatableAsset = unknown, CreatableAsset = u
 
   // * Editing operations
   readonly update: (updatableAsset: UpdatableAsset) => Promise<Either<Error, Asset>>;
-  readonly delete: (id: string) => Promise<Either<Error, string>>;
+  readonly delete: (id: string) => Promise<Either<Error, void>>;
   readonly create: (creatableAsset: CreatableAsset) => Promise<Either<Error, Asset>>;
 
   // * Getters operations

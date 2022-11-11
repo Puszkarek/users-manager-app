@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { User } from '@api-interfaces';
 import { UsersClient } from '@front/clients';
 import { UsersStore } from '@front/stores';
-import { toError } from '@front/utils';
 import { Either, isLeft, left, right } from 'fp-ts/Either';
 import { isNull } from 'lodash';
 import { firstValueFrom } from 'rxjs';
@@ -32,23 +31,19 @@ export class AuthService {
   }
 
   public async login(email: string, password: string): Promise<Either<Error, User>> {
-    try {
-      const userEither = await this._usersClient.loginOne(email, password);
+    const userEither = await this._usersClient.loginOne(email, password);
 
-      if (isLeft(userEither)) {
-        return left(userEither.left);
-      }
-      const loginResponse = userEither.right;
-
-      this._setToken({
-        email: loginResponse.loggedUser.email,
-        newToken: loginResponse.token,
-      });
-
-      return right(loginResponse.loggedUser);
-    } catch (error) {
-      return left(toError(error));
+    if (isLeft(userEither)) {
+      return left(userEither.left);
     }
+    const loginResponse = userEither.right;
+
+    this._setToken({
+      email: loginResponse.loggedUser.email,
+      newToken: loginResponse.token,
+    });
+
+    return right(loginResponse.loggedUser);
   }
 
   public async logoutUser(): Promise<void> {

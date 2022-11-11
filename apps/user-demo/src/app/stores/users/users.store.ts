@@ -3,12 +3,11 @@ import { CreatableUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
 import { UsersClient } from '@front/clients';
 import { IStore, StoreLoadOptions } from '@front/interfaces';
 import { USER_ENTITY_NAME } from '@front/stores/root';
-import { isTrue, toError } from '@front/utils';
+import { isTrue } from '@front/utils';
 import { EntityCollectionServiceBase, EntityCollectionServiceElementsFactory } from '@ngrx/data';
 import { Either } from 'fp-ts/Either';
 import { foldW, isRight } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
-import { tryCatch } from 'fp-ts/lib/TaskEither';
 import { List } from 'immutable';
 import { combineLatest, firstValueFrom, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, takeUntil } from 'rxjs/operators';
@@ -119,20 +118,15 @@ export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, O
    * @param assetID The user ID to delete
    * @returns a either containing the error or nothing
    */
-  public async delete(assetID: string): Promise<Either<Error, string>> {
-    // TODO: idk if `tryCatch` still necessary since we are using a try catch inside the client, but we can discuss that later
-    const taskEither = tryCatch(async () => {
-      const either = await this._usersClient.deleteOne(assetID);
+  public async delete(assetID: string): Promise<Either<Error, void>> {
+    const either = await this._usersClient.deleteOne(assetID);
 
-      // Remove from cache
-      if (isRight(either)) {
-        this._entityCollection.removeOneFromCache(assetID);
-      }
+    // Remove from cache
+    if (isRight(either)) {
+      this._entityCollection.removeOneFromCache(assetID);
+    }
 
-      return assetID;
-    }, toError);
-
-    return taskEither();
+    return either;
   }
 
   public getAll(): Observable<List<User>> {

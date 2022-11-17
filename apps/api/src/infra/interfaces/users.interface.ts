@@ -1,4 +1,4 @@
-import { CreatableUser, ID, LoginResponse, UpdatableUser, User } from '@api-interfaces';
+import { CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
 import { Either } from 'fp-ts/lib/Either';
 import { Option } from 'fp-ts/lib/Option';
 
@@ -33,10 +33,7 @@ export type IUsersService = {
   };
   /** Create a token for the current logged user */
   readonly login: {
-    readonly one: (data: {
-      readonly email: string;
-      readonly password: string;
-    }) => Promise<Either<ExceptionError, LoginResponse>>;
+    readonly one: (data: LoginRequest) => Promise<Either<ExceptionError, LoginResponse>>;
   };
 
   // TODO: logout

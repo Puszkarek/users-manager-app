@@ -1,7 +1,8 @@
-import { CreatableUser, UpdatableUser, User } from '@api-interfaces';
-import { Body, Controller, Delete, Get, HttpException, Inject, Param, Post, Put } from '@nestjs/common';
+import { CreatableUser, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, Inject, Param, Post, Put } from '@nestjs/common';
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
 import { ExceptionError } from '@server/infra/interfaces';
+import { REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
 import { IUsersService } from '@server/infra/interfaces/users.interface';
 import { Either, foldW } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
@@ -59,6 +60,15 @@ export class UsersController {
   @Get()
   public async getAll(): Promise<ReadonlyArray<User>> {
     const either = await this._usersService.get.all();
+
+    return this._executeTask(either);
+  }
+
+  // * Login Stuffs
+  @Post('login')
+  @HttpCode(REQUEST_STATUS.accepted)
+  public async loginOne(@Body() loginRequest: LoginRequest): Promise<LoginResponse> {
+    const either = await this._usersService.login.one(loginRequest);
 
     return this._executeTask(either);
   }

@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { CreatableUser, isCreatableUser, UpdatableUser, User } from '@api-interfaces';
+import { isCreatableUser, User } from '@api-interfaces';
+import { UserModalFormComponent } from '@front/components/user-modal-form';
+import { ModalService } from '@front/services/modal';
 import { UsersStore } from '@front/stores';
 import { isLeft } from 'fp-ts/lib/Either';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -13,7 +15,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 export class UsersListComponent implements OnInit {
   public readonly users$ = this._usersStore.getAll();
 
-  constructor(private readonly _usersStore: UsersStore) {}
+  constructor(private readonly _usersStore: UsersStore, private readonly _modalService: ModalService) {}
 
   public ngOnInit(): void {
     console.log('init');
@@ -25,18 +27,13 @@ export class UsersListComponent implements OnInit {
 
   public async openUserForm(user: User | null = null): Promise<void> {
     console.log('open modal for user', user);
-    const reference: Observable<CreatableUser | UpdatableUser | null> = null!; /*  This._matDialog.open<
-      UserModalFormComponent,
-      UserModalFormComponentData,
-      CreatableUser | UpdatableUser
-    >(UserModalFormComponent, {
+    const reference = this._modalService.openModal(UserModalFormComponent, {
       data: {
         user: user,
       },
-      width: '500px',
-    }); */
+    });
 
-    const response = await firstValueFrom(reference);
+    const response = await firstValueFrom(reference.data$);
 
     if (response) {
       await (isCreatableUser(response) ? this._usersStore.create(response) : this._usersStore.update(response));

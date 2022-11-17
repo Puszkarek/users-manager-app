@@ -1,30 +1,35 @@
-<h2>{{ formStatus === 'creating' ? 'Create' : 'Update' }} User</h2>
-<div class="modal-content">
-  <div class="row">
-    <app-form-field-input [label]="'Email'" [type]="'email'" [control]="form.controls.email">
-      <div class="error" *ngIf="emailError as errorMessage">{{ errorMessage }}</div>
+<div class="container">
+  <div class="modal-header">
+    <h2 class="title">{{ formStatus === 'creating' ? 'Create' : 'Update' }} User</h2>
+    <hr />
+  </div>
+  <div class="modal-content">
+    <div class="row">
+      <app-form-field-input [label]="'Email'" [type]="'email'" [control]="form.controls.email">
+        <div class="error" *ngIf="emailError as errorMessage">{{ errorMessage }}</div>
+      </app-form-field-input>
+
+      <app-form-field-input [label]="'Name'" [control]="form.controls.name">
+        <div class="error" *ngIf="nameError as errorMessage">{{ errorMessage }}</div>
+      </app-form-field-input>
+    </div>
+
+    <app-form-field-input [label]="'Password'" [type]="'password'" [control]="form.controls.password">
+      <div class="error" *ngIf="passwordError as errorMessage">{{ errorMessage }}</div>
     </app-form-field-input>
 
-    <app-form-field-input [label]="'Name'" [control]="form.controls.name">
-      <div class="error" *ngIf="nameError as errorMessage">{{ errorMessage }}</div>
+    <app-form-field-input
+      [label]="'Password Confirmation'"
+      [type]="'password'"
+      [control]="form.controls.passwordConfirmed">
+      <div class="error" *ngIf="passwordConfirmedError as errorMessage">{{ errorMessage }}</div>
     </app-form-field-input>
   </div>
 
-  <app-form-field-input [label]="'Password'" [type]="'password'" [control]="form.controls.password">
-    <div class="error" *ngIf="passwordError as errorMessage">{{ errorMessage }}</div>
-  </app-form-field-input>
-
-  <app-form-field-input
-    [label]="'Password Confirmation'"
-    [type]="'password'"
-    [control]="form.controls.passwordConfirmed">
-    <div class="error" *ngIf="passwordConfirmedError as errorMessage">{{ errorMessage }}</div>
-  </app-form-field-input>
-</div>
-
-<div class="modal-actions">
-  <app-button [type]="'warn'" (click)="close()">Cancel</app-button>
-  <app-button [type]="'primary'" (click)="save()" [disabled]="this.form.invalid">{{
-    formStatus === 'creating' ? 'Create' : 'Update'
-  }}</app-button>
+  <div class="modal-actions">
+    <app-button [type]="'warn'" (click)="close()">Cancel</app-button>
+    <app-button [type]="'primary'" (click)="save()" [disabled]="this.form.invalid">{{
+      formStatus === 'creating' ? 'Create' : 'Update'
+    }}</app-button>
+  </div>
 </div>

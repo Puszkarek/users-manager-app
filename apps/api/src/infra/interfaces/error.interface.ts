@@ -2,6 +2,7 @@ export enum REQUEST_STATUS {
   // * 2xx Success
   created = 201,
   ok = 200,
+  accepted = 202,
   // * 4xx Client Errors
   bad = 400,
   unauthorized = 401,

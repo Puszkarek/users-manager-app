@@ -23,7 +23,7 @@ import { AppRoutingModule } from './app-routing.module';
     HttpClientModule,
     HeaderModule,
     NavBarModule,
-    // NgRx/Data
+    // * NgRx/Data
     EntityStoreModule,
     EffectsModule.forRoot([]),
     StoreModule.forRoot({}, {}),

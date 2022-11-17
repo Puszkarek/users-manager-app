@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
-import { isUser, User, USER_ROLE } from '@api-interfaces';
+import { CreatableUser, isUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
 import { USER_NAME_MIN_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@front/constants';
+import { MODAL_DATA_TOKEN } from '@front/constants/modal';
 import { FormStatus } from '@front/interfaces';
 import { NotificationService } from '@front/services/notification';
 import { CUSTOM_VALIDATORS } from '@front/utils';
 import { isNil } from 'lodash';
+import { Subject } from 'rxjs';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,6 +16,10 @@ import { isNil } from 'lodash';
   templateUrl: './user-modal-form.component.html',
 })
 export class UserModalFormComponent implements OnInit {
+  // TODO: Found a way to abstract this inside one factory
+  private readonly _close$ = new Subject<CreatableUser | UpdatableUser | null>();
+  public readonly close$ = this._close$.asObservable();
+
   public readonly user: User | null = null;
 
   public readonly form = this._formBuilder.group(
@@ -123,7 +129,7 @@ export class UserModalFormComponent implements OnInit {
   }
 
   constructor(
-    @Inject({}) data: UserModalFormComponentData,
+    @Inject(MODAL_DATA_TOKEN) data: UserModalFormComponentData,
     private readonly _formBuilder: NonNullableFormBuilder,
     private readonly _notificationService: NotificationService,
   ) {
@@ -138,15 +144,23 @@ export class UserModalFormComponent implements OnInit {
     }
   }
 
-  public close(): void {
-    // This._dialogReference.close();
+  public close(data?: CreatableUser | UpdatableUser | null): void {
+    this._close$.next(data ?? null);
+    this._close$.complete();
   }
 
   public save(): void {
     if (this.form.valid) {
-      // This._dialogReference.close(this.form.value);
+      const updatedValues = this.form.getRawValue();
+
+      const currentUser = this.user ?? {};
+
+      this.close({
+        ...currentUser,
+        ...updatedValues,
+      });
     } else {
-      this._notificationService.error('Form is invalid');
+      this._notificationService.error('Please, check the inputs and try again');
     }
   }
 }

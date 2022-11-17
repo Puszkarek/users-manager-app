@@ -7,11 +7,7 @@ const ROUTES: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'login',
-  },
-  {
     component: LoginPageComponent,
-    path: 'login',
   },
 ];
 

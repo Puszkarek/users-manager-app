@@ -1,5 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HeaderModule } from '@front/components/header';
@@ -23,6 +24,7 @@ import { AppRoutingModule } from './app-routing.module';
     HttpClientModule,
     HeaderModule,
     NavBarModule,
+    ReactiveFormsModule,
     // * NgRx/Data
     EntityStoreModule,
     EffectsModule.forRoot([]),

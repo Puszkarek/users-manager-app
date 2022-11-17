@@ -32,7 +32,7 @@ export class LoginPageComponent {
         },
         // On Right
         async () => {
-          await this._router.navigate(['/']);
+          await this._router.navigateByUrl('/');
         },
       ),
     );

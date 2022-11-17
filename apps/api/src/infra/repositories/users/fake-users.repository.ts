@@ -35,6 +35,7 @@ export class FakeUsersRepository implements IUsersRepository {
 
   public async findByEmail(email: string): Promise<Option<User>> {
     const user = this.users.find(item => item.email === email);
+
     return fromNullable(user);
   }
 

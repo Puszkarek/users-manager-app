@@ -1,12 +1,10 @@
-/* eslint-disable functional/prefer-readonly-type */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CreatableUser, isUser, LoginResponse, UpdatableUser, User } from '@api-interfaces';
 import { LoginStatus } from '@front/interfaces';
 import { toError } from '@front/utils';
 import { Either, isRight, left, right } from 'fp-ts/lib/Either';
-import { isArray } from 'lodash';
-import { isString } from 'lodash-es';
+import { isArray, isNull, isString } from 'lodash-es';
 import { BehaviorSubject, catchError, firstValueFrom, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -29,7 +27,7 @@ export class UsersClient {
   public async updateOne(updatableUser: UpdatableUser): Promise<Either<Error, User>> {
     // TODO: can it be a websocket?
     const either = await firstValueFrom(
-      this._http.put<User>(`${environment.apiHost}/api/users`, updatableUser).pipe(
+      this._http.put<User>(`${environment.apiHost}/users`, updatableUser).pipe(
         map(response => {
           // TODO: Replace the if by a fp-ts function
           if (isUser(response)) {
@@ -48,7 +46,7 @@ export class UsersClient {
 
   public async createOne(creatableUser: CreatableUser): Promise<Either<Error, User>> {
     const either = await firstValueFrom(
-      this._http.post<User>(`${environment.apiHost}/api/users`, creatableUser).pipe(
+      this._http.post<User>(`${environment.apiHost}/users`, creatableUser).pipe(
         map(response => {
           // TODO: Replace the if by a fp-ts function
           if (isUser(response)) {
@@ -67,7 +65,7 @@ export class UsersClient {
 
   public async deleteOne(id: string): Promise<Either<Error, void>> {
     const either = await firstValueFrom(
-      this._http.delete(`${environment.apiHost}/api/users/${id}`).pipe(
+      this._http.delete(`${environment.apiHost}/users/${id}`).pipe(
         map(() => right(void 0)),
         catchError((error: unknown) => of(left(toError(error)))),
       ),
@@ -77,10 +75,10 @@ export class UsersClient {
   }
 
   // * Get Methods
-  public async getAll(): Promise<Either<Error, Array<User>>> {
+  public async getAll(): Promise<Either<Error, ReadonlyArray<User>>> {
     // TODO: can it be a websocket?
     const either = await firstValueFrom(
-      this._http.get<Array<unknown>>(`${environment.apiHost}/api/users`).pipe(
+      this._http.get<ReadonlyArray<unknown>>(`${environment.apiHost}/users`).pipe(
         map(response => {
           if (isArray(response) && response.every(isUser)) {
             return right(response);
@@ -106,14 +104,13 @@ export class UsersClient {
     const result: Either<Error, LoginResponse> = await firstValueFrom(
       this._http
         .post<LoginResponse>(`${environment.apiHost}/users/login`, {
-          headers: {
-            email,
-            password,
-          },
+          email,
+          password,
         })
         .pipe(
           map(response => {
             if (isString(response.token) && isUser(response.loggedUser)) {
+              this._updateLoggedUser(response.loggedUser);
               return right(response);
             }
             console.error('Invalid response', response);
@@ -145,6 +142,7 @@ export class UsersClient {
         .pipe(
           map(response => {
             if (isString(response.token) && isUser(response.loggedUser)) {
+              this._updateLoggedUser(response.loggedUser);
               return right(response);
             }
             console.error('Invalid response', response);
@@ -169,6 +167,7 @@ export class UsersClient {
       // TODO (token): we need to "un-validate" the token
       of(token).pipe(
         map(() => {
+          this._updateLoggedUser(null);
           return right(void 0);
         }),
         catchError((error: unknown) => of(left(toError(error)))),
@@ -180,5 +179,18 @@ export class UsersClient {
     }
 
     return result;
+  }
+
+  private _updateLoggedUser(user: User | null): void {
+    if (isNull(user)) {
+      this._loggedStatus$.next({
+        status: 'logout',
+      });
+    } else {
+      this._loggedStatus$.next({
+        status: 'logged',
+        user: user,
+      });
+    }
   }
 }

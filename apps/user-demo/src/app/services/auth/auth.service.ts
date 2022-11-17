@@ -11,7 +11,9 @@ import { firstValueFrom } from 'rxjs';
 })
 export class AuthService {
   // TODO (feature): check if the auth token expires every 5 seconds
-  constructor(private readonly _usersClient: UsersClient, private readonly _usersStore: UsersStore) {}
+  constructor(private readonly _usersClient: UsersClient, private readonly _usersStore: UsersStore) {
+    this._usersStore.load();
+  }
 
   public async load(): Promise<void> {
     const savedLogin = this._getToken();

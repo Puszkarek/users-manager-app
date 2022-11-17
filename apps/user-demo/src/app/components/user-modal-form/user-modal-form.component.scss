@@ -1,4 +1,44 @@
-mat-dialog-actions {
+/* TODO: Needs to be abstract, maybe we can use hostDirectives */
+:host {
+  display: flex;
+  position: fixed;
+
+  top: 0;
+  right: 0;
+
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+
+  .container {
+    background: var(--bg-primary);
+    display: block;
+    position: absolute;
+
+    top: 50%;
+    right: 50%;
+
+    transform: translate(50%, -50%);
+
+    padding: 3rem 4rem;
+    border-radius: calc(var(--radius) * 3);
+  }
+}
+
+.modal-header {
+  margin: 0 0 2rem 0;
+  .title {
+    margin: 0;
+  }
+
+  hr {
+    border: 0;
+    height: 1px;
+    background: var(--text-primary);
+  }
+}
+
+.modal-actions {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;

@@ -70,15 +70,23 @@ export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, O
   public async load(options?: StoreLoadOptions): Promise<void> {
     const isLoaded = await firstValueFrom(this.loaded$);
     if (options?.force === true || !isLoaded) {
+      this._entityCollection.setLoading(true);
       if (options?.clearCache === true) {
         this._clearCache();
+        this._entityCollection.setLoaded(false);
       }
       const either = await this._usersClient.getAll();
       pipe(
         either,
         foldW(
           () => void 0,
-          users => this._entityCollection.upsertManyInCache(users),
+          users => {
+            this._entityCollection.upsertManyInCache([...users]);
+
+            // * Update load state
+            this._entityCollection.setLoading(false);
+            this._entityCollection.setLoaded(true);
+          },
         ),
       );
     }

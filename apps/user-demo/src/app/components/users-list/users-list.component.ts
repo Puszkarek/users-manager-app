@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { isCreatableUser, User } from '@api-interfaces';
 import { UserModalFormComponent } from '@front/components/user-modal-form';
 import { ModalService } from '@front/services/modal';
@@ -12,21 +12,16 @@ import { firstValueFrom } from 'rxjs';
   styleUrls: ['./users-list.component.scss'],
   templateUrl: './users-list.component.html',
 })
-export class UsersListComponent implements OnInit {
+export class UsersListComponent {
   public readonly users$ = this._usersStore.getAll();
 
   constructor(private readonly _usersStore: UsersStore, private readonly _modalService: ModalService) {}
-
-  public ngOnInit(): void {
-    console.log('init');
-  }
 
   public trackByID(_index: number, user: User): string {
     return user.id;
   }
 
   public async openUserForm(user: User | null = null): Promise<void> {
-    console.log('open modal for user', user);
     const reference = this._modalService.openModal(UserModalFormComponent, {
       data: {
         user: user,

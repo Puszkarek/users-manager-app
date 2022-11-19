@@ -17,8 +17,9 @@ jobs:
           main-branch-name: 'dev'
       - run: npm ci
 
-      - run: npx nx workspace-lint
-      - run: npx nx format:check
-      - run: npx nx affected --target=lint --parallel=3
-      - run: npx nx affected --target=test --parallel=3 --ci --code-coverage
-      - run: npx nx affected --target=build --parallel=3
+      - run: npm run build:www:prod
+      - run: npm run build:api:prod
+      - run: npm run lint:prettier
+      - run: npm run lint:eslint
+      - run: npm run test:www
+      - run: npm run test:e2e

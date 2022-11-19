@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
 import { FakeMailProvider } from '@server/infra/providers/fake-mail';
 import { FakeUsersRepository } from '@server/infra/repositories/users';
 import { UsersService } from '@server/infra/services';
@@ -13,7 +14,7 @@ describe(UsersController.name, () => {
       controllers: [UsersController],
       providers: [
         {
-          provide: UsersService,
+          provide: USERS_SERVICE_INJECTABLE_TOKEN,
           useValue: new UsersService(new FakeUsersRepository(), new FakeMailProvider()),
         },
       ],

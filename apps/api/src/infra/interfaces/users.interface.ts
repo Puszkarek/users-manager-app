@@ -1,4 +1,4 @@
-import { CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
+import { CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User, UserToken } from '@api-interfaces';
 import { Either } from 'fp-ts/lib/Either';
 import { Option } from 'fp-ts/lib/Option';
 
@@ -6,15 +6,20 @@ import { ExceptionError } from './error.interface';
 
 export type IUsersRepository = {
   readonly findByEmail: (email: string) => Promise<Option<User>>;
+  readonly findByToken: (token: UserToken) => Promise<Option<User>>;
   readonly findByID: (id: string) => Promise<Option<User>>;
 
+  // TODO: rename these methods to specify that we are doing actions in the user
   readonly save: (user: User, password: string) => Promise<Either<ExceptionError, void>>;
   readonly update: (user: User, password?: string) => Promise<Either<ExceptionError, void>>;
   readonly delete: (userID: ID) => Promise<Either<ExceptionError, void>>;
 
   readonly all: () => Promise<Either<ExceptionError, ReadonlyArray<User>>>;
 
-  readonly isUserPasswordValid: (email: string, password: string) => Promise<Either<ExceptionError, boolean>>;
+  readonly isUserPasswordValid: (email: string, password: string) => Promise<boolean>;
+  readonly isUserTokenValid: (token: UserToken) => Promise<boolean>;
+
+  readonly upsertToken: (user: User['id']) => Promise<Either<ExceptionError, UserToken>>;
 };
 
 export type IUsersService = {
@@ -34,6 +39,11 @@ export type IUsersService = {
   /** Create a token for the current logged user */
   readonly login: {
     readonly one: (data: LoginRequest) => Promise<Either<ExceptionError, LoginResponse>>;
+  };
+
+  /** Update a token for the user */
+  readonly token: {
+    readonly update: (data: UserToken) => Promise<Either<ExceptionError, LoginResponse>>;
   };
 
   // TODO: logout

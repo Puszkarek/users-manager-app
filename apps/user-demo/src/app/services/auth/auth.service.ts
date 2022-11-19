@@ -13,6 +13,8 @@ export class AuthService {
   // TODO (feature): check if the auth token expires every 5 seconds
   constructor(private readonly _usersClient: UsersClient, private readonly _usersStore: UsersStore) {
     this._usersStore.load();
+
+    this.load();
   }
 
   public async load(): Promise<void> {
@@ -22,6 +24,7 @@ export class AuthService {
       return;
     }
 
+    console.log('login with token');
     const either = await this._usersClient.loginOneWithToken(savedLogin.email, savedLogin.token);
 
     if (isLeft(either)) {

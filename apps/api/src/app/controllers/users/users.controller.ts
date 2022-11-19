@@ -72,4 +72,12 @@ export class UsersController {
 
     return this._executeTask(either);
   }
+
+  @Post('login')
+  @HttpCode(REQUEST_STATUS.accepted)
+  public async loginOneWithToken(@Body() loginRequest: LoginRequest): Promise<LoginResponse> {
+    const either = await this._usersService.login.one(loginRequest);
+
+    return this._executeTask(either);
+  }
 }

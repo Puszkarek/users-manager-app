@@ -28,7 +28,12 @@ export type CreatableUser = {
   readonly role: USER_ROLE;
 };
 
+// TODO: rename to AuthToken
 export type UserToken = string;
+export type UserTokenMetadata = {
+  expireAt: Date;
+  userID: string;
+};
 
 export type LoginRequest = {
   readonly email: string;

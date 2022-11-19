@@ -1,4 +1,4 @@
-import { CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
+import { CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User, UserToken } from '@api-interfaces';
 import { createExceptionError } from '@server/infra/helpers';
 import {
   ExceptionError,
@@ -69,27 +69,6 @@ export class UsersService implements IUsersService {
     },
   };
 
-  public login = {
-    one: async ({ email, password }: LoginRequest): Promise<Either<ExceptionError, LoginResponse>> => {
-      // TODO: improve using pipe
-      const userO = await this._usersRepository.findByEmail(email);
-      if (isNone(userO)) {
-        return left(createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found));
-      }
-
-      const isPasswordValidE = await this._usersRepository.isUserPasswordValid(userO.value.id, password);
-
-      if (isLeft(isPasswordValidE)) {
-        return left(createExceptionError('The given password is wrong', REQUEST_STATUS.bad));
-      }
-
-      return right({
-        loggedUser: userO.value,
-        token: password,
-      });
-    },
-  };
-
   public update = {
     one: async (data: UpdatableUser): Promise<Either<ExceptionError, User>> => {
       const { password, ...updatableUser } = data;
@@ -108,6 +87,61 @@ export class UsersService implements IUsersService {
       }
 
       return right(updatedUser);
+    },
+  };
+
+  public login = {
+    one: async ({ email, password }: LoginRequest): Promise<Either<ExceptionError, LoginResponse>> => {
+      // TODO: improve using pipe
+      // Search the user using his email
+      const userO = await this._usersRepository.findByEmail(email);
+      if (isNone(userO)) {
+        return left(createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found));
+      }
+
+      // Validate the password
+      const isPasswordValid = await this._usersRepository.isUserPasswordValid(userO.value.id, password);
+      if (!isPasswordValid) {
+        return left(createExceptionError('The given password is wrong', REQUEST_STATUS.bad));
+      }
+
+      // Create the Token
+      const tokenE = await this._usersRepository.createUserToken(userO.value.id);
+      if (isLeft(tokenE)) {
+        return tokenE;
+      }
+
+      return right({
+        loggedUser: userO.value,
+        token: tokenE.right,
+      });
+    },
+  };
+
+  public readonly token = {
+    update: async (token: UserToken): Promise<Either<ExceptionError, LoginResponse>> => {
+      // TODO: improve using pipe
+      // Search the user using his email
+      const userO = await this._usersRepository.findByToken(token);
+      if (isNone(userO)) {
+        return left(createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found));
+      }
+
+      // Validate the password
+      const isTokenValid = await this._usersRepository.isUserTokenValid(token);
+      if (!isTokenValid) {
+        return left(createExceptionError('The given password is wrong', REQUEST_STATUS.bad));
+      }
+
+      // Create the Token
+      const tokenE = await this._usersRepository.updateUserToken(token);
+      if (isLeft(tokenE)) {
+        return tokenE;
+      }
+      return right({
+        loggedUser: userO.value,
+        token: tokenE.right,
+      });
     },
   };
 

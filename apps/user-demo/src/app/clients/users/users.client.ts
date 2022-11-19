@@ -132,12 +132,10 @@ export class UsersClient {
   public async loginOneWithToken(email: string, token: string): Promise<Either<Error, LoginResponse>> {
     const result: Either<Error, LoginResponse> = await firstValueFrom(
       this._http
-        .post<LoginResponse>(`${environment.apiHost}/users/login`, {
-          headers: {
-            email,
-            // TODO (token): should use token property
-            password: token,
-          },
+        .post<LoginResponse>(`${environment.apiHost}/users/login/token`, {
+          email,
+          // TODO (token): should use token property
+          password: token,
         })
         .pipe(
           map(response => {

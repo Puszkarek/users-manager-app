@@ -14,20 +14,11 @@ import { UsersStore } from '@front/stores';
  * If logged, it will redirect to the main page, this extra validation to avoid to access the login page when the user is not logged
  */
 export class LoggedGuard implements CanActivate {
-  constructor(
-    private readonly _usersStore: UsersStore,
-    private readonly _router: Router
-  ) {}
+  constructor(private readonly _usersStore: UsersStore, private readonly _router: Router) {}
 
-  public canActivate():
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree>
-    | boolean
-    | UrlTree {
+  public canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     return this._usersStore.isAuthenticated$.pipe(
-      map((isAuthenticated) =>
-        isAuthenticated ? this._router.createUrlTree(['/']) : true
-      )
+      map(isAuthenticated => (isAuthenticated ? this._router.createUrlTree(['/']) : true)),
     );
   }
 }

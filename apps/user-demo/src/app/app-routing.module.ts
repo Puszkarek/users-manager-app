@@ -16,25 +16,17 @@ const routes: Routes = [
   {
     canActivate: [AuthGuard],
     loadChildren: () =>
-      import('./routes/dashboard-routing.module').then(
-        ({ DashboardRoutingModule }) => DashboardRoutingModule
-      ),
+      import('./routes/dashboard-routing.module').then(({ DashboardRoutingModule }) => DashboardRoutingModule),
     path: 'dashboard',
   },
   {
     canActivate: [LoggedGuard],
-    loadChildren: () =>
-      import('./routes/auth-routing.module').then(
-        ({ AuthRoutingModule }) => AuthRoutingModule
-      ),
+    loadChildren: () => import('./routes/auth-routing.module').then(({ AuthRoutingModule }) => AuthRoutingModule),
     path: 'auth',
   },
   {
     canActivate: [AuthGuard, AdminGuard],
-    loadChildren: () =>
-      import('./routes/admin-routing.module').then(
-        ({ AdminRoutingModule }) => AdminRoutingModule
-      ),
+    loadChildren: () => import('./routes/admin-routing.module').then(({ AdminRoutingModule }) => AdminRoutingModule),
     path: 'admin',
   },
 ];

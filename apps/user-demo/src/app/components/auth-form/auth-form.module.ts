@@ -9,11 +9,6 @@ import { AuthFormComponent } from './auth-form.component';
 @NgModule({
   declarations: [AuthFormComponent],
   exports: [AuthFormComponent],
-  imports: [
-    CommonModule,
-    RouterModule,
-    ReactiveFormsModule,
-    FormFieldInputModule,
-  ],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormFieldInputModule],
 })
 export class AuthFormModule {}

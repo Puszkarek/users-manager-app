@@ -14,7 +14,8 @@
     "test:e2e": "nx e2e user-demo-e2e",
     "lint:eslint": "ng lint",
     "lint:prettier": "prettier --check .",
-    "lint:style": "ng lint"
+    "lint:style": "ng lint",
+    "format:prettier": "prettier --write ."
   },
   "private": true,
   "dependencies": {

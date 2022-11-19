@@ -14,7 +14,7 @@
     "test:e2e": "nx e2e user-demo-e2e",
     "lint:eslint": "npm run lint:eslint:www && npm run lint:eslint:api",
     "lint:eslint:www": "nx run user-demo:lint",
-    "lint:eslint:api": "ng nx run api:lint",
+    "lint:eslint:api": "nx run api:lint",
     "lint:prettier": "prettier --check .",
     "lint:style": "ng lint",
     "format:prettier": "prettier --write ."

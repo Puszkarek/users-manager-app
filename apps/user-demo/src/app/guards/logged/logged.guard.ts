@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, UrlTree } from '@angular/router';
+import { UsersStore } from '@front/stores';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { UsersStore } from '@front/stores';
 
 @Injectable({
   providedIn: 'root',

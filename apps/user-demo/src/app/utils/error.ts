@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { isError, isString } from 'lodash-es';
 import { UNKNOWN_ERROR_MESSAGE } from '@front/constants';
+import { isError, isString } from 'lodash-es';
 
 export const toError = (value: unknown): Error => {
   if (value instanceof HttpErrorResponse) {

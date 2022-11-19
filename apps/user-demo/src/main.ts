@@ -10,4 +10,5 @@ if (environment.production) {
 
 platformBrowserDynamic()
   .bootstrapModule(AppModule)
+  // eslint-disable-next-line unicorn/prefer-top-level-await
   .catch(error => console.error(error));

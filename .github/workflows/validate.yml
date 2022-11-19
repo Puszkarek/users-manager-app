@@ -15,7 +15,9 @@ jobs:
       - uses: nrwl/nx-set-shas@v3
         with:
           main-branch-name: 'dev'
-      - run: npm ci
+
+      - name: Install dependencies
+      - run: npm clean-install
 
       - name: Build Front End
       - run: npm run build:www:prod

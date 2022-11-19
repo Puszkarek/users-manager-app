@@ -106,7 +106,7 @@ export class UsersService implements IUsersService {
       }
 
       // Create the Token
-      const tokenE = await this._usersRepository.createUserToken(userO.value.id);
+      const tokenE = await this._usersRepository.upsertToken(userO.value.id);
       if (isLeft(tokenE)) {
         return tokenE;
       }
@@ -134,7 +134,7 @@ export class UsersService implements IUsersService {
       }
 
       // Create the Token
-      const tokenE = await this._usersRepository.updateUserToken(token);
+      const tokenE = await this._usersRepository.upsertToken(token);
       if (isLeft(tokenE)) {
         return tokenE;
       }

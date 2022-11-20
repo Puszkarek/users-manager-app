@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewContainerRef } from '@angular/core';
 import { ModalService } from '@front/services/modal';
 import { NotificationService } from '@front/services/notification';
-import { UsersStore } from '@front/stores';
+import { UsersStore } from '@front/stores/users';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

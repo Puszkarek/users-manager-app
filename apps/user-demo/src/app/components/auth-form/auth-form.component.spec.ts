@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { StoreTestingModule } from '@front/stores/root';
 
 import { AuthFormComponent } from './auth-form.component';
+import { AuthFormModule } from './auth-form.module';
 
 describe(AuthFormComponent.name, () => {
   let component: AuthFormComponent;
@@ -8,7 +10,7 @@ describe(AuthFormComponent.name, () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AuthFormComponent],
+      imports: [StoreTestingModule, AuthFormModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AuthFormComponent);

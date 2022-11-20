@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { StoreTestingModule } from '@front/stores/root';
 
 import { AuthGuard } from './auth.guard';
 
@@ -6,7 +7,9 @@ describe(AuthGuard.name, () => {
   let guard: AuthGuard;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      imports: [StoreTestingModule],
+    });
     guard = TestBed.inject(AuthGuard);
   });
 

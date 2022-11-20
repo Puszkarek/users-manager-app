@@ -18,4 +18,8 @@ export default {
     'jest-preset-angular/build/serializers/ng-snapshot',
     'jest-preset-angular/build/serializers/html-comment',
   ],
+  moduleNameMapper: {
+    // `lodash-es` modules doesn't work on Node environment
+    '^lodash-es$': 'lodash',
+  },
 };

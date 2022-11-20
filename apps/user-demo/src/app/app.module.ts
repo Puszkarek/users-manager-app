@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HeaderModule } from '@front/components/header';
 import { NavBarModule } from '@front/components/nav-bar';
-import { EntityStoreModule } from '@front/stores';
+import { EntityStoreModule } from '@front/stores/root';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';

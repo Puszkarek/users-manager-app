@@ -1,7 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CreatableUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
-import { UsersClient } from '@front/clients';
+import { UsersClient } from '@front/clients/users';
 import { IStore, StoreLoadOptions } from '@front/interfaces';
+import { TypedEntityCollectionServiceBase } from '@front/interfaces/store.interface';
 import { USER_ENTITY_NAME } from '@front/stores/root';
 import { isTrue } from '@front/utils';
 import { EntityCollectionServiceBase, EntityCollectionServiceElementsFactory } from '@ngrx/data';
@@ -11,8 +12,6 @@ import { pipe } from 'fp-ts/lib/function';
 import { List } from 'immutable';
 import { combineLatest, firstValueFrom, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, takeUntil } from 'rxjs/operators';
-
-import { TypedEntityCollectionServiceBase } from '../../interfaces/store.interface';
 
 @Injectable({ providedIn: 'root' })
 // TODO (docs): write function docs

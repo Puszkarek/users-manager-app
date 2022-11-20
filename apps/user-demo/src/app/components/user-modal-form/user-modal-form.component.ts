@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { CreatableUser, isUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
-import { USER_NAME_MIN_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@front/constants';
+import { USER_NAME_MIN_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@front/constants/form-settings';
 import { MODAL_DATA_TOKEN } from '@front/constants/modal';
 import { FormStatus } from '@front/interfaces';
 import { NotificationService } from '@front/services/notification';

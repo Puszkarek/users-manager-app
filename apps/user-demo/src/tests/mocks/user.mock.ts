@@ -1,5 +1,6 @@
 import { User } from '@api-interfaces';
-import { generateUser } from '@front/../tests/generators';
+
+import { generateUser } from '../../tests/generators';
 
 export const loggedUser = generateUser({ name: 'Bob' });
 

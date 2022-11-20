@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from '@api-interfaces';
-import { UsersClient } from '@front/clients';
-import { UsersStore } from '@front/stores';
+import { UsersClient } from '@front/clients/users';
+import { UsersStore } from '@front/stores/users';
 import { Either, isLeft, left, right } from 'fp-ts/Either';
 import { isNull } from 'lodash';
 import { firstValueFrom } from 'rxjs';

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthFormEntries } from '@front/interfaces';
+import { AuthFormEntries } from '@front/interfaces/auth';
 import { AuthService } from '@front/services/auth';
 import { NotificationService } from '@front/services/notification';
 import { toErrorMessage } from '@front/utils';

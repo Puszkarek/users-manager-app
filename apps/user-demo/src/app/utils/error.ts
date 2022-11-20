@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { UNKNOWN_ERROR_MESSAGE } from '@front/constants';
+import { UNKNOWN_ERROR_MESSAGE } from '@front/constants/messages';
 import { isError, isString } from 'lodash-es';
 
 export const toError = (value: unknown): Error => {

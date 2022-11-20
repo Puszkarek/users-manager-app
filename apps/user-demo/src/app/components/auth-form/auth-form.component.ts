@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
-import { AuthFormEntries, FormLink } from '@front/interfaces';
+import { AuthFormEntries } from '@front/interfaces/auth';
+import { FormLink } from '@front/interfaces/form';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

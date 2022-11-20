@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { NotificationData } from '@front/interfaces/notification.interface';
+import { NotificationData } from '@front/interfaces/notification';
 
 @Component({
   selector: 'app-notification-toast',

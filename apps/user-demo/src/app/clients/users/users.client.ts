@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CreatableUser, isUser, LoginResponse, UpdatableUser, User } from '@api-interfaces';
-import { LoginStatus } from '@front/interfaces';
+import { LoginStatus } from '@front/interfaces/auth';
 import { toError } from '@front/utils';
 import { Either, isRight, left, right } from 'fp-ts/lib/Either';
 import { isArray, isNull, isString } from 'lodash-es';

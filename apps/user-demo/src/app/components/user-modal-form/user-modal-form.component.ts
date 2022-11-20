@@ -3,7 +3,7 @@ import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { CreatableUser, isUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
 import { USER_NAME_MIN_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@front/constants/form-settings';
 import { MODAL_DATA_TOKEN } from '@front/constants/modal';
-import { FormStatus } from '@front/interfaces';
+import { FormStatus } from '@front/interfaces/form';
 import { NotificationService } from '@front/services/notification';
 import { CUSTOM_VALIDATORS } from '@front/utils';
 import { isNil } from 'lodash';

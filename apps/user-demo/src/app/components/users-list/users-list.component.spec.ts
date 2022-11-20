@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UsersListModule } from '@front/components/users-list';
-import { StoreTestingModule } from '@front/stores/root';
+import { UsersListModule } from '@front/app/components/users-list';
+import { StoreTestingModule } from '@front/app/stores/root';
 
 import { UsersListComponent } from './users-list.component';
 

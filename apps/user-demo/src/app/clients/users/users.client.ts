@@ -1,14 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CreatableUser, isUser, LoginResponse, UpdatableUser, User } from '@api-interfaces';
-import { LoginStatus } from '@front/interfaces/auth';
-import { toError } from '@front/utils';
+import { LoginStatus } from '@front/app/interfaces/auth';
+import { toError } from '@front/app/utils';
+import { environment } from '@front/environments/environment';
 import { Either, isRight, left, right } from 'fp-ts/lib/Either';
 import { isArray, isNull, isString } from 'lodash-es';
 import { BehaviorSubject, catchError, firstValueFrom, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',

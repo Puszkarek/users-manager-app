@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ButtonModule } from '@front/components/button';
-import { IconModule } from '@front/components/icon';
-import { UserModalFormModule } from '@front/components/user-modal-form';
+import { ButtonModule } from '@front/app/components/button';
+import { IconModule } from '@front/app/components/icon';
+import { UserModalFormModule } from '@front/app/components/user-modal-form';
 
 import { UsersListComponent } from './users-list.component';
 

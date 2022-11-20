@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DashboardPageComponent, DashboardPageModule } from '@front/pages/dashboard-page';
+import { DashboardPageComponent, DashboardPageModule } from '@front/app/pages/dashboard-page';
 
 const ROUTES: Routes = [
   {

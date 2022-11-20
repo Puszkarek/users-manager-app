@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, UrlTree } from '@angular/router';
-import { UsersStore } from '@front/stores/users';
+import { UsersStore } from '@front/app/stores/users';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 

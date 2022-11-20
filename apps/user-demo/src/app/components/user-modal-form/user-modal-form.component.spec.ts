@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UserModalFormModule } from '@front/components/user-modal-form';
-import { MODAL_DATA_TOKEN } from '@front/constants/modal';
-import { StoreTestingModule } from '@front/stores/root';
+import { UserModalFormModule } from '@front/app/components/user-modal-form';
+import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
+import { StoreTestingModule } from '@front/app/stores/root';
 
 import { UserModalFormComponent } from './user-modal-form.component';
 

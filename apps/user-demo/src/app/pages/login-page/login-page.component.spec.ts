@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { StoreTestingModule } from '@front/stores/root';
+import { StoreTestingModule } from '@front/app/stores/root';
 
 import { LoginPageComponent } from './login-page.component';
 import { LoginPageModule } from './login-page.module';

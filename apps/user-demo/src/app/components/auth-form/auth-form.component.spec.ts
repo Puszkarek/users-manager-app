@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { StoreTestingModule } from '@front/stores/root';
+import { StoreTestingModule } from '@front/app/stores/root';
 
 import { AuthFormComponent } from './auth-form.component';
 import { AuthFormModule } from './auth-form.module';

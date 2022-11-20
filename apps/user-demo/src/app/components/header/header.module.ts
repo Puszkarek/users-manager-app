@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { IconModule } from '@front/components/icon';
+import { IconModule } from '@front/app/components/icon';
 
 import { HeaderComponent } from './header.component';
 

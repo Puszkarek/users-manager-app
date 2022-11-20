@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NgModule } from '@angular/core';
-import { EntityStoreModule } from '@front/stores/root';
-import { UsersStore } from '@front/stores/users/users.store';
+import { EntityStoreModule } from '@front/app/stores/root';
+import { UsersStore } from '@front/app/stores/users/users.store';
 
 const stores = [UsersStore];
 

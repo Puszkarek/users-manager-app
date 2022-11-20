@@ -1,6 +1,6 @@
 import { Injectable, Injector, ViewContainerRef } from '@angular/core';
-import { NotificationToastComponent } from '@front/components/notification-toast';
-import { NotificationData, NotificationType } from '@front/interfaces/notification';
+import { NotificationToastComponent } from '@front/app/components/notification-toast';
+import { NotificationData, NotificationType } from '@front/app/interfaces/notification';
 import { firstValueFrom } from 'rxjs';
 import { timer } from 'rxjs/internal/observable/timer';
 

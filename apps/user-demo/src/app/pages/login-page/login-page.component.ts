@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthFormEntries } from '@front/interfaces/auth';
-import { AuthService } from '@front/services/auth';
-import { NotificationService } from '@front/services/notification';
-import { toErrorMessage } from '@front/utils';
+import { AuthFormEntries } from '@front/app/interfaces/auth';
+import { AuthService } from '@front/app/services/auth';
+import { NotificationService } from '@front/app/services/notification';
+import { toErrorMessage } from '@front/app/utils';
 import { foldW } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 

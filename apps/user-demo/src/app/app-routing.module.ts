@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/promise-function-async */
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AdminGuard } from '@front/guards/admin';
-import { AuthGuard } from '@front/guards/auth';
-import { LoggedGuard } from '@front/guards/logged';
+import { AdminGuard } from '@front/app/guards/admin';
+import { AuthGuard } from '@front/app/guards/auth';
+import { LoggedGuard } from '@front/app/guards/logged';
 
 const routes: Routes = [
   // Redirects

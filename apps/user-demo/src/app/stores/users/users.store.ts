@@ -1,9 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CreatableUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
-import { UsersClient } from '@front/clients/users';
-import { IStore, StoreLoadOptions, TypedEntityCollectionServiceBase } from '@front/interfaces/store';
-import { USER_ENTITY_NAME } from '@front/stores/root';
-import { isTrue } from '@front/utils';
+import { UsersClient } from '@front/app/clients/users';
+import { IStore, StoreLoadOptions, TypedEntityCollectionServiceBase } from '@front/app/interfaces/store';
+import { USER_ENTITY_NAME } from '@front/app/stores/root';
+import { isTrue } from '@front/app/utils';
 import { EntityCollectionServiceBase, EntityCollectionServiceElementsFactory } from '@ngrx/data';
 import { Either } from 'fp-ts/Either';
 import { foldW, isRight } from 'fp-ts/lib/Either';

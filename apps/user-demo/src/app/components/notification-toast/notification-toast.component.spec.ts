@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NotificationData } from '@front/interfaces/notification';
+import { NotificationData } from '@front/app/interfaces/notification';
 
 import { NotificationToastComponent } from './notification-toast.component';
 import { NotificationToastModule } from './notification-toast.module';

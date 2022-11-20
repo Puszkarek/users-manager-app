@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HeaderModule } from '@front/components/header';
-import { IconModule } from '@front/components/icon';
-import { NavBarModule } from '@front/components/nav-bar';
-import { StoreTestingModule } from '@front/stores/root';
+import { HeaderModule } from '@front/app/components/header';
+import { IconModule } from '@front/app/components/icon';
+import { NavBarModule } from '@front/app/components/nav-bar';
+import { StoreTestingModule } from '@front/app/stores/root';
 
 import { AppComponent } from './app.component';
 

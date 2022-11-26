@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CreatableUser, isUser, LoginResponse, UpdatableUser, User, AuthToken } from '@api-interfaces';
+import { AuthToken, CreatableUser, isUser, LoginResponse, UpdatableUser, User } from '@api-interfaces';
 import { LoginStatus } from '@front/app/interfaces/auth';
 import { toError } from '@front/app/utils';
 import { environment } from '@front/environments/environment';
@@ -128,10 +128,10 @@ export class UsersClient {
    * TODO: actually, this is using the user password because we still don't have a token system
    * TODO (token): we should create the system and methods for token in the backend
    */
-  public async getMe(token: AuthToken): Promise<Either<Error, LoginResponse>> {
-    const result: Either<Error, LoginResponse> = await firstValueFrom(
+  public async getMe(token: AuthToken): Promise<Either<Error, User>> {
+    const result: Either<Error, User> = await firstValueFrom(
       this._http
-        .get<LoginResponse>(`${environment.apiHost}/users/me`, {
+        .get<User>(`${environment.apiHost}/users/me`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`, // TODO: use a interception
@@ -139,8 +139,8 @@ export class UsersClient {
         })
         .pipe(
           map(response => {
-            if (isString(response.token) && isUser(response.loggedUser)) {
-              this._updateLoggedUser(response.loggedUser);
+            if (isUser(response)) {
+              this._updateLoggedUser(response);
               return right(response);
             }
             console.error('Invalid response', response);
@@ -153,7 +153,7 @@ export class UsersClient {
     if (isRight(result)) {
       this._loggedStatus$.next({
         status: 'logged',
-        user: result.right.loggedUser,
+        user: result.right,
       });
     }
 

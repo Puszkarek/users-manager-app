@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User, AuthToken } from '@api-interfaces';
+import { AuthToken, User } from '@api-interfaces';
 import { UsersClient } from '@front/app/clients/users';
 import { UsersStore } from '@front/app/stores/users';
 import { Either, isLeft, left, right } from 'fp-ts/Either';
@@ -29,10 +29,7 @@ export class AuthService {
 
     if (isLeft(either)) {
       console.error(either.left);
-      return;
     }
-
-    this._setToken(either.right.token);
   }
 
   public async login(email: string, password: string): Promise<Either<Error, User>> {

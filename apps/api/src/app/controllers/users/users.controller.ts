@@ -6,7 +6,7 @@ import { IUsersService } from '@server/infra/interfaces/users.interface';
 import { Request } from 'express';
 import { Either, foldW } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
-import { isUndefined } from 'lodash';
+import { isEmpty, isUndefined } from 'lodash';
 
 @Controller('users')
 export class UsersController {
@@ -71,10 +71,10 @@ export class UsersController {
   @Get('me')
   @HttpCode(REQUEST_STATUS.accepted)
   public async getUserByToken(@Req() request: Request): Promise<User> {
-    const authToken = request.header('Authorization');
+    const authToken = request.header('Authorization')?.split(' ')[1]; // TODO: move to a helper
 
     // TODO: improve it with a pipe or some guard
-    if (isUndefined(authToken)) {
+    if (isUndefined(authToken) || isEmpty(authToken)) {
       // eslint-disable-next-line functional/no-throw-statement
       throw new HttpException('Missing authentication token', REQUEST_STATUS.unauthorized);
     }

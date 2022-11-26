@@ -1,4 +1,4 @@
-import { CreatableUser, LoginRequest, LoginResponse, UpdatableUser, User, UserToken } from '@api-interfaces';
+import { AuthToken, CreatableUser, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
 import { Body, Controller, Delete, Get, HttpCode, HttpException, Inject, Param, Post, Put, Req } from '@nestjs/common';
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
 import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
@@ -62,8 +62,8 @@ export class UsersController {
 
   @Post('token')
   @HttpCode(REQUEST_STATUS.accepted)
-  public async refreshOneToken(@Body() userToken: UserToken): Promise<LoginResponse> {
-    const either = await this._usersService.token.refresh(userToken);
+  public async refreshOneToken(@Body() authToken: AuthToken): Promise<LoginResponse> {
+    const either = await this._usersService.token.refresh(authToken);
 
     return this._executeTask(either);
   }
@@ -71,15 +71,15 @@ export class UsersController {
   @Get('me')
   @HttpCode(REQUEST_STATUS.accepted)
   public async getUserByToken(@Req() request: Request): Promise<User> {
-    const userToken = request.header('Authorization');
+    const authToken = request.header('Authorization');
 
     // TODO: improve it with a pipe or some guard
-    if (isUndefined(userToken)) {
+    if (isUndefined(authToken)) {
       // eslint-disable-next-line functional/no-throw-statement
       throw new HttpException('Missing authentication token', REQUEST_STATUS.unauthorized);
     }
 
-    const either = await this._usersService.get.me(userToken);
+    const either = await this._usersService.get.me(authToken);
 
     return this._executeTask(either);
   }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User, UserToken } from '@api-interfaces';
+import { User, AuthToken } from '@api-interfaces';
 import { UsersClient } from '@front/app/clients/users';
 import { UsersStore } from '@front/app/stores/users';
 import { Either, isLeft, left, right } from 'fp-ts/Either';
@@ -64,15 +64,15 @@ export class AuthService {
   }
 
   // * Token
-  private _setToken(userToken: UserToken): void {
-    if (userToken) {
-      sessionStorage.setItem('token', userToken);
+  private _setToken(authToken: AuthToken): void {
+    if (authToken) {
+      sessionStorage.setItem('token', authToken);
     } else {
       sessionStorage.removeItem('token');
     }
   }
 
-  private _getToken(): UserToken | null {
+  private _getToken(): AuthToken | null {
     const token = sessionStorage.getItem('token');
 
     if (isString(token)) {

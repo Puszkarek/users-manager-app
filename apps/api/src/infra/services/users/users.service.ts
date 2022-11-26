@@ -1,4 +1,4 @@
-import { CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User, UserToken } from '@api-interfaces';
+import { CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User, AuthToken } from '@api-interfaces';
 import { createExceptionError } from '@server/infra/helpers';
 import {
   ExceptionError,
@@ -67,7 +67,7 @@ export class UsersService implements IUsersService {
         fromOption(() => createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found)),
       );
     },
-    me: async (token: UserToken): Promise<Either<ExceptionError, User>> => {
+    me: async (token: AuthToken): Promise<Either<ExceptionError, User>> => {
       const userOption = await this._usersRepository.findByToken(token);
 
       return pipe(
@@ -127,7 +127,7 @@ export class UsersService implements IUsersService {
   };
 
   public readonly token = {
-    refresh: async (token: UserToken): Promise<Either<ExceptionError, LoginResponse>> => {
+    refresh: async (token: AuthToken): Promise<Either<ExceptionError, LoginResponse>> => {
       // TODO: improve using pipe
       // Search the user using his email
       const userO = await this._usersRepository.findByToken(token);
@@ -136,7 +136,7 @@ export class UsersService implements IUsersService {
       }
 
       // Validate the password
-      const isTokenValid = await this._usersRepository.isUserTokenValid(token);
+      const isTokenValid = await this._usersRepository.isAuthTokenValid(token);
       if (!isTokenValid) {
         return left(createExceptionError('The given password is wrong', REQUEST_STATUS.bad));
       }

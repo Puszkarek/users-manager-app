@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import { ID, User, USER_ROLE, UserToken } from '@api-interfaces';
+import { ID, User, USER_ROLE, AuthToken } from '@api-interfaces';
 import { createExceptionError, extractError } from '@server/infra/helpers/error.helper';
 import { IUsersRepository } from '@server/infra/interfaces';
 import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
@@ -47,7 +47,7 @@ export class FakeUsersRepository implements IUsersRepository {
     return fromNullable(user);
   }
 
-  public async findByToken(token: UserToken): Promise<Option<User>> {
+  public async findByToken(token: AuthToken): Promise<Option<User>> {
     console.log('TOKEN TO SEARCH', token);
     const tokenE = await this._parseToken(token);
     if (isLeft(tokenE)) {
@@ -95,7 +95,7 @@ export class FakeUsersRepository implements IUsersRepository {
   }
 
   // * Tokens
-  public async addToken(userID: User['id']): Promise<Either<ExceptionError, UserToken>> {
+  public async addToken(userID: User['id']): Promise<Either<ExceptionError, AuthToken>> {
     // Verify if the user exists
     if (!this._users.some(user => user.id === userID)) {
       return left(createExceptionError('Given user ID is invalid', REQUEST_STATUS.bad));
@@ -108,7 +108,7 @@ export class FakeUsersRepository implements IUsersRepository {
     return right(newToken);
   }
 
-  public async isUserTokenValid(token: UserToken): Promise<boolean> {
+  public async isAuthTokenValid(token: AuthToken): Promise<boolean> {
     // Get the real user password
     const tokenMetadata = await this._parseToken(token);
 
@@ -117,7 +117,7 @@ export class FakeUsersRepository implements IUsersRepository {
 
   // TODO: move tokens methods to a single interface
 
-  private async _createToken(userID: string): Promise<UserToken> {
+  private async _createToken(userID: string): Promise<AuthToken> {
     const JWT = await new jose.SignJWT({ userID })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
@@ -129,7 +129,7 @@ export class FakeUsersRepository implements IUsersRepository {
     return JWT;
   }
 
-  private async _parseToken(JWT: UserToken): Promise<Either<ExceptionError, jose.JWTVerifyResult>> {
+  private async _parseToken(JWT: AuthToken): Promise<Either<ExceptionError, jose.JWTVerifyResult>> {
     try {
       const parsedJWT = await jose.jwtVerify(JWT, this._secret, {
         issuer: 'urn:example:issuer',

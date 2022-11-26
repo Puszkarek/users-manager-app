@@ -1,4 +1,4 @@
-import { CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User, UserToken } from '@api-interfaces';
+import { CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User, AuthToken } from '@api-interfaces';
 import { Either } from 'fp-ts/lib/Either';
 import { Option } from 'fp-ts/lib/Option';
 
@@ -6,7 +6,7 @@ import { ExceptionError } from './error.interface';
 
 export type IUsersRepository = {
   readonly findByEmail: (email: string) => Promise<Option<User>>;
-  readonly findByToken: (token: UserToken) => Promise<Option<User>>;
+  readonly findByToken: (token: AuthToken) => Promise<Option<User>>;
   readonly findByID: (id: string) => Promise<Option<User>>;
 
   // TODO: rename these methods to specify that we are doing actions in the user
@@ -17,9 +17,9 @@ export type IUsersRepository = {
   readonly all: () => Promise<Either<ExceptionError, ReadonlyArray<User>>>;
 
   readonly isUserPasswordValid: (email: string, password: string) => Promise<boolean>;
-  readonly isUserTokenValid: (token: UserToken) => Promise<boolean>;
+  readonly isAuthTokenValid: (token: AuthToken) => Promise<boolean>;
 
-  readonly addToken: (user: User['id']) => Promise<Either<ExceptionError, UserToken>>;
+  readonly addToken: (user: User['id']) => Promise<Either<ExceptionError, AuthToken>>;
 };
 
 export type IUsersService = {
@@ -34,7 +34,7 @@ export type IUsersService = {
   };
   readonly get: {
     readonly one: (data: ID) => Promise<Either<ExceptionError, User>>;
-    readonly me: (data: UserToken) => Promise<Either<ExceptionError, User>>;
+    readonly me: (data: AuthToken) => Promise<Either<ExceptionError, User>>;
     readonly all: () => Promise<Either<ExceptionError, ReadonlyArray<User>>>;
   };
   /** Create a token for the current logged user */
@@ -44,7 +44,7 @@ export type IUsersService = {
 
   /** Update a token for the user */
   readonly token: {
-    readonly refresh: (data: UserToken) => Promise<Either<ExceptionError, LoginResponse>>;
+    readonly refresh: (data: AuthToken) => Promise<Either<ExceptionError, LoginResponse>>;
   };
 
   // TODO: logout

@@ -19,7 +19,7 @@ export type IUsersRepository = {
   readonly isUserPasswordValid: (email: string, password: string) => Promise<boolean>;
   readonly isUserTokenValid: (token: UserToken) => Promise<boolean>;
 
-  readonly upsertToken: (user: User['id']) => Promise<Either<ExceptionError, UserToken>>;
+  readonly addToken: (user: User['id']) => Promise<Either<ExceptionError, UserToken>>;
 };
 
 export type IUsersService = {
@@ -34,6 +34,7 @@ export type IUsersService = {
   };
   readonly get: {
     readonly one: (data: ID) => Promise<Either<ExceptionError, User>>;
+    readonly me: (data: UserToken) => Promise<Either<ExceptionError, User>>;
     readonly all: () => Promise<Either<ExceptionError, ReadonlyArray<User>>>;
   };
   /** Create a token for the current logged user */
@@ -43,7 +44,7 @@ export type IUsersService = {
 
   /** Update a token for the user */
   readonly token: {
-    readonly update: (data: UserToken) => Promise<Either<ExceptionError, LoginResponse>>;
+    readonly refresh: (data: UserToken) => Promise<Either<ExceptionError, LoginResponse>>;
   };
 
   // TODO: logout

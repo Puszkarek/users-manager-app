@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CreatableUser, isUser, LoginResponse, UpdatableUser, User } from '@api-interfaces';
+import { CreatableUser, isUser, LoginResponse, UpdatableUser, User, UserToken } from '@api-interfaces';
 import { LoginStatus } from '@front/app/interfaces/auth';
 import { toError } from '@front/app/utils';
 import { environment } from '@front/environments/environment';
@@ -128,13 +128,14 @@ export class UsersClient {
    * TODO: actually, this is using the user password because we still don't have a token system
    * TODO (token): we should create the system and methods for token in the backend
    */
-  public async loginOneWithToken(email: string, token: string): Promise<Either<Error, LoginResponse>> {
+  public async getMe(token: UserToken): Promise<Either<Error, LoginResponse>> {
     const result: Either<Error, LoginResponse> = await firstValueFrom(
       this._http
-        .post<LoginResponse>(`${environment.apiHost}/users/login/token`, {
-          email,
-          // TODO (token): should use token property
-          password: token,
+        .get<LoginResponse>(`${environment.apiHost}/users/me`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // TODO: use a interception
+          },
         })
         .pipe(
           map(response => {

@@ -1,13 +1,16 @@
 import { randomUUID } from 'node:crypto';
 
-import { ID, User, USER_ROLE, UserToken, UserTokenMetadata } from '@api-interfaces';
-import { createExceptionError } from '@server/infra/helpers/error.helper';
+import { ID, User, USER_ROLE, UserToken } from '@api-interfaces';
+import { createExceptionError, extractError } from '@server/infra/helpers/error.helper';
 import { IUsersRepository } from '@server/infra/interfaces';
 import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
-import { Either, left, right } from 'fp-ts/lib/Either';
+import { Either, isLeft, isRight, left, right } from 'fp-ts/lib/Either';
 import { fromNullable, Option } from 'fp-ts/lib/Option';
 import { List, Map } from 'immutable';
-import { isUndefined } from 'lodash';
+import * as jose from 'jose';
+import { isString } from 'lodash';
+
+// TODO: replace `JWTVerifyResult` by a abstract interface
 
 /** The system should initialize with a default user */
 const initialUser: User = {
@@ -24,9 +27,9 @@ const initialPassword = { [initialUser.id]: 'admin' };
 export class FakeUsersRepository implements IUsersRepository {
   private _users: List<User> = List([initialUser]);
   private _passwords = Map<string, string>(initialPassword);
-  private _tokens = Map<UserToken, UserTokenMetadata>();
 
-  private readonly _defaultTokenExpirationTime = 86_400_000; // One day in ms
+  // * Token
+  private readonly _secret = new TextEncoder().encode('ADD-SECRET-KEY-LATER');
 
   public async all(): Promise<Either<ExceptionError, ReadonlyArray<User>>> {
     return right(this._users.toArray());
@@ -45,12 +48,17 @@ export class FakeUsersRepository implements IUsersRepository {
   }
 
   public async findByToken(token: UserToken): Promise<Option<User>> {
-    const tokenMetadata = this._tokens.get(token);
-    if (!tokenMetadata) {
+    console.log('TOKEN TO SEARCH', token);
+    const tokenE = await this._parseToken(token);
+    if (isLeft(tokenE)) {
       return fromNullable(null);
     }
 
-    const { userID } = tokenMetadata;
+    const { userID } = tokenE.right.payload;
+    if (!isString(userID)) {
+      return fromNullable(null);
+    }
+
     const userFounded = this._users.find(user => user.id === userID);
 
     return fromNullable(userFounded);
@@ -87,52 +95,49 @@ export class FakeUsersRepository implements IUsersRepository {
   }
 
   // * Tokens
-  public async upsertToken(userID: User['id']): Promise<Either<ExceptionError, UserToken>> {
+  public async addToken(userID: User['id']): Promise<Either<ExceptionError, UserToken>> {
     // Verify if the user exists
     if (!this._users.some(user => user.id === userID)) {
-      return left(createExceptionError('', REQUEST_STATUS.bad));
-    }
-    // If already exist a token, remove it
-    const existingToken = this._tokens.get(userID);
-    if (existingToken) {
-      this._tokens.delete(userID);
+      return left(createExceptionError('Given user ID is invalid', REQUEST_STATUS.bad));
     }
 
     // Create the new token
-    const newUserToken = randomUUID();
-
-    // Set the metadata
-    this._tokens.set(newUserToken, {
-      expireAt: this._getNewExpirationDate(),
-      userID: userID,
-    });
+    const newToken = await this._createToken(userID);
 
     // Returns the token ID
-    return right(newUserToken);
+    return right(newToken);
   }
 
   public async isUserTokenValid(token: UserToken): Promise<boolean> {
     // Get the real user password
-    const tokenMetadata = this._tokens.get(token);
+    const tokenMetadata = await this._parseToken(token);
 
-    return !isUndefined(tokenMetadata) && !this._hasTokenExpired(tokenMetadata);
+    return isRight(tokenMetadata);
   }
 
-  /**
-   * Create a new valid expiration date to be used in the token
-   * @returns
-   */
-  private _getNewExpirationDate(): Date {
-    return new Date(Date.now() + this._defaultTokenExpirationTime);
+  // TODO: move tokens methods to a single interface
+
+  private async _createToken(userID: string): Promise<UserToken> {
+    const JWT = await new jose.SignJWT({ userID })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setIssuer('urn:example:issuer')
+      .setAudience('urn:example:audience')
+      .setExpirationTime('1d')
+      .sign(this._secret);
+
+    return JWT;
   }
 
-  /**
-   * Check if the Token has expired
-   *
-   * @param tokenMetadata The metadata from token that we want to check
-   * @returns True if the token has expired
-   */
-  private _hasTokenExpired(tokenMetadata: UserTokenMetadata): boolean {
-    return Date.now() > tokenMetadata.expireAt.getTime();
+  private async _parseToken(JWT: UserToken): Promise<Either<ExceptionError, jose.JWTVerifyResult>> {
+    try {
+      const parsedJWT = await jose.jwtVerify(JWT, this._secret, {
+        issuer: 'urn:example:issuer',
+        audience: 'urn:example:audience',
+      });
+      return right(parsedJWT);
+    } catch (error: unknown) {
+      return left(createExceptionError(extractError(error).message, REQUEST_STATUS.bad));
+    }
   }
 }

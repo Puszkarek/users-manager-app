@@ -67,6 +67,14 @@ export class UsersService implements IUsersService {
         fromOption(() => createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found)),
       );
     },
+    me: async (token: UserToken): Promise<Either<ExceptionError, User>> => {
+      const userOption = await this._usersRepository.findByToken(token);
+
+      return pipe(
+        userOption,
+        fromOption(() => createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found)),
+      );
+    },
   };
 
   public update = {
@@ -106,7 +114,7 @@ export class UsersService implements IUsersService {
       }
 
       // Create the Token
-      const tokenE = await this._usersRepository.upsertToken(userO.value.id);
+      const tokenE = await this._usersRepository.addToken(userO.value.id);
       if (isLeft(tokenE)) {
         return tokenE;
       }
@@ -119,7 +127,7 @@ export class UsersService implements IUsersService {
   };
 
   public readonly token = {
-    update: async (token: UserToken): Promise<Either<ExceptionError, LoginResponse>> => {
+    refresh: async (token: UserToken): Promise<Either<ExceptionError, LoginResponse>> => {
       // TODO: improve using pipe
       // Search the user using his email
       const userO = await this._usersRepository.findByToken(token);
@@ -134,7 +142,7 @@ export class UsersService implements IUsersService {
       }
 
       // Create the Token
-      const tokenE = await this._usersRepository.upsertToken(token);
+      const tokenE = await this._usersRepository.addToken(token);
       if (isLeft(tokenE)) {
         return tokenE;
       }

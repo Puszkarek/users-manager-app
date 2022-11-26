@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { User } from '@api-interfaces';
+import { User, UserToken } from '@api-interfaces';
 import { UsersClient } from '@front/app/clients/users';
 import { UsersStore } from '@front/app/stores/users';
 import { Either, isLeft, left, right } from 'fp-ts/Either';
-import { isNull } from 'lodash';
+import { isNull, isString } from 'lodash';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable({
@@ -18,21 +18,21 @@ export class AuthService {
   }
 
   public async load(): Promise<void> {
-    const savedLogin = this._getToken();
+    const savedToken = this._getToken();
 
-    if (isNull(savedLogin)) {
+    if (isNull(savedToken)) {
       return;
     }
 
-    console.log('login with token');
-    const either = await this._usersClient.loginOneWithToken(savedLogin.email, savedLogin.token);
+    console.log('login with token', savedToken);
+    const either = await this._usersClient.getMe(savedToken);
 
     if (isLeft(either)) {
       console.error(either.left);
       return;
     }
 
-    this._setToken({ email: savedLogin.email, newToken: either.right.token });
+    this._setToken(either.right.token);
   }
 
   public async login(email: string, password: string): Promise<Either<Error, User>> {
@@ -43,23 +43,20 @@ export class AuthService {
     }
     const loginResponse = userEither.right;
 
-    this._setToken({
-      email: loginResponse.loggedUser.email,
-      newToken: loginResponse.token,
-    });
+    this._setToken(loginResponse.token);
 
     return right(loginResponse.loggedUser);
   }
 
   public async logoutUser(): Promise<void> {
-    const savedLogin = this._getToken();
+    const savedToken = this._getToken();
     const loggedUser = await firstValueFrom(this._usersStore.loggedUser$);
-    if (isNull(savedLogin) || isNull(loggedUser)) {
+    if (isNull(savedToken) || isNull(loggedUser)) {
       console.error('None user is logged');
       return;
     }
 
-    const userEither = await this._usersClient.logoutOne(savedLogin.token);
+    const userEither = await this._usersClient.logoutOne(savedToken);
 
     if (isLeft(userEither)) {
       console.error('Something gones wrong', userEither);
@@ -67,26 +64,21 @@ export class AuthService {
   }
 
   // * Token
-  private _setToken({ newToken, email }: { readonly newToken: string | null; readonly email: string | null }): void {
-    if (newToken && email) {
-      sessionStorage.setItem('token', newToken);
-      sessionStorage.setItem('email', email);
+  private _setToken(userToken: UserToken): void {
+    if (userToken) {
+      sessionStorage.setItem('token', userToken);
     } else {
       sessionStorage.removeItem('token');
-      sessionStorage.removeItem('email');
     }
   }
 
-  private _getToken(): {
-    readonly email: string;
-    readonly token: string;
-  } | null {
+  private _getToken(): UserToken | null {
     const token = sessionStorage.getItem('token');
-    const email = sessionStorage.getItem('email');
 
-    if (token && email) {
-      return { email, token };
+    if (isString(token)) {
+      return token;
     }
+
     return null;
   }
 }

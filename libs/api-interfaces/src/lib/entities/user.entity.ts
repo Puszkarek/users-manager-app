@@ -31,8 +31,8 @@ export type CreatableUser = {
 // TODO: rename to AuthToken
 export type UserToken = string;
 export type UserTokenMetadata = {
-  expireAt: Date;
-  userID: string;
+  readonly expireAt: Date;
+  readonly userID: string;
 };
 
 export type LoginRequest = {

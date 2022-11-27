@@ -29,7 +29,7 @@ export class FakeUsersRepository implements IUsersRepository {
   private _passwords = Map<string, string>(initialPassword);
 
   // * Token
-  private readonly _secret = new TextEncoder().encode('ADD-SECRET-KEY-LATER');
+  private readonly _jwtSecret = new TextEncoder().encode('ADD-SECRET-KEY-LATER'); // TODO: move to `.env`
 
   public async all(): Promise<Either<ExceptionError, ReadonlyArray<User>>> {
     return right(this._users.toArray());
@@ -120,17 +120,17 @@ export class FakeUsersRepository implements IUsersRepository {
     const JWT = await new jose.SignJWT({ userID })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
-      .setIssuer('urn:example:issuer')
+      .setIssuer('urn:example:issuer') // TODO: i don't know what really is it
       .setAudience('urn:example:audience')
       .setExpirationTime('1d')
-      .sign(this._secret);
+      .sign(this._jwtSecret);
 
     return JWT;
   }
 
   private async _parseToken(JWT: AuthToken): Promise<Either<ExceptionError, jose.JWTVerifyResult>> {
     try {
-      const parsedJWT = await jose.jwtVerify(JWT, this._secret, {
+      const parsedJWT = await jose.jwtVerify(JWT, this._jwtSecret, {
         issuer: 'urn:example:issuer',
         audience: 'urn:example:audience',
       });

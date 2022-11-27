@@ -17,7 +17,6 @@ export class LoggedGuard implements CanActivate {
   constructor(private readonly _usersClient: UsersClient, private readonly _router: Router) {}
 
   public canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    console.log('canActivate');
     return this._usersClient.authAction$.pipe(
       switchMap(loginStatus => {
         // Load it in case ins't loaded yet

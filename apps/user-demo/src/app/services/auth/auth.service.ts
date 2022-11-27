@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { AuthToken, User } from '@api-interfaces';
+import { User } from '@api-interfaces';
 import { UsersClient } from '@front/app/clients/users';
+import { TokenManagerService } from '@front/app/services/token-manager';
 import { UsersStore } from '@front/app/stores/users';
 import { Either, isLeft, left, right } from 'fp-ts/Either';
-import { isNull, isString } from 'lodash';
+import { isNull } from 'lodash-es';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable({
@@ -11,25 +12,13 @@ import { firstValueFrom } from 'rxjs';
 })
 export class AuthService {
   // TODO (feature): check if the auth token expires every 5 seconds
-  constructor(private readonly _usersClient: UsersClient, private readonly _usersStore: UsersStore) {
+  // TODO: May all these methods should be inside `users.store`
+  constructor(
+    private readonly _usersClient: UsersClient,
+    private readonly _usersStore: UsersStore,
+    private readonly _tokenManager: TokenManagerService,
+  ) {
     this._usersStore.load();
-
-    this.load();
-  }
-
-  public async load(): Promise<void> {
-    const savedToken = this._getToken();
-
-    if (isNull(savedToken)) {
-      return;
-    }
-
-    console.log('login with token', savedToken);
-    const either = await this._usersClient.getMe(savedToken);
-
-    if (isLeft(either)) {
-      console.error(either.left);
-    }
   }
 
   public async login(email: string, password: string): Promise<Either<Error, User>> {
@@ -40,13 +29,13 @@ export class AuthService {
     }
     const loginResponse = userEither.right;
 
-    this._setToken(loginResponse.token);
+    this._tokenManager.setToken(loginResponse.token);
 
     return right(loginResponse.loggedUser);
   }
 
   public async logoutUser(): Promise<void> {
-    const savedToken = this._getToken();
+    const savedToken = this._tokenManager.getToken();
     const loggedUser = await firstValueFrom(this._usersStore.loggedUser$);
     if (isNull(savedToken) || isNull(loggedUser)) {
       console.error('None user is logged');
@@ -58,24 +47,5 @@ export class AuthService {
     if (isLeft(userEither)) {
       console.error('Something gones wrong', userEither);
     }
-  }
-
-  // * Token
-  private _setToken(authToken: AuthToken): void {
-    if (authToken) {
-      sessionStorage.setItem('token', authToken);
-    } else {
-      sessionStorage.removeItem('token');
-    }
-  }
-
-  private _getToken(): AuthToken | null {
-    const token = sessionStorage.getItem('token');
-
-    if (isString(token)) {
-      return token;
-    }
-
-    return null;
   }
 }

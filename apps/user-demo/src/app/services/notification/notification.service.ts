@@ -33,7 +33,6 @@ export class NotificationService {
   /** Create a new Component to show the notification, then destroy it  */
   private async _instantiateNotification(message: string, type: NotificationType): Promise<void> {
     if (!this._viewContainerReference) {
-      console.log(message);
       return;
     }
 

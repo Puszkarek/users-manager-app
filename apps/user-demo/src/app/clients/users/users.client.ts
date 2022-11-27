@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthToken, CreatableUser, isUser, LoginResponse, UpdatableUser, User } from '@api-interfaces';
+import { CreatableUser, isUser, LoginResponse, UpdatableUser, User } from '@api-interfaces';
 import { LoginStatus } from '@front/app/interfaces/auth';
+import { TokenManagerService } from '@front/app/services/token-manager';
 import { toError } from '@front/app/utils';
 import { environment } from '@front/environments/environment';
 import { Either, isRight, left, right } from 'fp-ts/lib/Either';
@@ -19,7 +20,7 @@ export class UsersClient {
 
   public readonly authAction$ = this._loggedStatus$.asObservable();
 
-  constructor(private readonly _http: HttpClient) {}
+  constructor(private readonly _http: HttpClient, private readonly _tokenManagerService: TokenManagerService) {}
 
   // * Update Methods
 
@@ -128,13 +129,18 @@ export class UsersClient {
    * TODO: actually, this is using the user password because we still don't have a token system
    * TODO (token): we should create the system and methods for token in the backend
    */
-  public async getMe(token: AuthToken): Promise<Either<Error, User>> {
+  public async getMe(): Promise<Either<Error, User>> {
+    const savedToken = this._tokenManagerService.getToken();
+    if (isNull(savedToken)) {
+      return left(new Error('None token founded'));
+    }
+
     const result: Either<Error, User> = await firstValueFrom(
       this._http
         .get<User>(`${environment.apiHost}/users/me`, {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`, // TODO: use a interception
+            'Authorization': `Bearer ${savedToken}`, // TODO: use a interception
           },
         })
         .pipe(
@@ -151,10 +157,7 @@ export class UsersClient {
     );
 
     if (isRight(result)) {
-      this._loggedStatus$.next({
-        status: 'logged',
-        user: result.right,
-      });
+      this._updateLoggedUser(result.right);
     }
 
     return result;
@@ -173,7 +176,9 @@ export class UsersClient {
     );
 
     if (isRight(result)) {
-      this._loggedStatus$.next({ status: 'logout' });
+      this._loggedStatus$.next({
+        status: 'logout',
+      });
     }
 
     return result;
@@ -182,7 +187,7 @@ export class UsersClient {
   private _updateLoggedUser(user: User | null): void {
     if (isNull(user)) {
       this._loggedStatus$.next({
-        status: 'logout',
+        status: 'needs-login',
       });
     } else {
       this._loggedStatus$.next({

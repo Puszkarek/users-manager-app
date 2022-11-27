@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import { ID, User, USER_ROLE, AuthToken } from '@api-interfaces';
+import { AuthToken, ID, User, USER_ROLE } from '@api-interfaces';
 import { createExceptionError, extractError } from '@server/infra/helpers/error.helper';
 import { IUsersRepository } from '@server/infra/interfaces';
 import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
@@ -48,7 +48,6 @@ export class FakeUsersRepository implements IUsersRepository {
   }
 
   public async findByToken(token: AuthToken): Promise<Option<User>> {
-    console.log('TOKEN TO SEARCH', token);
     const tokenE = await this._parseToken(token);
     if (isLeft(tokenE)) {
       return fromNullable(null);

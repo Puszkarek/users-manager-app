@@ -1,4 +1,4 @@
-import { ID } from '../interfaces';
+import { ID } from '../interfaces/common.interface';
 
 export enum USER_ROLE {
   admin = 'admin',

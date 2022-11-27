@@ -1,0 +1,17 @@
+h2 {
+  // * Centralize
+  position: absolute;
+
+  right: 50%;
+  top: 50%;
+
+  transform: translate(50%, -50%);
+
+  // * Styles
+  font-size: 8rem;
+
+  margin: 0;
+  padding: 0;
+
+  color: var(--yellow);
+}

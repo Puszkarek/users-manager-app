@@ -1,13 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HeaderModule } from '@front/app/components/header';
+import { IconModule } from '@front/app/components/icon';
+import { NavBarModule } from '@front/app/components/nav-bar';
+import { StoreTestingModule } from '@front/app/stores/root';
 
 import { AppComponent } from './app.component';
 
-describe('AppComponent', () => {
+describe(AppComponent.name, () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AppComponent],
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule, StoreTestingModule, IconModule, HeaderModule, NavBarModule],
     }).compileComponents();
   });
 

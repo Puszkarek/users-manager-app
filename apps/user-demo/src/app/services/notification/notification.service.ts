@@ -1,6 +1,6 @@
 import { Injectable, Injector, ViewContainerRef } from '@angular/core';
-import { NotificationToastComponent } from '@front/components/notification-toast';
-import { NotificationData, NotificationType } from '@front/interfaces/notification.interface';
+import { NotificationToastComponent } from '@front/app/components/notification-toast';
+import { NotificationData, NotificationType } from '@front/app/interfaces/notification';
 import { firstValueFrom } from 'rxjs';
 import { timer } from 'rxjs/internal/observable/timer';
 
@@ -33,7 +33,6 @@ export class NotificationService {
   /** Create a new Component to show the notification, then destroy it  */
   private async _instantiateNotification(message: string, type: NotificationType): Promise<void> {
     if (!this._viewContainerReference) {
-      console.log(message);
       return;
     }
 

@@ -1,5 +1,5 @@
 import { AbstractControl, ValidationErrors } from '@angular/forms';
-import { trim } from 'lodash';
+import { trim } from 'lodash-es';
 
 const makePositiveNumberValidator: () => (control: AbstractControl) => ValidationErrors | null = () => {
   const minAllowed = 0;

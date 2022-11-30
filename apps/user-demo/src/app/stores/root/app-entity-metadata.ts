@@ -1,4 +1,4 @@
-import { sortByName } from '@front/utils';
+import { sortByName } from '@front/app/utils';
 import { EntityMetadataMap } from '@ngrx/data';
 
 import { USER_ENTITY_NAME, USER_ENTITY_PLURAL_NAME } from './entity-names';

@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { CreatableUser, isUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
-import { USER_NAME_MIN_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@front/constants';
-import { MODAL_DATA_TOKEN } from '@front/constants/modal';
-import { FormStatus } from '@front/interfaces';
-import { NotificationService } from '@front/services/notification';
-import { CUSTOM_VALIDATORS } from '@front/utils';
-import { isNil } from 'lodash';
+import { USER_NAME_MIN_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@front/app/constants/form-settings';
+import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
+import { FormStatus } from '@front/app/interfaces/form';
+import { NotificationService } from '@front/app/services/notification';
+import { CUSTOM_VALIDATORS } from '@front/app/utils';
+import { isNil } from 'lodash-es';
 import { Subject } from 'rxjs';
 
 @Component({

@@ -7,7 +7,7 @@ export type AuthFormEntries = {
 
 export type LoginStatus =
   | {
-      readonly status: 'undefined' | 'logout';
+      readonly status: 'undefined' | 'needs-login' | 'logout';
     }
   | {
       readonly status: 'logged';

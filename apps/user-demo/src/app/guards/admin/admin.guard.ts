@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, UrlTree } from '@angular/router';
 import { USER_ROLE } from '@api-interfaces';
-import { UsersStore } from '@front/stores';
+import { UsersStore } from '@front/app/stores/users';
 import { map, Observable } from 'rxjs';
 
 @Injectable({

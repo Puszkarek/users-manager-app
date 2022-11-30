@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
-import { NotificationData } from '@front/interfaces/notification.interface';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { NotificationData } from '@front/app/interfaces/notification';
 
 @Component({
-  selector: 'playground-notification-toast',
+  selector: 'app-notification-toast',
   templateUrl: './notification-toast.component.html',
   styleUrls: ['./notification-toast.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificationToastComponent {
   public readonly message = this._notificationData.message;

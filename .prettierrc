@@ -5,6 +5,7 @@
   "bracketSameLine": true,
   "singleQuote": true,
   "trailingComma": "all",
+  "quoteProps": "consistent",
   "printWidth": 120,
   "htmlWhitespaceSensitivity": "strict"
 }

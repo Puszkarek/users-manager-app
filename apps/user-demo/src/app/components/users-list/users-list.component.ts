@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { isCreatableUser, User } from '@api-interfaces';
-import { UserModalFormComponent } from '@front/components/user-modal-form';
-import { ModalService } from '@front/services/modal';
-import { UsersStore } from '@front/stores';
+import { UserModalFormComponent } from '@front/app/components/user-modal-form';
+import { ModalService } from '@front/app/services/modal';
+import { UsersStore } from '@front/app/stores/users';
 import { isLeft } from 'fp-ts/lib/Either';
 import { firstValueFrom } from 'rxjs';
 

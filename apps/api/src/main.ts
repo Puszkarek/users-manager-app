@@ -9,6 +9,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 
 const DEFAULT_SERVER_PORT = 3333;
+const GLOBAL_PREFIX = 'api';
 
 const bootstrap = async (): Promise<void> => {
   const app = await NestFactory.create(AppModule, {
@@ -17,11 +18,10 @@ const bootstrap = async (): Promise<void> => {
       origin: ['http://localhost:4200'],
     },
   });
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
+  app.setGlobalPrefix(GLOBAL_PREFIX);
   const port = process.env['PORT'] ?? DEFAULT_SERVER_PORT;
   await app.listen(port);
-  Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
+  Logger.log(`🚀 Application is running on: http://localhost:${port}/${GLOBAL_PREFIX}`);
 };
 
 bootstrap();

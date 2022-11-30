@@ -1,14 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CreatableUser, isUser, LoginResponse, UpdatableUser, User } from '@api-interfaces';
-import { LoginStatus } from '@front/interfaces';
-import { toError } from '@front/utils';
+import { LoginStatus } from '@front/app/interfaces/auth';
+import { TokenManagerService } from '@front/app/services/token-manager';
+import { toError } from '@front/app/utils';
+import { environment } from '@front/environments/environment';
 import { Either, isRight, left, right } from 'fp-ts/lib/Either';
 import { isArray, isNull, isString } from 'lodash-es';
 import { BehaviorSubject, catchError, firstValueFrom, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +20,7 @@ export class UsersClient {
 
   public readonly authAction$ = this._loggedStatus$.asObservable();
 
-  constructor(private readonly _http: HttpClient) {}
+  constructor(private readonly _http: HttpClient, private readonly _tokenManagerService: TokenManagerService) {}
 
   // * Update Methods
 
@@ -129,20 +129,24 @@ export class UsersClient {
    * TODO: actually, this is using the user password because we still don't have a token system
    * TODO (token): we should create the system and methods for token in the backend
    */
-  public async loginOneWithToken(email: string, token: string): Promise<Either<Error, LoginResponse>> {
-    const result: Either<Error, LoginResponse> = await firstValueFrom(
+  public async getMe(): Promise<Either<Error, User>> {
+    // Avoid unnecessary requests to the backend
+    const savedToken = this._tokenManagerService.getToken();
+    if (isNull(savedToken)) {
+      return left(new Error('None token founded'));
+    }
+
+    const result: Either<Error, User> = await firstValueFrom(
       this._http
-        .post<LoginResponse>(`${environment.apiHost}/users/login`, {
+        .get<User>(`${environment.apiHost}/users/me`, {
           headers: {
-            email,
-            // TODO (token): should use token property
-            password: token,
+            'Content-Type': 'application/json',
           },
         })
         .pipe(
           map(response => {
-            if (isString(response.token) && isUser(response.loggedUser)) {
-              this._updateLoggedUser(response.loggedUser);
+            if (isUser(response)) {
+              this._updateLoggedUser(response);
               return right(response);
             }
             console.error('Invalid response', response);
@@ -153,10 +157,7 @@ export class UsersClient {
     );
 
     if (isRight(result)) {
-      this._loggedStatus$.next({
-        status: 'logged',
-        user: result.right.loggedUser,
-      });
+      this._updateLoggedUser(result.right);
     }
 
     return result;
@@ -175,7 +176,9 @@ export class UsersClient {
     );
 
     if (isRight(result)) {
-      this._loggedStatus$.next({ status: 'logout' });
+      this._loggedStatus$.next({
+        status: 'logout',
+      });
     }
 
     return result;
@@ -184,7 +187,7 @@ export class UsersClient {
   private _updateLoggedUser(user: User | null): void {
     if (isNull(user)) {
       this._loggedStatus$.next({
-        status: 'logout',
+        status: 'needs-login',
       });
     } else {
       this._loggedStatus$.next({

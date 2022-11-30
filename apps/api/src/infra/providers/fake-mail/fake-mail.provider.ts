@@ -1,10 +1,9 @@
+import { createExceptionError } from '@server/infra/helpers/error.helper';
 import { IMailProvider, IMessage, REQUEST_STATUS } from '@server/infra/interfaces';
+import { ExceptionError } from '@server/infra/interfaces/error.interface';
 import { Either } from 'fp-ts/lib/Either';
 import { tryCatch } from 'fp-ts/lib/TaskEither';
 import { isError } from 'lodash';
-
-import { createExceptionError } from '../../helpers/error.helper';
-import { ExceptionError } from '../../interfaces/error.interface';
 
 export class FakeMailProvider implements IMailProvider {
   private readonly _transporter = {

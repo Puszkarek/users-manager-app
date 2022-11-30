@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NotificationData } from '@front/app/interfaces/notification';
 
 import { NotificationToastComponent } from './notification-toast.component';
+import { NotificationToastModule } from './notification-toast.module';
 
 describe('NotificationToastComponent', () => {
   let component: NotificationToastComponent;
@@ -8,7 +10,13 @@ describe('NotificationToastComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [NotificationToastComponent],
+      imports: [NotificationToastModule],
+      providers: [
+        {
+          provide: NotificationData,
+          useValue: new NotificationData('testing', 'info'),
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(NotificationToastComponent);

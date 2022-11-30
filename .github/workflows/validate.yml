@@ -1,0 +1,41 @@
+name: Validate
+
+on:
+  pull_request:
+    branches: [master, dev]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: nrwl/nx-set-shas@v3
+        with:
+          main-branch-name: 'dev'
+
+      - name: Install dependencies
+        run: npm clean-install
+
+      - name: Build Front End
+        run: npm run build:www:prod
+
+      - name: Build Back End
+        run: npm run build:api:prod
+
+      - name: Prettier
+        run: npm run lint:prettier
+
+      - name: ESLint
+        run: npm run lint:eslint
+
+      - name: API Test
+        run: npm run test:api
+
+      - name: Client Test
+        run: npm run test:www
+
+      - name: End To End test
+        run: npm run test:e2e

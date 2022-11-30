@@ -1,18 +1,18 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CreatableUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
-import { UsersClient } from '@front/clients';
-import { IStore, StoreLoadOptions } from '@front/interfaces';
-import { USER_ENTITY_NAME } from '@front/stores/root';
-import { isTrue } from '@front/utils';
+import { UsersClient } from '@front/app/clients/users';
+import { IStore, StoreLoadOptions, TypedEntityCollectionServiceBase } from '@front/app/interfaces/store';
+import { USER_ENTITY_NAME } from '@front/app/stores/root';
+import { isTrue } from '@front/app/utils';
 import { EntityCollectionServiceBase, EntityCollectionServiceElementsFactory } from '@ngrx/data';
 import { Either } from 'fp-ts/Either';
 import { foldW, isRight } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { List } from 'immutable';
-import { combineLatest, firstValueFrom, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, map, shareReplay, takeUntil } from 'rxjs/operators';
+import { combineLatest, firstValueFrom, Observable, Subject, timer } from 'rxjs';
+import { distinctUntilChanged, filter, first, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
 
-import { TypedEntityCollectionServiceBase } from '../../interfaces/store.interface';
+import { STORE_REFRESH_INTERVAL_TIME } from '../../constants/store';
 
 @Injectable({ providedIn: 'root' })
 // TODO (docs): write function docs
@@ -39,12 +39,12 @@ export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, O
     map(user => user?.role === USER_ROLE.admin),
   );
 
-  public readonly isAuthenticated$ = combineLatest([this._usersClient.authAction$, this.loaded$]).pipe(
-    map(([{ status }, loaded]) => (status === 'logged' && loaded ? true : false)),
+  public readonly isAuthenticated$ = combineLatest([this._usersClient.authAction$]).pipe(
+    map(([{ status }]) => status === 'logged'),
     shareReplay(1),
   );
 
-  public readonly onLogout$ = this._usersClient.authAction$.pipe(
+  public readonly logout$ = this._usersClient.authAction$.pipe(
     map(({ status }) => status === 'logout'),
     distinctUntilChanged(),
     filter(isTrue),
@@ -57,9 +57,26 @@ export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, O
     private readonly _usersClient: UsersClient,
     private readonly _serviceElementsFactory: EntityCollectionServiceElementsFactory,
   ) {
-    this.onLogout$.pipe(takeUntil(this._unsubscribe$)).subscribe(() => {
+    this.logout$.pipe(takeUntil(this._unsubscribe$)).subscribe(() => {
       this._clearCache();
     });
+
+    // TODO: improve and move to a helper
+    /** Wait to the user be authenticated, then load the store and refresh after x seconds, do it in loop */
+    this.isAuthenticated$
+      .pipe(
+        filter(isAuthenticated => isAuthenticated),
+        first(),
+        tap(() => console.log('1. trigger here')),
+        switchMap(() => timer(0, STORE_REFRESH_INTERVAL_TIME)),
+        takeUntil(this.logout$),
+      )
+      .subscribe(() => {
+        this.load({
+          force: true,
+          clearCache: false,
+        });
+      });
   }
 
   public ngOnDestroy(): void {

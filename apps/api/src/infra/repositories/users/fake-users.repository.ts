@@ -1,17 +1,21 @@
-import { ID, User, USER_ROLE } from '@api-interfaces';
+import { randomUUID } from 'node:crypto';
+
+import { AuthToken, ID, User, USER_ROLE } from '@api-interfaces';
+import { createExceptionError, extractError } from '@server/infra/helpers/error.helper';
 import { IUsersRepository } from '@server/infra/interfaces';
-import { Either, left, right } from 'fp-ts/lib/Either';
+import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
+import { Either, isLeft, isRight, left, right } from 'fp-ts/lib/Either';
 import { fromNullable, Option } from 'fp-ts/lib/Option';
 import { List, Map } from 'immutable';
-import { isUndefined, uniqueId } from 'lodash';
+import * as jose from 'jose';
+import { isString } from 'lodash';
 
-import { createExceptionError } from '../../helpers/error.helper';
-import { ExceptionError, REQUEST_STATUS } from '../../interfaces/error.interface';
+// TODO: replace `JWTVerifyResult` by a abstract interface
 
 /** The system should initialize with a default user */
 const initialUser: User = {
   email: 'admin@admin',
-  id: uniqueId(),
+  id: randomUUID(),
   name: 'Admin',
   role: USER_ROLE.admin,
 };
@@ -21,52 +25,118 @@ const initialPassword = { [initialUser.id]: 'admin' };
  * This is a demo repository for testing
  */
 export class FakeUsersRepository implements IUsersRepository {
-  public users: List<User> = List([initialUser]);
-  public passwords = Map<string, string>(initialPassword);
+  private _users: List<User> = List([initialUser]);
+  private _passwords = Map<string, string>(initialPassword);
+
+  // * Token
+  private readonly _jwtSecret = new TextEncoder().encode('ADD-SECRET-KEY-LATER'); // TODO: move to `.env`
 
   public async all(): Promise<Either<ExceptionError, ReadonlyArray<User>>> {
-    return right(this.users.toArray());
+    return right(this._users.toArray());
   }
 
-  public async delete(id: ID): Promise<Either<ExceptionError, void>> {
-    this.users = this.users.filter(user => user.id !== id);
-    return right(void 0);
-  }
-
+  // * Find Users
   public async findByEmail(email: string): Promise<Option<User>> {
-    const user = this.users.find(item => item.email === email);
+    const user = this._users.find(item => item.email === email);
 
     return fromNullable(user);
   }
 
   public async findByID(id: ID): Promise<Option<User>> {
-    const user = this.users.find(item => item.id === id);
+    const user = this._users.find(item => item.id === id);
     return fromNullable(user);
   }
 
-  public async isUserPasswordValid(id: ID, givenPassword: string): Promise<Either<ExceptionError, boolean>> {
-    // Get the real user password
-    const userPassword = this.passwords.get(id);
-    if (isUndefined(userPassword)) {
-      return left(createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found));
+  public async findByToken(token: AuthToken): Promise<Option<User>> {
+    const tokenE = await this._parseToken(token);
+    if (isLeft(tokenE)) {
+      return fromNullable(null);
     }
-    // Are password equals
-    return right(userPassword === givenPassword);
+
+    const { userID } = tokenE.right.payload;
+    if (!isString(userID)) {
+      return fromNullable(null);
+    }
+
+    const userFounded = this._users.find(user => user.id === userID);
+
+    return fromNullable(userFounded);
+  }
+
+  // * Crud User Actions
+  public async delete(id: ID): Promise<Either<ExceptionError, void>> {
+    this._users = this._users.filter(user => user.id !== id);
+    return right(void 0);
   }
 
   public async save(user: User, password: string): Promise<Either<ExceptionError, void>> {
-    this.users = this.users.push(user);
-    this.passwords = this.passwords.set(user.id, password);
+    this._users = this._users.push(user);
+    this._passwords = this._passwords.set(user.id, password);
 
     return right(void 0);
   }
 
   public async update(updatedUser: User, password?: string): Promise<Either<ExceptionError, void>> {
-    this.users = this.users.map(user => (user.id === updatedUser.id ? updatedUser : user));
+    this._users = this._users.map(user => (user.id === updatedUser.id ? updatedUser : user));
     if (password) {
-      this.passwords = this.passwords.set(updatedUser.id, password);
+      this._passwords = this._passwords.set(updatedUser.id, password);
     }
 
     return right(void 0);
+  }
+
+  // * User Helpers
+  public async isUserPasswordValid(id: ID, givenPassword: string): Promise<boolean> {
+    // Get the real user password
+    const userPassword = this._passwords.get(id);
+
+    return userPassword === givenPassword;
+  }
+
+  // * Tokens
+  public async addToken(userID: User['id']): Promise<Either<ExceptionError, AuthToken>> {
+    // Verify if the user exists
+    if (!this._users.some(user => user.id === userID)) {
+      return left(createExceptionError('Given user ID is invalid', REQUEST_STATUS.bad));
+    }
+
+    // Create the new token
+    const newToken = await this._createToken(userID);
+
+    // Returns the token ID
+    return right(newToken);
+  }
+
+  public async isAuthTokenValid(token: AuthToken): Promise<boolean> {
+    // Get the real user password
+    const tokenMetadata = await this._parseToken(token);
+
+    return isRight(tokenMetadata);
+  }
+
+  // TODO: move tokens methods to a single interface
+
+  private async _createToken(userID: string): Promise<AuthToken> {
+    const JWT = await new jose.SignJWT({ userID })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setIssuer('urn:example:issuer') // TODO: i don't know what really is it
+      .setAudience('urn:example:audience')
+      .setExpirationTime('1d')
+      .sign(this._jwtSecret);
+
+    return JWT;
+  }
+
+  private async _parseToken(JWT: AuthToken): Promise<Either<ExceptionError, jose.JWTVerifyResult>> {
+    try {
+      const parsedJWT = await jose.jwtVerify(JWT, this._jwtSecret, {
+        issuer: 'urn:example:issuer',
+        audience: 'urn:example:audience',
+      });
+      return right(parsedJWT);
+    } catch (error: unknown) {
+      return left(createExceptionError(extractError(error).message, REQUEST_STATUS.bad));
+    }
   }
 }

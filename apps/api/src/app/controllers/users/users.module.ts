@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
-import { FakeMailProvider } from '@server/infra/providers/fake-mail/fake-mail.provider';
-import { FakeUsersRepository } from '@server/infra/repositories/users/fake-users.repository';
-import { UsersService } from '@server/infra/services';
+import { usersService } from '@server/app/services/user.service';
 
 import { UsersController } from './users.controller';
 
@@ -11,7 +9,7 @@ import { UsersController } from './users.controller';
   providers: [
     {
       provide: USERS_SERVICE_INJECTABLE_TOKEN,
-      useValue: new UsersService(new FakeUsersRepository(), new FakeMailProvider()),
+      useValue: usersService(),
     },
   ],
 })

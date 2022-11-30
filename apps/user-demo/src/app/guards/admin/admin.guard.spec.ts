@@ -1,12 +1,15 @@
 import { TestBed } from '@angular/core/testing';
+import { StoreTestingModule } from '@front/app/stores/root';
 
 import { AdminGuard } from './admin.guard';
 
-describe('AdminGuard', () => {
+describe(AdminGuard.name, () => {
   let guard: AdminGuard;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      imports: [StoreTestingModule],
+    });
     guard = TestBed.inject(AdminGuard);
   });
 

@@ -1,5 +1,5 @@
 import { Injectable, Injector, OnDestroy, Type, ViewContainerRef } from '@angular/core';
-import { MODAL_DATA_TOKEN } from '@front/constants/modal';
+import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 

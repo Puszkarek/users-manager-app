@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { User } from '@api-interfaces';
-import { UsersClient } from '@front/clients';
-import { UsersStore } from '@front/stores';
+import { UsersClient } from '@front/app/clients/users';
+import { TokenManagerService } from '@front/app/services/token-manager';
+import { UsersStore } from '@front/app/stores/users';
 import { Either, isLeft, left, right } from 'fp-ts/Either';
-import { isNull } from 'lodash';
+import { isNull } from 'lodash-es';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable({
@@ -11,26 +12,12 @@ import { firstValueFrom } from 'rxjs';
 })
 export class AuthService {
   // TODO (feature): check if the auth token expires every 5 seconds
-  constructor(private readonly _usersClient: UsersClient, private readonly _usersStore: UsersStore) {
-    this._usersStore.load();
-  }
-
-  public async load(): Promise<void> {
-    const savedLogin = this._getToken();
-
-    if (isNull(savedLogin)) {
-      return;
-    }
-
-    const either = await this._usersClient.loginOneWithToken(savedLogin.email, savedLogin.token);
-
-    if (isLeft(either)) {
-      console.error(either.left);
-      return;
-    }
-
-    this._setToken({ email: savedLogin.email, newToken: either.right.token });
-  }
+  // TODO: May all these methods should be inside `users.store`
+  constructor(
+    private readonly _usersClient: UsersClient,
+    private readonly _usersStore: UsersStore,
+    private readonly _tokenManager: TokenManagerService,
+  ) {}
 
   public async login(email: string, password: string): Promise<Either<Error, User>> {
     const userEither = await this._usersClient.loginOne(email, password);
@@ -40,50 +27,23 @@ export class AuthService {
     }
     const loginResponse = userEither.right;
 
-    this._setToken({
-      email: loginResponse.loggedUser.email,
-      newToken: loginResponse.token,
-    });
+    this._tokenManager.setToken(loginResponse.token);
 
     return right(loginResponse.loggedUser);
   }
 
   public async logoutUser(): Promise<void> {
-    const savedLogin = this._getToken();
+    const savedToken = this._tokenManager.getToken();
     const loggedUser = await firstValueFrom(this._usersStore.loggedUser$);
-    if (isNull(savedLogin) || isNull(loggedUser)) {
+    if (isNull(savedToken) || isNull(loggedUser)) {
       console.error('None user is logged');
       return;
     }
 
-    const userEither = await this._usersClient.logoutOne(savedLogin.token);
+    const userEither = await this._usersClient.logoutOne(savedToken);
 
     if (isLeft(userEither)) {
       console.error('Something gones wrong', userEither);
     }
-  }
-
-  // * Token
-  private _setToken({ newToken, email }: { readonly newToken: string | null; readonly email: string | null }): void {
-    if (newToken && email) {
-      sessionStorage.setItem('token', newToken);
-      sessionStorage.setItem('email', email);
-    } else {
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('email');
-    }
-  }
-
-  private _getToken(): {
-    readonly email: string;
-    readonly token: string;
-  } | null {
-    const token = sessionStorage.getItem('token');
-    const email = sessionStorage.getItem('email');
-
-    if (token && email) {
-      return { email, token };
-    }
-    return null;
   }
 }

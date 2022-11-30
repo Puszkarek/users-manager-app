@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { HTMLInputType } from '@front/interfaces';
+import { HTMLInputType } from '@front/app/interfaces/form';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

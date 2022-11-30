@@ -11,10 +11,10 @@ describe(AppController.name, () => {
     }).compile();
   });
 
-  describe(AppController.prototype.ping.name, () => {
-    it('should return "pong"', () => {
+  describe(AppController.prototype.sendMessage.name, () => {
+    it('should return the welcome message', () => {
       const appController = app.get<AppController>(AppController);
-      expect(appController.ping()).toEqual('pong');
+      expect(appController.sendMessage()).toEqual('Welcome to the api!');
     });
   });
 });

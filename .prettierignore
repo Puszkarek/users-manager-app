@@ -1,4 +1,8 @@
-# Add files here to ignore them from prettier formatting
+# dependencies
+**/node_modules
+**/.angular
 
-/dist
-/coverage
+# misc
+**/dist
+**/coverage
+

@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { StoreTestingModule } from '@front/app/stores/root';
 
-import { AuthService } from './token-manager.service';
+import { TokenManagerService } from './token-manager.service';
 
-describe(AuthService.name, () => {
-  let service: AuthService;
+describe(TokenManagerService.name, () => {
+  let service: TokenManagerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [StoreTestingModule],
     });
-    service = TestBed.inject(AuthService);
+    service = TestBed.inject(TokenManagerService);
   });
 
   it('should be created', () => {

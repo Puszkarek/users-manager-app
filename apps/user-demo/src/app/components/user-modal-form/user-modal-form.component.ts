@@ -6,7 +6,7 @@ import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
 import { FormStatus } from '@front/app/interfaces/form';
 import { NotificationService } from '@front/app/services/notification';
 import { CUSTOM_VALIDATORS } from '@front/app/utils';
-import { isNil } from 'lodash';
+import { isNil } from 'lodash-es';
 import { Subject } from 'rxjs';
 
 @Component({

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthToken } from '@api-interfaces';
-import { isString } from 'lodash';
+import { isString } from 'lodash-es';
 
 @Injectable({
   providedIn: 'root',

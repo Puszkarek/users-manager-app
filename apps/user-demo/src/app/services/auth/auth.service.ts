@@ -17,9 +17,7 @@ export class AuthService {
     private readonly _usersClient: UsersClient,
     private readonly _usersStore: UsersStore,
     private readonly _tokenManager: TokenManagerService,
-  ) {
-    this._usersStore.load();
-  }
+  ) {}
 
   public async login(email: string, password: string): Promise<Either<Error, User>> {
     const userEither = await this._usersClient.loginOne(email, password);

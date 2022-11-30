@@ -130,6 +130,7 @@ export class UsersClient {
    * TODO (token): we should create the system and methods for token in the backend
    */
   public async getMe(): Promise<Either<Error, User>> {
+    // Avoid unnecessary requests to the backend
     const savedToken = this._tokenManagerService.getToken();
     if (isNull(savedToken)) {
       return left(new Error('None token founded'));
@@ -140,7 +141,6 @@ export class UsersClient {
         .get<User>(`${environment.apiHost}/users/me`, {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${savedToken}`, // TODO: use a interception
           },
         })
         .pipe(

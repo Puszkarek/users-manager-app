@@ -1,4 +1,4 @@
-import { CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User, AuthToken } from '@api-interfaces';
+import { AuthToken, CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
 import { Either } from 'fp-ts/lib/Either';
 import { Option } from 'fp-ts/lib/Option';
 
@@ -44,6 +44,7 @@ export type IUsersService = {
 
   /** Update a token for the user */
   readonly token: {
+    readonly validate: (data: AuthToken) => Promise<Either<ExceptionError, void>>;
     readonly refresh: (data: AuthToken) => Promise<Either<ExceptionError, LoginResponse>>;
   };
 

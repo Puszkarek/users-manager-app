@@ -1,4 +1,4 @@
-import { CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User, AuthToken } from '@api-interfaces';
+import { AuthToken, CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
 import { createExceptionError } from '@server/infra/helpers';
 import {
   ExceptionError,
@@ -150,6 +150,15 @@ export class UsersService implements IUsersService {
         loggedUser: userO.value,
         token: tokenE.right,
       });
+    },
+    validate: async (token: AuthToken): Promise<Either<ExceptionError, void>> => {
+      const isValid = await this._usersRepository.isAuthTokenValid(token);
+
+      if (!isValid) {
+        return left(createExceptionError('The given token is invalid', REQUEST_STATUS.unauthorized));
+      }
+
+      return right(void 0);
     },
   };
 

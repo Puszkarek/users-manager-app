@@ -16,10 +16,10 @@ export class TokenManagerService {
   }
 
   public getToken(): AuthToken | null {
-    const token = sessionStorage.getItem('token');
+    const authToken = sessionStorage.getItem('token');
 
-    if (isString(token)) {
-      return token;
+    if (isString(authToken)) {
+      return authToken;
     }
 
     return null;

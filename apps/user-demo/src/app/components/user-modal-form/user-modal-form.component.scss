@@ -1,15 +1,5 @@
-/* TODO: Needs to be abstract, maybe we can use hostDirectives */
+/* TODO: Needs to be abstract, maybe we can use directives */
 :host {
-  display: flex;
-  position: fixed;
-
-  top: 0;
-  right: 0;
-
-  height: 100%;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.3);
-
   .container {
     background: var(--bg-primary);
     display: block;

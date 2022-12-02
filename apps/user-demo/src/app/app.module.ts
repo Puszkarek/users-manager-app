@@ -1,3 +1,4 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -26,6 +27,7 @@ import { AppRoutingModule } from './app-routing.module';
     HeaderModule,
     NavBarModule,
     ReactiveFormsModule,
+    OverlayModule,
     // * NgRx/Data
     EntityStoreModule,
     EffectsModule.forRoot([]),

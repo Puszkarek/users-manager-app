@@ -1,5 +1,8 @@
+import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UserModalFormModule } from '@front/app/components/user-modal-form';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ButtonModule } from '@front/app/components/button';
+import { FormFieldInputModule } from '@front/app/components/form-field-input';
 import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
 import { StoreTestingModule } from '@front/app/stores/root';
 
@@ -11,7 +14,7 @@ describe(UserModalFormComponent.name, () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StoreTestingModule, UserModalFormModule],
+      imports: [StoreTestingModule, CommonModule, ReactiveFormsModule, FormFieldInputModule, ButtonModule],
       providers: [
         {
           provide: MODAL_DATA_TOKEN,

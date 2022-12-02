@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CreatableUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
 import { UsersClient } from '@front/app/clients/users';
+import { STORE_REFRESH_INTERVAL_TIME } from '@front/app/constants/store';
 import { IStore, StoreLoadOptions, TypedEntityCollectionServiceBase } from '@front/app/interfaces/store';
 import { USER_ENTITY_NAME } from '@front/app/stores/root';
 import { isTrue } from '@front/app/utils';
@@ -11,8 +12,6 @@ import { pipe } from 'fp-ts/lib/function';
 import { List } from 'immutable';
 import { combineLatest, firstValueFrom, Observable, Subject, timer } from 'rxjs';
 import { distinctUntilChanged, filter, first, map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
-
-import { STORE_REFRESH_INTERVAL_TIME } from '../../constants/store';
 
 @Injectable({ providedIn: 'root' })
 // TODO (docs): write function docs

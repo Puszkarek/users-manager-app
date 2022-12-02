@@ -12,6 +12,7 @@ import { pipe } from 'fp-ts/lib/function';
 import { isNil, isNull } from 'lodash-es';
 import { Subject } from 'rxjs';
 
+// TODO: rename to `user-form-modal`
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-user-modal-form',

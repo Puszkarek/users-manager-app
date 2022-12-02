@@ -111,7 +111,7 @@ export class UsersService implements IUsersService {
       // Validate the password
       const isPasswordValid = await this._usersRepository.isUserPasswordValid(userO.value.id, password);
       if (!isPasswordValid) {
-        return left(createExceptionError('The given password is wrong', REQUEST_STATUS.bad));
+        return left(createExceptionError('Check your password and try again', REQUEST_STATUS.bad));
       }
 
       // Create the Token
@@ -139,7 +139,7 @@ export class UsersService implements IUsersService {
       // Validate the password
       const isTokenValid = await this._usersRepository.isAuthTokenValid(token);
       if (!isTokenValid) {
-        return left(createExceptionError('The given password is wrong', REQUEST_STATUS.bad));
+        return left(createExceptionError('Check your password and try again', REQUEST_STATUS.bad));
       }
 
       // Create the Token

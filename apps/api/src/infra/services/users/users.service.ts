@@ -9,17 +9,17 @@ import {
 } from '@server/infra/interfaces';
 import { Either, fromOption, isLeft, left, right } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
-import { isNone } from 'fp-ts/lib/Option';
-import { isNull, uniqueId } from 'lodash';
+import { isNone, isSome } from 'fp-ts/lib/Option';
+import { uniqueId } from 'lodash';
 
 // TODO: remove try catch from here
 export class UsersService implements IUsersService {
   public create = {
     one: async (data: CreatableUser): Promise<Either<ExceptionError, User>> => {
       const { password, ...creatableUser } = data;
-      const foundUser = await this._usersRepository.findByEmail(creatableUser.email);
+      const userO = await this._usersRepository.findByEmail(creatableUser.email);
 
-      if (!isNull(foundUser)) {
+      if (isSome(userO)) {
         return left(createExceptionError('User already exists', REQUEST_STATUS.not_found));
       }
 

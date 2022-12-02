@@ -152,13 +152,12 @@ export class UsersClient {
             console.error('Invalid response', response);
             return left(new Error('Invalid response'));
           }),
-          catchError((error: unknown) => of(left(toError(error)))),
+          catchError((error: unknown) => {
+            this._updateLoggedUser(null);
+            return of(left(toError(error)));
+          }),
         ),
     );
-
-    if (isRight(result)) {
-      this._updateLoggedUser(result.right);
-    }
 
     return result;
   }

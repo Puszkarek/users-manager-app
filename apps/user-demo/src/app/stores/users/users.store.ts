@@ -93,9 +93,13 @@ export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, O
         this._clearCache();
         this._entityCollection.setLoaded(false);
       }
-      const either = await this._usersClient.getAll();
+
+      // If the request falls means that the token expired or the user doesn't exist anymore, then logged user will be set to `null`
+      await this._usersClient.getMe();
+
+      const usersE = await this._usersClient.getAll();
       pipe(
-        either,
+        usersE,
         foldW(
           () => void 0,
           users => {

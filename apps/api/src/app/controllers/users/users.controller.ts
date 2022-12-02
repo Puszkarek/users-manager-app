@@ -25,7 +25,7 @@ export class UsersController {
     return executeTask(either);
   }
 
-  @Delete()
+  @Delete(':id')
   public async deleteOne(@Param('id') id: string): Promise<void> {
     const either = await this._usersService.delete.one(id);
 

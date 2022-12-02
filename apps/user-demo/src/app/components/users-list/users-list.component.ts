@@ -45,6 +45,12 @@ export class UsersListComponent {
     }
   }
 
+  /**
+   * Validate if the user can be deleted by the current user
+   *
+   * @param user The user to check if can be deleted
+   * @returns True if the `loggedUser` be able to delete
+   */
   public canDeleteUser(user: User): Observable<boolean> {
     return this._usersStore.loggedUser$.pipe(
       map(loggedUser => isNotNull(loggedUser) && loggedUser.role === USER_ROLE.admin && loggedUser.id !== user.id),

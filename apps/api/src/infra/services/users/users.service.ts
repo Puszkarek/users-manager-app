@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import { AuthToken, CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
 import { createExceptionError } from '@server/infra/helpers';
 import {
@@ -10,7 +12,6 @@ import {
 import { Either, fromOption, isLeft, left, right } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { isNone, isSome } from 'fp-ts/lib/Option';
-import { uniqueId } from 'lodash';
 
 // TODO: remove try catch from here
 export class UsersService implements IUsersService {
@@ -25,7 +26,7 @@ export class UsersService implements IUsersService {
 
       const newUser: User = {
         ...data,
-        id: uniqueId(),
+        id: randomUUID(),
       };
 
       await this._usersRepository.save(newUser, password);

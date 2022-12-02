@@ -14,6 +14,7 @@
     "test:api": "nx run api:test",
     "test:api:watch": "nx run api:test --watch",
     "test:e2e": "nx e2e user-demo-e2e",
+    "test:e2e:watch": "nx e2e user-demo-e2e --watch",
     "lint:eslint": "npm run lint:eslint:www && npm run lint:eslint:api",
     "lint:eslint:www": "nx run user-demo:lint",
     "lint:eslint:api": "nx run api:lint",

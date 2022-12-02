@@ -1,12 +1,15 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
-import { CreatableUser, isUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
+import { isUser, User, USER_ROLE } from '@api-interfaces';
 import { USER_NAME_MIN_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@front/app/constants/form-settings';
 import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
 import { FormStatus } from '@front/app/interfaces/form';
 import { NotificationService } from '@front/app/services/notification';
+import { UsersStore } from '@front/app/stores/users';
 import { CUSTOM_VALIDATORS } from '@front/app/utils';
-import { isNil } from 'lodash-es';
+import { foldW } from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
+import { isNil, isNull } from 'lodash-es';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -17,7 +20,7 @@ import { Subject } from 'rxjs';
 })
 export class UserModalFormComponent implements OnInit {
   // TODO: Found a way to abstract this inside one factory
-  private readonly _close$ = new Subject<CreatableUser | UpdatableUser | null>();
+  private readonly _close$ = new Subject<User | null>();
   public readonly close$ = this._close$.asObservable();
 
   public readonly user: User | null = null;
@@ -132,6 +135,7 @@ export class UserModalFormComponent implements OnInit {
     @Inject(MODAL_DATA_TOKEN) data: UserModalFormComponentData,
     private readonly _formBuilder: NonNullableFormBuilder,
     private readonly _notificationService: NotificationService,
+    private readonly _usersStore: UsersStore,
   ) {
     this.user = data.user;
   }
@@ -144,21 +148,29 @@ export class UserModalFormComponent implements OnInit {
     }
   }
 
-  public close(data?: CreatableUser | UpdatableUser | null): void {
+  public close(data?: User | null): void {
     this._close$.next(data ?? null);
     this._close$.complete();
   }
 
-  public save(): void {
+  public async save(): Promise<void> {
     if (this.form.valid) {
       const updatedValues = this.form.getRawValue();
 
-      const currentUser = this.user ?? {};
+      const either = await (isNull(this.user)
+        ? this._usersStore.create(updatedValues)
+        : this._usersStore.update({
+            ...this.user,
+            ...updatedValues,
+          }));
 
-      this.close({
-        ...currentUser,
-        ...updatedValues,
-      });
+      pipe(
+        either,
+        foldW(
+          async error => this._notificationService.error(error.message),
+          user => this.close(user),
+        ),
+      );
     } else {
       this._notificationService.error('Please, check the inputs and try again');
     }

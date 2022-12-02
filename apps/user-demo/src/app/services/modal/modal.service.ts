@@ -23,8 +23,6 @@ export class ModalService implements OnDestroy {
   public ngOnDestroy(): void {
     this._unsubscribe$.next();
     this._unsubscribe$.complete();
-
-    console.log(this._viewContainerReference);
   }
 
   public openModal<ModalOutputData, ModalInputData>(
@@ -53,9 +51,19 @@ export class ModalService implements OnDestroy {
         (obs$ as Observable<unknown>).pipe(startWith(null)),
       ),
     )
-      .pipe(skip(1), first(), takeUntil(this._unsubscribe$))
+      .pipe(
+        /**
+         * `combineLatest` will emit soon after subscribe because we're using `startWith`, them
+         * we will skip the first because
+         *
+         * P.S: I doing that because I haven't found any operator of rxjs which emits a value
+         * after any observable be trigger without emit a initial value
+         */
+        skip(1),
+        first(),
+        takeUntil(this._unsubscribe$),
+      )
       .subscribe(() => {
-        console.log('here');
         overlayReference.detach();
         overlayReference.dispose();
       });

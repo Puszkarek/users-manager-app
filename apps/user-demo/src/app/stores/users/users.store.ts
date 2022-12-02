@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CreatableUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
 import { UsersClient } from '@front/app/clients/users';
+import { STORE_REFRESH_INTERVAL_TIME } from '@front/app/constants/store';
 import { IStore, StoreLoadOptions, TypedEntityCollectionServiceBase } from '@front/app/interfaces/store';
 import { USER_ENTITY_NAME } from '@front/app/stores/root';
 import { isTrue } from '@front/app/utils';
@@ -10,9 +11,7 @@ import { foldW, isRight } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { List } from 'immutable';
 import { combineLatest, firstValueFrom, Observable, Subject, timer } from 'rxjs';
-import { distinctUntilChanged, filter, first, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
-
-import { STORE_REFRESH_INTERVAL_TIME } from '../../constants/store';
+import { distinctUntilChanged, filter, first, map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 // TODO (docs): write function docs
@@ -62,12 +61,14 @@ export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, O
     });
 
     // TODO: improve and move to a helper
-    /** Wait to the user be authenticated, then load the store and refresh after x seconds, do it in loop */
+    /**
+     * Wait to the user be authenticated, then load the store and refresh after x seconds, do
+     * it in loop
+     */
     this.isAuthenticated$
       .pipe(
         filter(isAuthenticated => isAuthenticated),
         first(),
-        tap(() => console.log('1. trigger here')),
         switchMap(() => timer(0, STORE_REFRESH_INTERVAL_TIME)),
         takeUntil(this.logout$),
       )
@@ -141,7 +142,7 @@ export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, O
    * Delete a user from the database and the state (users that are admin can delete users).
    *
    * @param assetID The user ID to delete
-   * @returns a either containing the error or nothing
+   * @returns A either containing the error or nothing
    */
   public async delete(assetID: string): Promise<Either<Error, void>> {
     const either = await this._usersClient.deleteOne(assetID);

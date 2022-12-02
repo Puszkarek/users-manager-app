@@ -21,12 +21,12 @@
       </td>
       <td>{{ user.email }}</td>
       <td class="settings">
-        <button (click)="openUserForm(user)" class="settings-btn">
-          <app-icon>more_vert</app-icon>
+        <button *ngIf="canDeleteUser(user) | async" (click)="deleteUser(user)" class="settings-btn delete-btn">
+          <app-icon>delete</app-icon>
         </button>
 
-        <button (click)="deleteUser(user)" class="settings-btn delete-btn">
-          <app-icon>delete</app-icon>
+        <button (click)="openUserForm(user)" class="settings-btn">
+          <app-icon>more_vert</app-icon>
         </button>
       </td>
     </tr>

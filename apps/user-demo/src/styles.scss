@@ -1,3 +1,6 @@
+/* CDK Overlay styles */
+@import '~@angular/cdk/overlay-prebuilt.css';
+
 @import './styles/reset.scss';
 @import './styles/variables.scss';
 @import './styles/themes/dark-theme.scss';
@@ -57,4 +60,13 @@ body {
 body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+// * Modal Overlay
+.modal-panel {
+}
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.4);
+
+  backdrop-filter: blur(0.5rem);
 }

@@ -11,27 +11,6 @@ import { isEmpty, isUndefined } from 'lodash';
 export class UsersController {
   constructor(@Inject(USERS_SERVICE_INJECTABLE_TOKEN) private readonly _usersService: IUsersService) {}
 
-  @Post()
-  public async createOne(@Body() creatableUser: CreatableUser): Promise<User> {
-    const either = await this._usersService.create.one(creatableUser);
-
-    return executeTask(either);
-  }
-
-  @Put()
-  public async updateOne(@Body() updatableUser: UpdatableUser): Promise<User> {
-    const either = await this._usersService.update.one(updatableUser);
-
-    return executeTask(either);
-  }
-
-  @Delete()
-  public async deleteOne(@Param('id') id: string): Promise<void> {
-    const either = await this._usersService.delete.one(id);
-
-    executeTask(either);
-  }
-
   // * Login Stuffs
   @Post('login')
   @HttpCode(REQUEST_STATUS.accepted)
@@ -48,6 +27,28 @@ export class UsersController {
     const either = await this._usersService.token.refresh(authToken);
 
     return executeTask(either);
+  }
+
+  // * Crud Operations
+  @Post()
+  public async createOne(@Body() creatableUser: CreatableUser): Promise<User> {
+    const either = await this._usersService.create.one(creatableUser);
+
+    return executeTask(either);
+  }
+
+  @Put()
+  public async updateOne(@Body() updatableUser: UpdatableUser): Promise<User> {
+    const either = await this._usersService.update.one(updatableUser);
+
+    return executeTask(either);
+  }
+
+  @Delete(':id')
+  public async deleteOne(@Param('id') id: string): Promise<void> {
+    const either = await this._usersService.delete.one(id);
+
+    executeTask(either);
   }
 
   // * Getters

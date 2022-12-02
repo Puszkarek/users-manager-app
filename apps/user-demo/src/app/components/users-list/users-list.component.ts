@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { isCreatableUser, User } from '@api-interfaces';
-import { UserModalFormComponent } from '@front/app/components/user-modal-form';
+import { User, USER_ROLE } from '@api-interfaces';
+import { UserModalFormComponent, UserModalFormComponentData } from '@front/app/components/user-modal-form';
 import { ModalService } from '@front/app/services/modal';
 import { UsersStore } from '@front/app/stores/users';
+import { isNotNull } from '@front/app/utils';
 import { isLeft } from 'fp-ts/lib/Either';
-import { firstValueFrom } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,18 +22,12 @@ export class UsersListComponent {
     return user.id;
   }
 
-  public async openUserForm(user: User | null = null): Promise<void> {
-    const reference = this._modalService.openModal(UserModalFormComponent, {
-      data: {
-        user: user,
-      },
-    });
+  public openUserForm(user: User | null = null): void {
+    const userModalData: UserModalFormComponentData = {
+      user: user,
+    };
 
-    const response = await firstValueFrom(reference.data$);
-
-    if (response) {
-      await (isCreatableUser(response) ? this._usersStore.create(response) : this._usersStore.update(response));
-    }
+    this._modalService.openModal(UserModalFormComponent, userModalData);
   }
 
   public async deleteUser(user: User): Promise<void> {
@@ -42,5 +37,17 @@ export class UsersListComponent {
     if (isLeft(either)) {
       console.error('Error deleting user', either.left);
     }
+  }
+
+  /**
+   * Validate if the user can be deleted by the current user
+   *
+   * @param user The user to check if can be deleted
+   * @returns True if the `loggedUser` be able to delete
+   */
+  public canDeleteUser(user: User): Observable<boolean> {
+    return this._usersStore.loggedUser$.pipe(
+      map(loggedUser => isNotNull(loggedUser) && loggedUser.role === USER_ROLE.admin && loggedUser.id !== user.id),
+    );
   }
 }

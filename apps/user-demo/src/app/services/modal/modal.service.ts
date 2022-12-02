@@ -1,7 +1,9 @@
-import { Injectable, Injector, OnDestroy, Type, ViewContainerRef } from '@angular/core';
+import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
+import { Injectable, InjectionToken, Injector, OnDestroy, Type, ViewContainerRef } from '@angular/core';
 import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
-import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { combineLatest, Observable, Subject } from 'rxjs';
+import { first, skip, startWith, takeUntil } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -12,16 +14,31 @@ export class ModalService implements OnDestroy {
 
   private readonly _unsubscribe$ = new Subject<void>();
 
-  public setRootViewContainerRef(viewContainerReference: ViewContainerRef): void {
-    this._viewContainerReference = viewContainerReference;
-  }
+  constructor(public readonly overlay: Overlay) {}
 
   public ngOnDestroy(): void {
     this._unsubscribe$.next();
     this._unsubscribe$.complete();
   }
 
-  /** Create a new Component to show the notification, then destroy it  */
+  /**
+   * We need that because we can't inject `setRootViewContainerRef` directly inside a service,
+   * so we are injecting inside the `app.component` and calling this function to pass the
+   * service here
+   *
+   * @param viewContainerReference - The `ViewContainerRef` to use for instantiate modals
+   */
+  public setRootViewContainerRef(viewContainerReference: ViewContainerRef): void {
+    this._viewContainerReference = viewContainerReference;
+  }
+
+  /**
+   * Will instantiate a component modal and attach to the view
+   *
+   * @param component - The component to use as a modal
+   * @param data - The optional data to inject inside modal
+   * @returns A subscription that will emit after the the close action be triggered
+   */
   public openModal<ModalOutputData, ModalInputData>(
     component: Type<{
       readonly close$: Observable<ModalOutputData>;
@@ -30,26 +47,83 @@ export class ModalService implements OnDestroy {
   ): {
     readonly data$: Observable<ModalOutputData>;
   } {
-    // Instantiate the entry data for the Modal
-    const injector = Injector.create({
+    // * Initialize overlay
+    const overlayConfig = this._getOverlayConfig();
+    const overlayReference = this.overlay.create(overlayConfig);
+
+    // * Create component portal
+    const injector = this._createInjector(MODAL_DATA_TOKEN, data);
+    const containerPortal = new ComponentPortal(component, this._viewContainerReference, injector);
+
+    // * Attach to the view
+    const reference = overlayReference.attach(containerPortal);
+
+    // * Listen to backdrop clicks to close
+    combineLatest(
+      // ? Really that rxjs doesn't have any method to do these things ????
+      [overlayReference.backdropClick(), reference.instance.close$].map(obs$ =>
+        (obs$ as Observable<unknown>).pipe(startWith(null)),
+      ),
+    )
+      .pipe(
+        /**
+         * `combineLatest` will emit soon after subscribe because we're using `startWith`, them
+         * we will skip the first because
+         *
+         * P.S: I doing that because I haven't found any operator of rxjs which emits a value
+         * after any observable be trigger without emit a initial value
+         */
+        skip(1),
+        first(),
+        takeUntil(this._unsubscribe$),
+      )
+      .subscribe(() => {
+        overlayReference.detach();
+        overlayReference.dispose();
+      });
+
+    // * Returns the data
+    return {
+      data$: reference.instance.close$,
+    };
+  }
+
+  /**
+   * Create a Injector and provide data to the given Token
+   *
+   * @param token The token where the data will be injected
+   * @param data The data to be inject
+   * @returns An instance of `Injector` with the data injected
+   */
+  private _createInjector<T>(token: InjectionToken<string>, data: T): Injector {
+    return Injector.create({
       providers: [
         {
-          provide: MODAL_DATA_TOKEN,
+          provide: token,
           useValue: data,
         },
       ],
     });
+  }
 
-    // Create the Modal
-    const reference = this._viewContainerReference.createComponent(component, {
-      injector: injector,
+  /**
+   * Init a `OverlayConfig` with default options
+   *
+   * @returns A standalone config for overlay
+   */
+  private _getOverlayConfig(): OverlayConfig {
+    return new OverlayConfig({
+      // * Setup
+      hasBackdrop: true,
+      disposeOnNavigation: false,
+
+      // * Custom CSS classes
+      backdropClass: 'modal-backdrop',
+      panelClass: 'modal-panel',
+
+      // * Strategy
+      scrollStrategy: this.overlay.scrollStrategies.noop(),
+      positionStrategy: this.overlay.position().global().centerHorizontally().centerVertically(),
     });
-
-    // Destroy the component when the close action being called
-    reference.instance.close$.pipe(takeUntil(this._unsubscribe$)).subscribe(() => reference.destroy());
-
-    return {
-      data$: reference.instance.close$,
-    };
   }
 }

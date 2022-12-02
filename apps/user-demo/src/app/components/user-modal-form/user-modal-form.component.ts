@@ -1,14 +1,18 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
-import { CreatableUser, isUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
+import { isUser, User, USER_ROLE } from '@api-interfaces';
 import { USER_NAME_MIN_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@front/app/constants/form-settings';
 import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
 import { FormStatus } from '@front/app/interfaces/form';
 import { NotificationService } from '@front/app/services/notification';
+import { UsersStore } from '@front/app/stores/users';
 import { CUSTOM_VALIDATORS } from '@front/app/utils';
-import { isNil } from 'lodash-es';
+import { foldW } from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
+import { isNil, isNull } from 'lodash-es';
 import { Subject } from 'rxjs';
 
+// TODO: rename to `user-form-modal`
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-user-modal-form',
@@ -17,7 +21,7 @@ import { Subject } from 'rxjs';
 })
 export class UserModalFormComponent implements OnInit {
   // TODO: Found a way to abstract this inside one factory
-  private readonly _close$ = new Subject<CreatableUser | UpdatableUser | null>();
+  private readonly _close$ = new Subject<User | null>();
   public readonly close$ = this._close$.asObservable();
 
   public readonly user: User | null = null;
@@ -50,10 +54,10 @@ export class UserModalFormComponent implements OnInit {
     }
 
     if (errors['required']) {
-      return 'Email is required';
+      return 'required';
     }
     if (errors['email']) {
-      return 'Email is invalid';
+      return 'invalid';
     }
 
     return null;
@@ -70,21 +74,21 @@ export class UserModalFormComponent implements OnInit {
     }
 
     if (errors['required']) {
-      return 'Name is required';
+      return 'required';
     }
 
     if (errors['minLength']) {
-      return `The size of name must be at least ${USER_NAME_MIN_LENGTH} characters`;
+      return `must have at least ${USER_NAME_MIN_LENGTH} characters`;
     }
 
     return null;
   }
 
   private readonly _passwordErrors = {
-    confirm: 'Please, confirm your password',
-    isPasswordEqual: 'Password and Password Confirmation must be equal',
-    minLength: `The size of password must be at least ${USER_PASSWORD_MIN_LENGTH} characters`,
-    required: 'Password is required',
+    confirm: 'please, confirm your password',
+    isPasswordEqual: 'passwords must be equal',
+    minLength: `must have at least ${USER_PASSWORD_MIN_LENGTH} characters`,
+    required: 'required',
   };
 
   public get passwordError(): string | null {
@@ -132,6 +136,7 @@ export class UserModalFormComponent implements OnInit {
     @Inject(MODAL_DATA_TOKEN) data: UserModalFormComponentData,
     private readonly _formBuilder: NonNullableFormBuilder,
     private readonly _notificationService: NotificationService,
+    private readonly _usersStore: UsersStore,
   ) {
     this.user = data.user;
   }
@@ -144,21 +149,29 @@ export class UserModalFormComponent implements OnInit {
     }
   }
 
-  public close(data?: CreatableUser | UpdatableUser | null): void {
+  public close(data?: User | null): void {
     this._close$.next(data ?? null);
     this._close$.complete();
   }
 
-  public save(): void {
+  public async save(): Promise<void> {
     if (this.form.valid) {
       const updatedValues = this.form.getRawValue();
 
-      const currentUser = this.user ?? {};
+      const either = await (isNull(this.user)
+        ? this._usersStore.create(updatedValues)
+        : this._usersStore.update({
+            ...this.user,
+            ...updatedValues,
+          }));
 
-      this.close({
-        ...currentUser,
-        ...updatedValues,
-      });
+      pipe(
+        either,
+        foldW(
+          async error => this._notificationService.error(error.message),
+          user => this.close(user),
+        ),
+      );
     } else {
       this._notificationService.error('Please, check the inputs and try again');
     }

@@ -11,6 +11,25 @@ import { isEmpty, isUndefined } from 'lodash';
 export class UsersController {
   constructor(@Inject(USERS_SERVICE_INJECTABLE_TOKEN) private readonly _usersService: IUsersService) {}
 
+  // * Login Stuffs
+  @Post('login')
+  @HttpCode(REQUEST_STATUS.accepted)
+  @IsPublic()
+  public async loginOne(@Body() loginRequest: LoginRequest): Promise<LoginResponse> {
+    const either = await this._usersService.login.one(loginRequest);
+
+    return executeTask(either);
+  }
+
+  @Post('token')
+  @HttpCode(REQUEST_STATUS.accepted)
+  public async refreshOneToken(@Body() authToken: AuthToken): Promise<LoginResponse> {
+    const either = await this._usersService.token.refresh(authToken);
+
+    return executeTask(either);
+  }
+
+  // * Crud Operations
   @Post()
   public async createOne(@Body() creatableUser: CreatableUser): Promise<User> {
     const either = await this._usersService.create.one(creatableUser);
@@ -30,24 +49,6 @@ export class UsersController {
     const either = await this._usersService.delete.one(id);
 
     executeTask(either);
-  }
-
-  // * Login Stuffs
-  @Post('login')
-  @HttpCode(REQUEST_STATUS.accepted)
-  @IsPublic()
-  public async loginOne(@Body() loginRequest: LoginRequest): Promise<LoginResponse> {
-    const either = await this._usersService.login.one(loginRequest);
-
-    return executeTask(either);
-  }
-
-  @Post('token')
-  @HttpCode(REQUEST_STATUS.accepted)
-  public async refreshOneToken(@Body() authToken: AuthToken): Promise<LoginResponse> {
-    const either = await this._usersService.token.refresh(authToken);
-
-    return executeTask(either);
   }
 
   // * Getters

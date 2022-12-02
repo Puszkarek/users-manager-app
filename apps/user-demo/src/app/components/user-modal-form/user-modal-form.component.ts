@@ -50,10 +50,10 @@ export class UserModalFormComponent implements OnInit {
     }
 
     if (errors['required']) {
-      return 'Email is required';
+      return 'required';
     }
     if (errors['email']) {
-      return 'Email is invalid';
+      return 'invalid';
     }
 
     return null;
@@ -70,21 +70,21 @@ export class UserModalFormComponent implements OnInit {
     }
 
     if (errors['required']) {
-      return 'Name is required';
+      return 'required';
     }
 
     if (errors['minLength']) {
-      return `The size of name must be at least ${USER_NAME_MIN_LENGTH} characters`;
+      return `must have at least ${USER_NAME_MIN_LENGTH} characters`;
     }
 
     return null;
   }
 
   private readonly _passwordErrors = {
-    confirm: 'Please, confirm your password',
-    isPasswordEqual: 'Password and Password Confirmation must be equal',
-    minLength: `The size of password must be at least ${USER_PASSWORD_MIN_LENGTH} characters`,
-    required: 'Password is required',
+    confirm: 'please, confirm your password',
+    isPasswordEqual: 'passwords must be equal',
+    minLength: `must have at least ${USER_PASSWORD_MIN_LENGTH} characters`,
+    required: 'required',
   };
 
   public get passwordError(): string | null {

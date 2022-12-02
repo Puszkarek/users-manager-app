@@ -2,12 +2,12 @@
 <form>
   <div class="field">
     <input [formControl]="form.controls.email" type="text" placeholder="Email" />
-    <div class="error" *ngIf="isEmailValid">The email is invalid</div>
+    <div class="error" *ngIf="isEmailValid">invalid</div>
   </div>
 
   <div class="field">
     <input [formControl]="form.controls.password" type="text" placeholder="Password" />
-    <div class="error" *ngIf="isPasswordRequired">The password is required</div>
+    <div class="error" *ngIf="isPasswordRequired">required</div>
   </div>
 
   <button type="button" (click)="submit()">{{ confirmButtonText }}</button>

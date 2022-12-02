@@ -1,3 +1,4 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HeaderModule } from '@front/app/components/header';
@@ -11,7 +12,7 @@ describe(AppComponent.name, () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AppComponent],
-      imports: [RouterTestingModule, StoreTestingModule, IconModule, HeaderModule, NavBarModule],
+      imports: [RouterTestingModule, OverlayModule, StoreTestingModule, IconModule, HeaderModule, NavBarModule],
     }).compileComponents();
   });
 

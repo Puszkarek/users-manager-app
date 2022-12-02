@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { isCreatableUser, User, USER_ROLE } from '@api-interfaces';
-import { UserModalFormComponent } from '@front/app/components/user-modal-form';
+import { UserModalFormComponent, UserModalFormComponentData } from '@front/app/components/user-modal-form';
 import { ModalService } from '@front/app/services/modal';
 import { UsersStore } from '@front/app/stores/users';
 import { isNotNull } from '@front/app/utils';
@@ -23,11 +23,11 @@ export class UsersListComponent {
   }
 
   public async openUserForm(user: User | null = null): Promise<void> {
-    const reference = this._modalService.openModal(UserModalFormComponent, {
-      data: {
-        user: user,
-      },
-    });
+    const userModalData: UserModalFormComponentData = {
+      user: user,
+    };
+
+    const reference = this._modalService.openModal(UserModalFormComponent, userModalData);
 
     const response = await firstValueFrom(reference.data$);
 

@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { isCreatableUser, User } from '@api-interfaces';
+import { isCreatableUser, User, USER_ROLE } from '@api-interfaces';
 import { UserModalFormComponent } from '@front/app/components/user-modal-form';
 import { ModalService } from '@front/app/services/modal';
 import { UsersStore } from '@front/app/stores/users';
+import { isNotNull } from '@front/app/utils';
 import { isLeft } from 'fp-ts/lib/Either';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,5 +43,11 @@ export class UsersListComponent {
     if (isLeft(either)) {
       console.error('Error deleting user', either.left);
     }
+  }
+
+  public canDeleteUser(user: User): Observable<boolean> {
+    return this._usersStore.loggedUser$.pipe(
+      map(loggedUser => isNotNull(loggedUser) && loggedUser.role === USER_ROLE.admin && loggedUser.id !== user.id),
+    );
   }
 }

@@ -25,7 +25,7 @@
           <app-icon>more_vert</app-icon>
         </button>
 
-        <button (click)="deleteUser(user)" class="settings-btn delete-btn">
+        <button *ngIf="canDeleteUser(user) | async" (click)="deleteUser(user)" class="settings-btn delete-btn">
           <app-icon>delete</app-icon>
         </button>
       </td>

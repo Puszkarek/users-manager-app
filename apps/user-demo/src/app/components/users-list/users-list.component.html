@@ -7,28 +7,31 @@
   </div>
 </div>
 
-<table>
-  <thead>
-    <tr class="header">
-      <th>Name</th>
-      <th>Email</th>
-    </tr>
-  </thead>
-  <tbody class="main">
-    <tr class="user-card" *ngFor="let user of users$ | async; trackBy: trackByID">
-      <td>
-        {{ user.name }}
-      </td>
-      <td>{{ user.email }}</td>
-      <td class="settings">
-        <button *ngIf="canDeleteUser(user) | async" (click)="deleteUser(user)" class="settings-btn delete-btn">
-          <app-icon>delete</app-icon>
-        </button>
+<div class="container">
+  <table>
+    <thead class="header">
+      <tr class="header-row">
+        <th>Name</th>
+        <th>Email</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody class="main">
+      <tr class="user-card" *ngFor="let user of users$ | async; trackBy: trackByID">
+        <td>
+          {{ user.name }}
+        </td>
+        <td>{{ user.email }}</td>
+        <td class="settings">
+          <button *ngIf="canDeleteUser(user) | async" (click)="deleteUser(user)" class="settings-btn delete-btn">
+            <app-icon>delete</app-icon>
+          </button>
 
-        <button (click)="openUserForm(user)" class="settings-btn">
-          <app-icon>more_vert</app-icon>
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+          <button (click)="openUserForm(user)" class="settings-btn">
+            <app-icon>more_vert</app-icon>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

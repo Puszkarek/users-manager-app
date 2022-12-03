@@ -162,7 +162,7 @@ export class UsersClient {
     return result;
   }
 
-  public async logoutOne(): Promise<Either<Error, void>> {
+  public logoutOne(): Either<Error, void> {
     // ? may we need to invalidate the token in the backend
     this._tokenManagerService.setToken(null);
     this._updateLoggedUser(null);

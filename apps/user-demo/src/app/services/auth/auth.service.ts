@@ -42,7 +42,7 @@ export class AuthService {
       return;
     }
 
-    await this._usersClient.logoutOne();
+    this._usersClient.logoutOne();
 
     await this._router.navigateByUrl('/auth');
   }

@@ -1,7 +1,13 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nrwl/nx"],
+  "plugins": ["@nrwl/nx", "@typescript-eslint", "simple-import-sort"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@nrwl/nx/typescript",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "overrides": [
     // * Main Rules
     {
@@ -10,13 +16,7 @@
         "project": ["tsconfig.base.json"],
         "createDefaultProgram": true
       },
-      "plugins": ["@typescript-eslint", "simple-import-sort"],
-      "extends": [
-        "eslint:recommended",
-        "plugin:@nrwl/nx/typescript",
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended"
-      ],
+
       "rules": {
         // TODO: find a solution and enable it
         /*  "@nrwl/nx/enforce-module-boundaries": [
@@ -35,6 +35,7 @@
 
         "arrow-body-style": "off",
         "prefer-arrow-callback": "off",
+        "require-await": "off",
 
         // Avoid possible Problems
         "array-callback-return": "error",
@@ -204,7 +205,8 @@
         "no-empty-function": "off",
         "@typescript-eslint/no-empty-function": ["error"],
         "@typescript-eslint/no-explicit-any": "error",
-        //"@typescript-eslint/no-floating-promises": "error",
+        // ! Is disable because doesn't work really well with subscribers (we shouldn't use async at a `subscribe`)
+        // TODO: "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/no-for-in-array": "error",
         "@typescript-eslint/no-inferrable-types": "error",
         "@typescript-eslint/no-invalid-void-type": "error",
@@ -254,12 +256,11 @@
         "@typescript-eslint/prefer-literal-enum-member": "error",
         "@typescript-eslint/prefer-nullish-coalescing": "warn",
         "@typescript-eslint/prefer-optional-chain": "warn",
-        /*
-        "@typescript-eslint/prefer-readonly-parameter-types": [
+        // TODO: too complex for deal with external libs
+        /*         "@typescript-eslint/prefer-readonly-parameter-types": [
           "error",
           { "checkParameterProperties": false, "treatMethodsAsReadonly": false }
-        ],
-        */
+        ], */
         "@typescript-eslint/prefer-readonly": ["error", { "onlyInlineLambdas": true }],
         "@typescript-eslint/prefer-string-starts-ends-with": "error",
         "@typescript-eslint/promise-function-async": [
@@ -273,8 +274,8 @@
           }
         ],
         "@typescript-eslint/require-array-sort-compare": "error",
-        "require-await": "off"
-        //"@typescript-eslint/require-await": "error"
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/require-await": "error"
       }
     },
     // * Custom Rules
@@ -287,24 +288,22 @@
       "rules": {
         // Disabled Rules
         "unicorn/no-null": "off",
-        "lodash/prefer-constant": "off",
         "unicorn/prefer-event-target": "off",
         "unicorn/no-array-callback-reference": "off",
+        "lodash/prefer-constant": "off",
+        "functional/no-expression-statement": "off",
+        "functional/no-return-void": "off",
+        "functional/no-conditional-statement": "off",
+
         // ! It's doesn't work properly with immutable lib
         "lodash/prefer-lodash-method": "off",
 
         // Lodash
         "lodash/import-scope": ["error", "member"],
 
-        // Custom rules
-
-        "functional/no-expression-statement": "off",
-        "functional/no-return-void": "off",
-        "functional/no-try-statement": "off",
-        "functional/no-conditional-statement": "off",
-
         // Functional Programming
         "functional/immutable-data": ["error", { "ignoreClass": true, "ignoreImmediateMutation": true }],
+        "functional/no-try-statement": "off",
         "functional/no-let": "error",
         "functional/no-method-signature": "error",
         "functional/prefer-readonly-type": ["error", { "ignoreClass": "fieldsOnly" }],

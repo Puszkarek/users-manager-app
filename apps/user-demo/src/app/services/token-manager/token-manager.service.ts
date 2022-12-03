@@ -7,7 +7,7 @@ import { isString } from 'lodash-es';
 })
 export class TokenManagerService {
   // * Token
-  public setToken(authToken: AuthToken): void {
+  public setToken(authToken: AuthToken | null): void {
     if (authToken) {
       sessionStorage.setItem('token', authToken);
     } else {

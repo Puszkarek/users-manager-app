@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { User } from '@api-interfaces';
 import { UsersClient } from '@front/app/clients/users';
 import { TokenManagerService } from '@front/app/services/token-manager';
@@ -17,6 +18,7 @@ export class AuthService {
     private readonly _usersClient: UsersClient,
     private readonly _usersStore: UsersStore,
     private readonly _tokenManager: TokenManagerService,
+    private readonly _router: Router,
   ) {}
 
   public async login(email: string, password: string): Promise<Either<Error, User>> {
@@ -32,18 +34,16 @@ export class AuthService {
     return right(loginResponse.loggedUser);
   }
 
-  public async logoutUser(): Promise<void> {
+  public async logout(): Promise<void> {
     const savedToken = this._tokenManager.getToken();
     const loggedUser = await firstValueFrom(this._usersStore.loggedUser$);
     if (isNull(savedToken) || isNull(loggedUser)) {
-      console.error('None user is logged');
+      console.error("You're not logged");
       return;
     }
 
-    const userEither = await this._usersClient.logoutOne(savedToken);
+    this._usersClient.logoutOne();
 
-    if (isLeft(userEither)) {
-      console.error('Something gones wrong', userEither);
-    }
+    await this._router.navigateByUrl('/auth');
   }
 }

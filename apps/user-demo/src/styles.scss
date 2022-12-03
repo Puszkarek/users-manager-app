@@ -63,10 +63,19 @@ body {
 }
 
 // * Modal Overlay
-.modal-panel {
-}
 .modal-backdrop {
   background: rgba(0, 0, 0, 0.4);
 
   backdrop-filter: blur(0.5rem);
+}
+
+// * Dropdown
+.dropdown-item {
+  font-size: var(--large);
+  padding: 0.5rem 1rem;
+  width: 100%;
+
+  &:hover {
+    background-color: var(--hover);
+  }
 }

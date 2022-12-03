@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import { createExceptionError } from '@server/infra/helpers/error.helper';
 import { IMailProvider, IMessage, REQUEST_STATUS } from '@server/infra/interfaces';
 import { ExceptionError } from '@server/infra/interfaces/error.interface';

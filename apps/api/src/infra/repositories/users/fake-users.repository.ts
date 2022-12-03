@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import { randomUUID } from 'node:crypto';
 
 import { AuthToken, ID, User, USER_ROLE } from '@api-interfaces';
@@ -21,9 +22,7 @@ const initialUser: User = {
 };
 const initialPassword = { [initialUser.id]: 'admin' };
 
-/**
- * This is a demo repository for testing
- */
+/** This is a demo repository for testing */
 export class FakeUsersRepository implements IUsersRepository {
   private _users: List<User> = List([initialUser]);
   private _passwords = Map<string, string>(initialPassword);

@@ -4,7 +4,7 @@ import { isError, isString } from 'lodash-es';
 
 export const toError = (value: unknown): Error => {
   if (value instanceof HttpErrorResponse) {
-    const errorMessage: unknown = value.error;
+    const errorMessage: unknown = value.error?.message;
     return new Error(isString(errorMessage) ? errorMessage : UNKNOWN_ERROR_MESSAGE);
   }
   if (isError(value)) {

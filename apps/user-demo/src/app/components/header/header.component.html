@@ -6,7 +6,7 @@
     <button [appDropdownTrigger]="userOptionDropdown"><app-icon>expand_more</app-icon></button>
     <app-dropdown #userOptionDropdown>
       <!-- TODO: may it's better to do a directive for that -->
-      <button class="dropdown-item">Logout</button>
+      <button class="dropdown-item" (click)="logoutUser()">Logout</button>
     </app-dropdown>
   </div>
 </div>

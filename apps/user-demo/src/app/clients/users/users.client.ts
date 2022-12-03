@@ -5,7 +5,7 @@ import { LoginStatus } from '@front/app/interfaces/auth';
 import { TokenManagerService } from '@front/app/services/token-manager';
 import { toError } from '@front/app/utils';
 import { environment } from '@front/environments/environment';
-import { Either, isRight, left, right } from 'fp-ts/lib/Either';
+import { Either, left, right } from 'fp-ts/lib/Either';
 import { isArray, isNull, isString } from 'lodash-es';
 import { BehaviorSubject, catchError, firstValueFrom, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -162,25 +162,16 @@ export class UsersClient {
     return result;
   }
 
-  public async logoutOne(token: string): Promise<Either<Error, void>> {
-    const result: Either<Error, void> = await firstValueFrom(
-      // TODO (token): we need to "un-validate" the token
-      of(token).pipe(
-        map(() => {
-          this._updateLoggedUser(null);
-          return right(void 0);
-        }),
-        catchError((error: unknown) => of(left(toError(error)))),
-      ),
-    );
+  public async logoutOne(): Promise<Either<Error, void>> {
+    // ? may we need to invalidate the token in the backend
+    this._tokenManagerService.setToken(null);
+    this._updateLoggedUser(null);
 
-    if (isRight(result)) {
-      this._loggedStatus$.next({
-        status: 'logout',
-      });
-    }
+    this._loggedStatus$.next({
+      status: 'logout',
+    });
 
-    return result;
+    return right(void 0);
   }
 
   private _updateLoggedUser(user: User | null): void {

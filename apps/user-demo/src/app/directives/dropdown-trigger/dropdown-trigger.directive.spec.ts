@@ -1,7 +1,7 @@
 import { DropdownTriggerDirective } from './dropdown-trigger.directive';
 
-describe('DropdownTriggerDirective', () => {
-  let directive!: DropdownTriggerDirective;
+describe(DropdownTriggerDirective.name, () => {
+  let directive: DropdownTriggerDirective;
   beforeEach(() => {
     directive = new DropdownTriggerDirective(null!, null!, null!);
   });

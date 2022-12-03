@@ -2,10 +2,7 @@
   <a>
     <app-icon [routerLink]="['/dashboard']" routerLinkActive="active">grid_view</app-icon>
   </a>
-  <a>
+  <a *ngIf="isAdmin$ | async">
     <app-icon [routerLink]="['/admin', 'users']" routerLinkActive="active">person</app-icon>
   </a>
-  <!--   <a>
-    <app-icon>settings</app-icon>
-  </a> -->
 </div>

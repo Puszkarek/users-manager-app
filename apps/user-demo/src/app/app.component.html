@@ -3,7 +3,7 @@
 
 <!-- * Main -->
 <div class="wrapper">
-  <app-nav-bar *ngIf="isAdmin$ | async" class="nav-bar"></app-nav-bar>
+  <app-nav-bar *ngIf="isAuthenticated$ | async" class="nav-bar"></app-nav-bar>
   <div class="app-container">
     <router-outlet></router-outlet>
   </div>

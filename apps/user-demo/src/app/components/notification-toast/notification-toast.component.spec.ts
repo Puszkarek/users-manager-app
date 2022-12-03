@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NotificationData } from '@front/app/interfaces/notification';
 
+import { NOTIFICATION_DATA_TOKEN } from '../../constants/notification';
 import { NotificationToastComponent } from './notification-toast.component';
 import { NotificationToastModule } from './notification-toast.module';
 
@@ -13,8 +13,11 @@ describe('NotificationToastComponent', () => {
       imports: [NotificationToastModule],
       providers: [
         {
-          provide: NotificationData,
-          useValue: new NotificationData('testing', 'info'),
+          provide: NOTIFICATION_DATA_TOKEN,
+          useValue: {
+            message: 'testing',
+            type: 'info',
+          },
         },
       ],
     }).compileComponents();

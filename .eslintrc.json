@@ -323,9 +323,11 @@
         "jest": true
       },
       "rules": {
+        // * Disabled Rules
         "@typescript-eslint/init-declarations": "off",
-        "fp/no-let": "off",
-        "fp/no-mutation": "off"
+        "@typescript-eslint/no-non-null-assertion": "off"
+
+        // * Override Rules
       }
     }
   ]

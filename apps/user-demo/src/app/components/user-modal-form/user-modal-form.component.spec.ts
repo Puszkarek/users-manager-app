@@ -14,6 +14,7 @@ describe(UserModalFormComponent.name, () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      declarations: [UserModalFormComponent],
       imports: [StoreTestingModule, CommonModule, ReactiveFormsModule, FormFieldInputModule, ButtonModule],
       providers: [
         {

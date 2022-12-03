@@ -1,5 +1,6 @@
 export type NotificationType = 'info' | 'error' | 'warn' | 'success';
 
-export class NotificationData {
-  constructor(public readonly message: string, public readonly type: NotificationType) {}
-}
+export type NotificationData = {
+  readonly message: string;
+  readonly type: NotificationType;
+};

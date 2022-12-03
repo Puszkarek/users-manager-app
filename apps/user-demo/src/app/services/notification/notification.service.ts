@@ -2,9 +2,11 @@ import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { Injectable, Injector, ViewContainerRef } from '@angular/core';
 import { NotificationToastComponent } from '@front/app/components/notification-toast';
-import { NotificationData, NotificationType } from '@front/app/interfaces/notification';
+import { NotificationType } from '@front/app/interfaces/notification';
 import { firstValueFrom } from 'rxjs';
 import { timer } from 'rxjs/internal/observable/timer';
+
+import { NOTIFICATION_DATA_TOKEN } from '../../constants/notification';
 
 @Injectable({
   providedIn: 'root',
@@ -50,9 +52,8 @@ export class NotificationService {
     const injector = Injector.create({
       providers: [
         {
-          // TODO: use injectionToken, take a look at `modal.service`
-          provide: NotificationData,
-          useValue: new NotificationData(message, type),
+          provide: NOTIFICATION_DATA_TOKEN,
+          useValue: { message, type },
         },
       ],
     });

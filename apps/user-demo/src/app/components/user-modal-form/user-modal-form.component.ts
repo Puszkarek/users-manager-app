@@ -142,8 +142,6 @@ export class UserModalFormComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this._notificationService.error('Please, check the inputs and try again');
-
     if (isUser(this.user)) {
       this._formStatus = 'editing';
 

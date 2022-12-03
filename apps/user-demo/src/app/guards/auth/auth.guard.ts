@@ -13,14 +13,17 @@ export class AuthGuard implements CanActivate {
   public canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     return this._usersClient.authAction$.pipe(
       switchMap(loginStatus => {
+        console.log('loginStatus', loginStatus);
         // Load it in case ins't loaded yet
         if (loginStatus.status === 'undefined') {
           return from(this._usersClient.getMe()).pipe(switchMap(() => this._usersClient.authAction$));
         }
+
         return of(loginStatus);
       }),
       map(({ status }) => {
-        return status === 'needs-login' ? this._router.createUrlTree(['/auth']) : true;
+        console.log('status', status);
+        return status === 'logged' ? true : this._router.createUrlTree(['/auth']);
       }),
     );
   }

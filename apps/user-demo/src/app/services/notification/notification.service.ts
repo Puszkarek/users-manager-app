@@ -1,3 +1,5 @@
+import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
 import { Injectable, Injector, ViewContainerRef } from '@angular/core';
 import { NotificationToastComponent } from '@front/app/components/notification-toast';
 import { NotificationData, NotificationType } from '@front/app/interfaces/notification';
@@ -9,6 +11,8 @@ import { timer } from 'rxjs/internal/observable/timer';
 })
 export class NotificationService {
   private _viewContainerReference: ViewContainerRef | null = null;
+
+  constructor(private readonly _overlay: Overlay) {}
 
   public setRootViewContainerRef(viewContainerReference: ViewContainerRef): void {
     this._viewContainerReference = viewContainerReference;
@@ -30,30 +34,54 @@ export class NotificationService {
     await this._instantiateNotification(message, 'info');
   }
 
-  /** Create a new Component to show the notification, then destroy it  */
+  /** Create a new Component to show the notification, then destroy it */
   private async _instantiateNotification(message: string, type: NotificationType): Promise<void> {
     if (!this._viewContainerReference) {
       return;
     }
 
     // Instantiate the necessary data for the notification
+
+    // * Initialize overlay
+    const overlayConfig = this._getOverlayConfig();
+    const overlayReference = this._overlay.create(overlayConfig);
+
+    // * Create component portal
     const injector = Injector.create({
       providers: [
         {
+          // TODO: use injectionToken, take a look at `modal.service`
           provide: NotificationData,
           useValue: new NotificationData(message, type),
         },
       ],
     });
+    const containerPortal = new ComponentPortal(NotificationToastComponent, this._viewContainerReference, injector);
 
-    // Create the notification
-    const reference = this._viewContainerReference.createComponent(NotificationToastComponent, {
-      injector: injector,
-    });
+    // * Attach to the view
+    overlayReference.attach(containerPortal);
 
     // Wait a time then destroy the notification
     const NOTIFICATION_DURATION = 2000;
     await firstValueFrom(timer(NOTIFICATION_DURATION));
-    reference.destroy();
+    overlayReference.detach();
+    overlayReference.dispose();
+  }
+
+  /**
+   * Init a `OverlayConfig` with default options
+   *
+   * @returns A standalone config for overlay
+   */
+  private _getOverlayConfig(): OverlayConfig {
+    return new OverlayConfig({
+      // * Setup
+      hasBackdrop: false,
+      disposeOnNavigation: true,
+
+      // * Strategy
+      scrollStrategy: this._overlay.scrollStrategies.noop(),
+      positionStrategy: this._overlay.position().global().top().right(),
+    });
   }
 }

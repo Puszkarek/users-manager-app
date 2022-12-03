@@ -1,6 +1,6 @@
 import { getGreeting } from '../support/app.po';
 
-describe('user-demo', () => {
+describe('Login', () => {
   beforeEach(() => cy.visit('/'));
 
   it('should display a Login Form', () => {

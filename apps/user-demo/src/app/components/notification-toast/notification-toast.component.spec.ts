@@ -4,7 +4,7 @@ import { NOTIFICATION_DATA_TOKEN } from '../../constants/notification';
 import { NotificationToastComponent } from './notification-toast.component';
 import { NotificationToastModule } from './notification-toast.module';
 
-describe('NotificationToastComponent', () => {
+describe(NotificationToastComponent.name, () => {
   let component: NotificationToastComponent;
   let fixture: ComponentFixture<NotificationToastComponent>;
 

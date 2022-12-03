@@ -1,3 +1,4 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -15,7 +16,14 @@ describe(UserModalFormComponent.name, () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [UserModalFormComponent],
-      imports: [StoreTestingModule, CommonModule, ReactiveFormsModule, FormFieldInputModule, ButtonModule],
+      imports: [
+        StoreTestingModule,
+        OverlayModule,
+        CommonModule,
+        ReactiveFormsModule,
+        FormFieldInputModule,
+        ButtonModule,
+      ],
       providers: [
         {
           provide: MODAL_DATA_TOKEN,

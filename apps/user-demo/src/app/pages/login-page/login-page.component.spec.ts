@@ -1,3 +1,4 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreTestingModule } from '@front/app/stores/root/store-testing.module';
 
@@ -10,7 +11,7 @@ describe(LoginPageComponent.name, () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StoreTestingModule, LoginPageModule],
+      imports: [StoreTestingModule, OverlayModule, LoginPageModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginPageComponent);

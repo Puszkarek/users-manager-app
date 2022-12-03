@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { TokenInterceptor } from './token.interceptor';
 
-describe('TokenInterceptor', () => {
+describe(TokenInterceptor.name, () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
       providers: [TokenInterceptor],

@@ -3,7 +3,7 @@ import { User } from '@api-interfaces';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'app-header',
+  selector: 'app-header [user]',
   styleUrls: ['./header.component.scss'],
   templateUrl: './header.component.html',
 })

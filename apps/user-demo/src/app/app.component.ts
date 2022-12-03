@@ -12,7 +12,10 @@ import { UsersStore } from './stores/users/users.store';
   templateUrl: './app.component.html',
 })
 export class AppComponent {
+  public loggedUser$ = this._usersStore.loggedUser$;
+
   public isAuthenticated$ = this._usersStore.isAuthenticated$;
+
   constructor(
     viewContainerReference: ViewContainerRef,
     private readonly _notificationService: NotificationService,

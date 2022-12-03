@@ -1,7 +1,7 @@
 <div class="container">
   <h1 class="logo">Demo</h1>
 
-  <div class="user-info">
+  <div *ngIf="user" class="user-info">
     <img class="avatar" src="/assets/images/avatar/avatar.svg" alt="User Profile" />
     <button data-test="dropdown-trigger" [appDropdownTrigger]="userOptionDropdown"
       ><app-icon>expand_more</app-icon></button

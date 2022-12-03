@@ -13,7 +13,7 @@ export class UsersController {
 
   // * Login Stuffs
   @Post('login')
-  @HttpCode(REQUEST_STATUS.accepted)
+  @HttpCode(REQUEST_STATUS.ok)
   @IsPublic()
   public async loginOne(@Body() loginRequest: LoginRequest): Promise<LoginResponse> {
     const either = await this._usersService.login.one(loginRequest);

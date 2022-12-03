@@ -7,7 +7,7 @@ import { UsersStore } from '@front/app/stores/users';
 import { UsersListComponent } from './users-list.component';
 
 // TODO: IDK WHAT HELL THIS TEST IS FAILING ON GIT HUB
-xdescribe(UsersListComponent.name, () => {
+describe(UsersListComponent.name, () => {
   let component: UsersListComponent;
   let fixture: ComponentFixture<UsersListComponent>;
 

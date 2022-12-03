@@ -325,7 +325,8 @@
         // * Disabled Rules
         "@typescript-eslint/init-declarations": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
-        "@typescript-eslint/consistent-type-assertions": "off"
+        "@typescript-eslint/consistent-type-assertions": "off",
+        "@typescript-eslint/no-use-before-define": "off"
         // * Override Rules
       }
     }

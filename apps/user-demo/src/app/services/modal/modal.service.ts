@@ -14,7 +14,7 @@ export class ModalService implements OnDestroy {
 
   private readonly _unsubscribe$ = new Subject<void>();
 
-  constructor(public readonly overlay: Overlay) {}
+  constructor(private readonly _overlay: Overlay) {}
 
   public ngOnDestroy(): void {
     this._unsubscribe$.next();
@@ -49,7 +49,7 @@ export class ModalService implements OnDestroy {
   } {
     // * Initialize overlay
     const overlayConfig = this._getOverlayConfig();
-    const overlayReference = this.overlay.create(overlayConfig);
+    const overlayReference = this._overlay.create(overlayConfig);
 
     // * Create component portal
     const injector = this._createInjector(MODAL_DATA_TOKEN, data);
@@ -88,6 +88,8 @@ export class ModalService implements OnDestroy {
     };
   }
 
+  // TODO: can be a helper
+  // TODO: rename to `injectData`
   /**
    * Create a Injector and provide data to the given Token
    *
@@ -122,8 +124,8 @@ export class ModalService implements OnDestroy {
       panelClass: 'modal-panel',
 
       // * Strategy
-      scrollStrategy: this.overlay.scrollStrategies.noop(),
-      positionStrategy: this.overlay.position().global().centerHorizontally().centerVertically(),
+      scrollStrategy: this._overlay.scrollStrategies.noop(),
+      positionStrategy: this._overlay.position().global().centerHorizontally().centerVertically(),
     });
   }
 }

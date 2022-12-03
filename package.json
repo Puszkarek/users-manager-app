@@ -9,7 +9,7 @@
     "serve:api": "nx run api:serve:development",
     "build:www:prod": "npx nx run user-demo:build:production",
     "build:api:prod": "npx nx run api:build:production",
-    "test:www": "nx run user-demo:test --skip-nx-cache",
+    "test:www": "nx run user-demo:test",
     "test:www:watch": "nx run user-demo:test --watch",
     "test:api": "nx run api:test",
     "test:api:watch": "nx run api:test --watch",

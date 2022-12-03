@@ -9,14 +9,14 @@ export class TokenManagerService {
   // * Token
   public setToken(authToken: AuthToken | null): void {
     if (authToken) {
-      sessionStorage.setItem('token', authToken);
+      localStorage.setItem('token', authToken);
     } else {
-      sessionStorage.removeItem('token');
+      localStorage.removeItem('token');
     }
   }
 
   public getToken(): AuthToken | null {
-    const authToken = sessionStorage.getItem('token');
+    const authToken = localStorage.getItem('token');
 
     if (isString(authToken)) {
       return authToken;

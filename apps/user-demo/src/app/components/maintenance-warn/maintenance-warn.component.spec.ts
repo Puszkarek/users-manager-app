@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MaintenanceWarnComponent } from './maintenance-warn.component';
 
-describe('MaintenanceWarnComponent', () => {
+describe(MaintenanceWarnComponent.name, () => {
   let component: MaintenanceWarnComponent;
   let fixture: ComponentFixture<MaintenanceWarnComponent>;
 

@@ -34,7 +34,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@front/*": ["apps/user-demo/src/*"],
+      "@front/*": ["apps/client-website/src/*"],
       "@server/*": ["apps/api/src/*"],
       "@api-interfaces": ["libs/api-interfaces/src/index.ts"]
     }

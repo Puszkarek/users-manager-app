@@ -1,22 +1,22 @@
 {
-  "name": "user-demo",
+  "name": "client-website",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "sourceRoot": "apps/user-demo/src",
+  "sourceRoot": "apps/client-website/src",
   "prefix": "playground",
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/user-demo",
-        "index": "apps/user-demo/src/index.html",
-        "main": "apps/user-demo/src/main.ts",
-        "polyfills": "apps/user-demo/src/polyfills.ts",
-        "tsConfig": "apps/user-demo/tsconfig.app.json",
+        "outputPath": "dist/apps/client-website",
+        "index": "apps/client-website/src/index.html",
+        "main": "apps/client-website/src/main.ts",
+        "polyfills": "apps/client-website/src/polyfills.ts",
+        "tsConfig": "apps/client-website/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
-        "assets": ["apps/user-demo/src/favicon.ico", "apps/user-demo/src/assets"],
-        "styles": ["apps/user-demo/src/styles.scss"],
+        "assets": ["apps/client-website/src/favicon.ico", "apps/client-website/src/assets"],
+        "styles": ["apps/client-website/src/styles.scss"],
         "scripts": []
       },
       "configurations": {
@@ -35,8 +35,8 @@
           ],
           "fileReplacements": [
             {
-              "replace": "apps/user-demo/src/environments/environment.ts",
-              "with": "apps/user-demo/src/environments/environment.prod.ts"
+              "replace": "apps/client-website/src/environments/environment.ts",
+              "with": "apps/client-website/src/environments/environment.prod.ts"
             }
           ],
           "outputHashing": "all"
@@ -56,34 +56,34 @@
       "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "browserTarget": "user-demo:build:production"
+          "browserTarget": "client-website:build:production"
         },
         "development": {
-          "browserTarget": "user-demo:build:development"
+          "browserTarget": "client-website:build:development"
         }
       },
       "defaultConfiguration": "development",
       "options": {
-        "proxyConfig": "apps/user-demo/proxy.conf.json"
+        "proxyConfig": "apps/client-website/proxy.conf.json"
       }
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "browserTarget": "user-demo:build"
+        "browserTarget": "client-website:build"
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": ["apps/user-demo/**/*.ts", "apps/user-demo/**/*.html"]
+        "lintFilePatterns": ["apps/client-website/**/*.ts", "apps/client-website/**/*.html"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/user-demo/jest.config.ts",
+        "jestConfig": "apps/client-website/jest.config.ts",
         "passWithNoTests": true
       }
     }

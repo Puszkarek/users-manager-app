@@ -14,6 +14,9 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class UsersClient {
+  /** The base URL to use in requests */
+  private readonly _baseURL = environment.apiHost;
+
   private readonly _loggedStatus$ = new BehaviorSubject<LoginStatus>({
     status: 'undefined',
   });
@@ -27,7 +30,7 @@ export class UsersClient {
   public async updateOne(updatableUser: UpdatableUser): Promise<Either<Error, User>> {
     // TODO: can it be a websocket?
     const either = await firstValueFrom(
-      this._http.put<User>(`${environment.apiHost}/users`, updatableUser).pipe(
+      this._http.put<User>(`${this._baseURL}/users`, updatableUser).pipe(
         map(response => {
           // TODO: Replace the if by a fp-ts function
           if (isUser(response)) {
@@ -46,7 +49,7 @@ export class UsersClient {
 
   public async createOne(creatableUser: CreatableUser): Promise<Either<Error, User>> {
     const either = await firstValueFrom(
-      this._http.post<User>(`${environment.apiHost}/users`, creatableUser).pipe(
+      this._http.post<User>(`${this._baseURL}/users`, creatableUser).pipe(
         map(response => {
           // TODO: Replace the if by a fp-ts function
           if (isUser(response)) {
@@ -65,7 +68,7 @@ export class UsersClient {
 
   public async deleteOne(id: string): Promise<Either<Error, void>> {
     const either = await firstValueFrom(
-      this._http.delete(`${environment.apiHost}/users/${id}`).pipe(
+      this._http.delete(`${this._baseURL}/users/${id}`).pipe(
         map(() => right(void 0)),
         catchError((error: unknown) => of(left(toError(error)))),
       ),
@@ -76,9 +79,8 @@ export class UsersClient {
 
   // * Get Methods
   public async getAll(): Promise<Either<Error, ReadonlyArray<User>>> {
-    // TODO: can it be a websocket?
     const either = await firstValueFrom(
-      this._http.get<ReadonlyArray<unknown>>(`${environment.apiHost}/users`).pipe(
+      this._http.get<ReadonlyArray<unknown>>(`${this._baseURL}/users`).pipe(
         map(response => {
           if (isArray(response) && response.every(isUser)) {
             return right(response);
@@ -93,17 +95,28 @@ export class UsersClient {
     return either;
   }
 
+  /** Fetch a user with the given ID */
   public getOne(id: string): Observable<User> {
+    // TODO: should be `Observable<Option<User>>`
     return this._http.get<User>(`TODO/${id}`);
   }
 
-  // TODO (create): getMe method
-
   // * Login Methods
+
+  /**
+   * Will try to login the user with the given data
+   *
+   * When the request returns without errors it'll update the {@link authAction$} with the
+   * received user
+   *
+   * @param email User's email
+   * @param password User's password
+   * @returns An `Either` with the api response
+   */
   public async loginOne(email: string, password: string): Promise<Either<Error, LoginResponse>> {
     const result: Either<Error, LoginResponse> = await firstValueFrom(
       this._http
-        .post<LoginResponse>(`${environment.apiHost}/users/login`, {
+        .post<LoginResponse>(`${this._baseURL}/users/login`, {
           email,
           password,
         })
@@ -124,10 +137,10 @@ export class UsersClient {
   }
 
   /**
-   * Login the user with the token
+   * Get the saved token, then fetch the api for the User
    *
-   * TODO: actually, this is using the user password because we still don't have a token system
-   * TODO (token): we should create the system and methods for token in the backend
+   * @returns On success will wrap the user in a `Right`, or in case some error happens will
+   *   return the Error wrapped in a `Left`
    */
   public async getMe(): Promise<Either<Error, User>> {
     // Avoid unnecessary requests to the backend
@@ -138,7 +151,7 @@ export class UsersClient {
 
     const result: Either<Error, User> = await firstValueFrom(
       this._http
-        .get<User>(`${environment.apiHost}/users/me`, {
+        .get<User>(`${this._baseURL}/users/me`, {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -162,8 +175,9 @@ export class UsersClient {
     return result;
   }
 
+  /** Delete the token from local storage and emits a new value for {@link authAction$} */
   public logoutOne(): Either<Error, void> {
-    // ? may we need to invalidate the token in the backend
+    // TODO: revoke the token
     this._tokenManagerService.setToken(null);
     this._updateLoggedUser(null);
 

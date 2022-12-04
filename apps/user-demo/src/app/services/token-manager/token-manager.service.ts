@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AuthToken } from '@api-interfaces';
-import { isString } from 'lodash-es';
+import { isEmpty, isString } from 'lodash-es';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TokenManagerService {
-  // * Token
+  /** Update the token in {@link localStorage} */
   public setToken(authToken: AuthToken | null): void {
     if (authToken) {
       localStorage.setItem('token', authToken);
@@ -15,10 +15,11 @@ export class TokenManagerService {
     }
   }
 
+  /** Load the token saved in {@link localStorage} */
   public getToken(): AuthToken | null {
     const authToken = localStorage.getItem('token');
 
-    if (isString(authToken)) {
+    if (isString(authToken) || isEmpty(authToken)) {
       return authToken;
     }
 

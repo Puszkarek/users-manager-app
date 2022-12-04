@@ -4,7 +4,9 @@ import { List } from 'immutable';
 import { Observable } from 'rxjs';
 
 export type StoreLoadOptions = {
+  /** When true forces the store load ever if the store already has been initialized before */
   readonly force?: boolean;
+  /** True if you want to clear the cache while loading */
   readonly clearCache?: boolean;
 };
 
@@ -29,7 +31,11 @@ export type IStore<Asset = unknown, UpdatableAsset = unknown, CreatableAsset = u
   // TODO: add filters? getManyWithFilter?
 };
 
-/** This project will not use the data-service to create a better environment to fit with fp-ts library, so to avoid mistakes this interface will remove the non-implemented methods from the EntityCollection */
+/**
+ * This project will not use the data-service to create a better environment to fit with fp-ts
+ * library, so to avoid mistakes this interface will remove the non-implemented methods from
+ * the EntityCollection
+ */
 export type TypedEntityCollectionServiceBase<T> = Omit<
   EntityCollectionServiceBase<T, EntitySelectors$<T>>,
   'update' | 'add' | 'delete' | 'getAll' | 'getByKey' | 'getWithQuery'

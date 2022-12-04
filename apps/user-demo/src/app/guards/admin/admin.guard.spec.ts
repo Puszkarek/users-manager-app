@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { StoreTestingModule } from '@front/app/stores/root';
+import { StoreTestingModule } from '@front/app/stores/root/store-testing.module';
 
 import { AdminGuard } from './admin.guard';
 

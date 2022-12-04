@@ -1,9 +1,18 @@
 import { ListPipe } from './list.pipe';
 
 describe(ListPipe.name, () => {
-  it('create an instance', () => {
-    const pipe = new ListPipe();
+  let pipe: ListPipe;
 
+  beforeEach(() => {
+    pipe = new ListPipe();
+  });
+
+  it('create an instance', () => {
     expect(pipe).toBeTruthy();
+  });
+
+  it('should humanize an Array', () => {
+    const parsedList = pipe.transform(['first', 'one']);
+    expect(parsedList).toBe('First, One');
   });
 });

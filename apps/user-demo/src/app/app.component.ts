@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, ViewContainerRef } from '@angular/c
 import { AuthService } from '@front/app/services/auth';
 import { ModalService } from '@front/app/services/modal';
 import { NotificationService } from '@front/app/services/notification';
-import { UsersStore } from '@front/app/stores/users';
+
+import { UsersStore } from './stores/users/users.store';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -11,7 +12,9 @@ import { UsersStore } from '@front/app/stores/users';
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  public readonly isAdmin$ = this._usersStore.isLoggedUserAdmin$;
+  public loggedUser$ = this._usersStore.loggedUser$;
+
+  public isAuthenticated$ = this._usersStore.isAuthenticated$;
 
   constructor(
     viewContainerReference: ViewContainerRef,

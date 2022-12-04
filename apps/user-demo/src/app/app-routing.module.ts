@@ -10,7 +10,7 @@ const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'admin', // TODO: to dashboard
+    redirectTo: 'dashboard', // TODO: to dashboard
   },
   // Pages
   {

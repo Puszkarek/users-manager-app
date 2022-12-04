@@ -1,6 +1,6 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { StoreTestingModule } from '@front/app/stores/root';
+import { StoreTestingModule } from '@front/app/stores/root/store-testing.module';
 
 import { LoginPageComponent } from './login-page.component';
 import { LoginPageModule } from './login-page.module';

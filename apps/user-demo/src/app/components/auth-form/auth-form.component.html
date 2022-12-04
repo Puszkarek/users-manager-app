@@ -1,14 +1,14 @@
 <h2>{{ title }}</h2>
 <form>
   <div class="field">
-    <input [formControl]="form.controls.email" type="text" placeholder="Email" />
+    <input data-test="login-email-input" [formControl]="form.controls.email" type="text" placeholder="Email" />
     <div class="error" *ngIf="isEmailValid">invalid</div>
   </div>
 
   <div class="field">
-    <input [formControl]="form.controls.password" type="text" placeholder="Password" />
+    <input data-test="login-password-input" [formControl]="form.controls.password" type="text" placeholder="Password" />
     <div class="error" *ngIf="isPasswordRequired">required</div>
   </div>
 
-  <button type="button" (click)="submit()">{{ confirmButtonText }}</button>
+  <button data-test="login-submit" type="button" (click)="submit()">{{ confirmButtonText }}</button>
 </form>

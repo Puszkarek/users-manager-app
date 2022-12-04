@@ -1,33 +1,28 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-
 // eslint-disable-next-line @typescript-eslint/no-namespace
 declare namespace Cypress {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/consistent-type-definitions
   interface Chainable<Subject> {
-    login(email: string, password: string): void;
+    readonly login: (email: string, password: string) => void;
+    readonly logout: () => void;
   }
 }
-//
-// -- This is a parent command --
+
+// * Add login command
 Cypress.Commands.add('login', (email, password) => {
-  console.log('Custom command example: Login', email, password);
+  cy.request({
+    method: 'POST',
+    url: '/api/users/login',
+    headers: { 'Accept': 'application/json, text/plain, */*', 'Content-Type': 'application/json' },
+    body: { email, password },
+  }).then(response => {
+    expect(response.status).to.equal(200);
+    expect(response.body).to.have.property('token');
+    expect(response.body).to.have.property('loggedUser');
+    cy.wrap(localStorage).invoke('setItem', 'token', response.body.token);
+  });
 });
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+// * Add logout command
+Cypress.Commands.add('logout', () => {
+  cy.clearLocalStorage('token');
+});

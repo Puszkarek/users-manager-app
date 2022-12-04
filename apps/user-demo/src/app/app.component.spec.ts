@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HeaderModule } from '@front/app/components/header';
 import { IconModule } from '@front/app/components/icon';
 import { NavBarModule } from '@front/app/components/nav-bar';
-import { StoreTestingModule } from '@front/app/stores/root';
+import { StoreTestingModule } from '@front/app/stores/root/store-testing.module';
 
 import { AppComponent } from './app.component';
 

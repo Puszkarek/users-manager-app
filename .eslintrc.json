@@ -326,7 +326,9 @@
         "@typescript-eslint/init-declarations": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/consistent-type-assertions": "off",
-        "@typescript-eslint/no-use-before-define": "off"
+        "@typescript-eslint/no-use-before-define": "off",
+        "@typescript-eslint/explicit-function-type": "off",
+        "max-nested-callbacks": "off"
         // * Override Rules
       }
     }

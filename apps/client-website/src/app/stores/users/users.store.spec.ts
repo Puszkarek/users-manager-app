@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { UsersClient } from '@front/app/clients/users';
 import { StoreTestingModule } from '@front/app/stores/root/store-testing.module';
 import { UsersStore } from '@front/app/stores/users';
-import { generateUser } from '@front/tests/generators/user.generator';
+import { generateUser } from '@testing-utils';
 import { right } from 'fp-ts/lib/Either';
 import { List } from 'immutable';
 import { firstValueFrom } from 'rxjs';

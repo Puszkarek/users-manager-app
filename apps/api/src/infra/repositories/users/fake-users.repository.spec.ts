@@ -1,9 +1,9 @@
 import { User } from '@api-interfaces';
 import { fromRight, fromSome } from '@server/infra/test/functional';
+import { generateUser } from '@testing-utils';
 import { isRight } from 'fp-ts/lib/Either';
 import { isNone } from 'fp-ts/lib/Option';
 
-import { generateUser } from '../../../../../client-website/src/tests/generators/user.generator';
 import { DEFAULT_USER, DEFAULT_USER_PASSWORD, FakeUsersRepository } from './fake-users.repository';
 
 /**

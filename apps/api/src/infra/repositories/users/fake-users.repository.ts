@@ -14,18 +14,18 @@ import { isString } from 'lodash';
 // TODO: replace `JWTVerifyResult` by a abstract interface
 
 /** The system should initialize with a default user */
-const initialUser: User = {
+export const DEFAULT_USER: User = {
   email: 'admin@admin',
   id: randomUUID(),
   name: 'Admin',
   role: USER_ROLE.admin,
 };
-const initialPassword = { [initialUser.id]: 'admin' };
+export const DEFAULT_USER_PASSWORD = 'admin';
 
 /** This is a demo repository for testing */
 export class FakeUsersRepository implements IUsersRepository {
-  private _users: List<User> = List([initialUser]);
-  private _passwords = Map<string, string>(initialPassword);
+  private _users: List<User> = List([DEFAULT_USER]);
+  private _passwords = Map<string, string>({ [DEFAULT_USER.id]: DEFAULT_USER_PASSWORD });
 
   // * Token
   private readonly _jwtSecret = new TextEncoder().encode('ADD-SECRET-KEY-LATER'); // TODO: move to `.env`

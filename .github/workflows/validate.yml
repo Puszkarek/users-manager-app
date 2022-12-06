@@ -39,3 +39,6 @@ jobs:
 
       - name: End To End test
         run: npm run test:e2e
+        with:
+          start: npm run serve:api
+          wait-on: http://localhost:3333

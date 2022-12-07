@@ -28,38 +28,32 @@ describe(UsersStore.name, () => {
   });
 
   describe(UsersStore.prototype.load.name, () => {
-    let loading: boolean | undefined;
-    beforeEach(() => {
-      store.loading$.subscribe(isLoading => {
-        loading = isLoading;
-      });
-    });
-
-    afterEach(() => {
-      loading = undefined;
-    });
     it('should UPDATE the state after load', async () => {
+      expect.hasAssertions();
+
       const user = generateUser({});
 
       // Check the initial state
-      expect(loading).toEqual(false);
-      expect(await firstValueFrom(store.loaded$)).toEqual(false);
-      expect(await firstValueFrom(store.getAll())).toEqual(List([]));
+      await expect(firstValueFrom(store.loading$)).resolves.toBe(false);
+      await expect(firstValueFrom(store.loaded$)).resolves.toBe(false);
+      await expect(firstValueFrom(store.getAll())).resolves.toStrictEqual(List([]));
 
       mockedClient.getAll.mockResolvedValue(right([user]));
       await store.load();
 
-      expect(mockedClient.getAll).toBeCalledTimes(1);
+      expect(mockedClient.getAll).toHaveBeenCalledTimes(1);
 
       // Check the updated state
-      expect(loading).toEqual(false);
-      expect(await firstValueFrom(store.loaded$)).toEqual(true);
-      expect(await firstValueFrom(store.getAll())).toEqual(List([user]));
+      await expect(firstValueFrom(store.loading$)).resolves.toBe(false);
+      await expect(firstValueFrom(store.loaded$)).resolves.toBe(true);
+      await expect(firstValueFrom(store.getAll())).resolves.toStrictEqual(List([user]));
 
-      expect(mockedClient.getAll).toBeCalledTimes(1);
+      expect(mockedClient.getAll).toHaveBeenCalledTimes(1);
     });
 
-    it('should NOT load the store twice', async () => {
+    it('should NOT update the cache if we call load twice', async () => {
+      expect.hasAssertions();
+
       mockedClient.getAll.mockResolvedValue(right([]));
 
       // Call load method twice
@@ -67,10 +61,12 @@ describe(UsersStore.name, () => {
       await store.load();
 
       // Expected to have fetch the data on backend once
-      expect(mockedClient.getAll).toBeCalledTimes(1);
+      expect(mockedClient.getAll).toHaveBeenCalledTimes(1);
     });
 
-    it('should re-load the store when pass', async () => {
+    it('should RELOAD the cache when FORCE load', async () => {
+      expect.hasAssertions();
+
       mockedClient.getAll.mockResolvedValue(right([]));
 
       // Call load
@@ -78,8 +74,8 @@ describe(UsersStore.name, () => {
       // Call load with force
       await store.load({ force: true });
 
-      // Expected to have fetch the data on backend once
-      expect(mockedClient.getAll).toBeCalledTimes(2);
+      // Expected to have fetch the data on backend twice
+      expect(mockedClient.getAll).toHaveBeenCalledTimes(2);
     });
   });
 });

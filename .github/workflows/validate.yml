@@ -43,6 +43,6 @@ jobs:
           # Web server runs on port 8080
           start: npm run serve:api, npm run serve:www
           # wait for all services to respond
-          wait-on: 'http://localhost:4200, http://localhost:3333'
+          wait-on: 'http://localhost:4200, http://localhost:3333/api'
           working-directory: apps/client-website-e2e
           install: false

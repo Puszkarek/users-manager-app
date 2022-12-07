@@ -41,8 +41,8 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           # Web server runs on port 8080
-          start: npm run serve:www, npm run serve:api
+          start: npm run serve:api, npm run serve:www
           # wait for all services to respond
-          wait-on: 'http://localhost:4200, http://localhost:3333/api'
+          wait-on: 'http://localhost:4200'
           working-directory: apps/client-website-e2e
           install: false

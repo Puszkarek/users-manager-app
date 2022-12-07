@@ -45,3 +45,4 @@ jobs:
           # wait for all services to respond
           wait-on: 'http://localhost:4200, http://localhost:3333'
           working-directory: apps/client-website-e2e
+          install: false

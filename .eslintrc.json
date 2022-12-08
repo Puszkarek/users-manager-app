@@ -303,7 +303,7 @@
 
         // Functional Programming
         "functional/immutable-data": ["error", { "ignoreClass": true, "ignoreImmediateMutation": true }],
-        "functional/no-try-statement": "off",
+        "functional/no-try-statement": "error",
         "functional/no-let": "error",
         "functional/no-method-signature": "error",
         "functional/prefer-readonly-type": ["error", { "ignoreClass": "fieldsOnly" }],

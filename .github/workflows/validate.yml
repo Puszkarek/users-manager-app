@@ -40,9 +40,9 @@ jobs:
       - name: End To End test (Cypress)
         uses: cypress-io/github-action@v4
         with:
-          # Web server runs on port 8080
+          # Start the api, then start the web-client ( `3333` and `4200`)
           start: npm run serve:api, npm run serve:www
-          # wait for all services to respond
+          # Since the backend is initialize first, we just need to wait until web-client be available
           wait-on: 'http://localhost:4200'
           working-directory: apps/client-website-e2e
           install: false

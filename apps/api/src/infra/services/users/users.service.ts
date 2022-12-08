@@ -207,11 +207,16 @@ export class UsersService implements IUsersService {
      * Check if the given token is valid
      *
      * @param token - The token to check
-     * @returns True if it's valid, otherwise false
+     * @returns On success it'll be void, otherwise the error that happened
      */
-    validate: async (token: AuthToken): Promise<boolean> => {
+    validate: async (token: AuthToken): Promise<Either<ExceptionError, void>> => {
       const isValid = await this._usersRepository.isAuthTokenValid(token);
-      return isValid;
+
+      if (!isValid) {
+        return left(createExceptionError('The given token is invalid', REQUEST_STATUS.unauthorized));
+      }
+
+      return right(void 0);
     },
   };
 

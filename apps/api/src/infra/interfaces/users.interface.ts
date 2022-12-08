@@ -46,7 +46,7 @@ export type IUsersService = {
 
   /** Update a token for the user */
   readonly token: {
-    readonly validate: (data: AuthToken) => Promise<boolean>;
+    readonly validate: (data: AuthToken) => Promise<Either<ExceptionError, void>>;
     readonly refresh: (data: AuthToken) => Promise<Either<ExceptionError, LoginResponse>>;
   };
 

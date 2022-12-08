@@ -352,6 +352,12 @@
 
         // * Override Rule
         "jest/prefer-expect-assertions": ["error", { "onlyFunctionsWithAsyncKeyword": true }],
+        "jest/prefer-lowercase-title": [
+          "error",
+          {
+            "ignore": ["describe"]
+          }
+        ],
         "jest/max-expects": "off",
 
         "jest/no-disabled-tests": "warn",

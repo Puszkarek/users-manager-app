@@ -17,7 +17,9 @@ describe(FakeMailProvider.name, () => {
     expect(provider).toBeTruthy();
   });
 
-  it('Should return a `Right` on success', async () => {
+  it('should return a `Right` on success', async () => {
+    expect.hasAssertions();
+
     // TODO: `generateMessage`
     const message: IMessage = {
       body: '',
@@ -34,14 +36,16 @@ describe(FakeMailProvider.name, () => {
 
     const either = await provider.sendMail(message);
 
-    expect(isRight(either)).toEqual(true);
+    expect(isRight(either)).toBe(true);
   });
 
-  it('Should return a `Left` when given wrong params', async () => {
+  it('should return a `Left` when given wrong params', async () => {
+    expect.hasAssertions();
+
     const nonValidMessage = null;
 
     const either = await provider.sendMail(nonValidMessage as any);
 
-    expect(isLeft(either)).toEqual(true);
+    expect(isLeft(either)).toBe(true);
   });
 });

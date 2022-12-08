@@ -1,3 +1,4 @@
+/* eslint-disable functional/no-try-statement */
 import { every, isArray, isString } from 'lodash';
 
 import { CreatableUser, LoginRequest, UpdatableUser, User } from '../entities/user.entity';

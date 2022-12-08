@@ -32,7 +32,7 @@ describe(TokenManagerService.name, () => {
   it('should RETURN null if none token as saved', () => {
     const savedToken = service.getToken();
 
-    expect(savedToken).toBe(null);
+    expect(savedToken).toBeNull();
   });
 
   it('should RETURN null if the saved token BE a empty string', () => {
@@ -40,6 +40,6 @@ describe(TokenManagerService.name, () => {
 
     const savedToken = service.getToken();
 
-    expect(savedToken).toBe(null);
+    expect(savedToken).toBeNull();
   });
 });

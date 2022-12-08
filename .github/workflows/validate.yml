@@ -20,10 +20,10 @@ jobs:
         run: npm clean-install
 
       - name: Build Front End
-        run: npm run build:www:prod
+        run: npm run build:www:dev
 
       - name: Build Back End
-        run: npm run build:api:prod
+        run: npm run build:api:dev
 
       - name: Prettier
         run: npm run lint:prettier
@@ -37,5 +37,12 @@ jobs:
       - name: Client Test
         run: npm run test:www
 
-      - name: End To End test
-        run: npm run test:e2e
+      - name: End To End test (Cypress)
+        uses: cypress-io/github-action@v4
+        with:
+          # Start the api, then start the web-client ( `3333` and `4200`)
+          start: npm run serve:api, npm run serve:www
+          # Since the backend is initialize first, we just need to wait until web-client be available
+          wait-on: 'http://localhost:4200'
+          working-directory: apps/client-website-e2e
+          install: false

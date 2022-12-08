@@ -303,7 +303,7 @@
 
         // Functional Programming
         "functional/immutable-data": ["error", { "ignoreClass": true, "ignoreImmediateMutation": true }],
-        "functional/no-try-statement": "off",
+        "functional/no-try-statement": "error",
         "functional/no-let": "error",
         "functional/no-method-signature": "error",
         "functional/prefer-readonly-type": ["error", { "ignoreClass": "fieldsOnly" }],
@@ -330,9 +330,41 @@
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-magic-numbers": "off",
         "max-lines-per-function": "off",
         "max-nested-callbacks": "off"
         // * Override Rules
+      }
+    },
+    // * Spec Rules
+    {
+      "files": ["*.spec.ts"],
+      "plugins": ["jest"],
+      "extends": ["plugin:jest/all"],
+      "env": {
+        "jest": true,
+        "jest/globals": true
+      },
+      "rules": {
+        // * Disabled Rules
+        "jest/valid-title": "off",
+        "jest/no-hooks": "off",
+
+        // * Override Rule
+        "jest/prefer-expect-assertions": ["error", { "onlyFunctionsWithAsyncKeyword": true }],
+        "jest/prefer-lowercase-title": [
+          "error",
+          {
+            "ignore": ["describe"]
+          }
+        ],
+        "jest/max-expects": "off",
+
+        "jest/no-disabled-tests": "warn",
+        "jest/no-focused-tests": "error",
+        "jest/no-identical-title": "error",
+        "jest/prefer-to-have-length": "warn",
+        "jest/valid-expect": "error"
       }
     }
   ]

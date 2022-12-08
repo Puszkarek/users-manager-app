@@ -13,9 +13,15 @@ import { Either, fromOption, isLeft, left, right } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { isNone, isSome } from 'fp-ts/lib/Option';
 
-// TODO: remove try catch from here
 export class UsersService implements IUsersService {
   public create = {
+    /**
+     * Create a new {@link User} and save on the repository, then send an message to his email
+     * address
+     *
+     * @param data - The data for the {@link User} we wanna create
+     * @returns On success it'll be the created {@link User}, otherwise the error that happened
+     */
     one: async (data: CreatableUser): Promise<Either<ExceptionError, User>> => {
       const { password, ...creatableUser } = data;
       const userO = await this._usersRepository.findByEmail(creatableUser.email);
@@ -49,6 +55,12 @@ export class UsersService implements IUsersService {
   };
 
   public delete = {
+    /**
+     * Delete one {@link User} from the repository
+     *
+     * @param id - The {@link User} to delete
+     * @returns On success it'll be void, otherwise the error that happened
+     */
     one: async (id: ID): Promise<Either<ExceptionError, void>> => {
       const either = await this._usersRepository.delete(id);
       return either;
@@ -56,10 +68,21 @@ export class UsersService implements IUsersService {
   };
 
   public get = {
+    /**
+     * Fetch all the users in the repository
+     *
+     * @returns List with the existing users
+     */
     all: async (): Promise<Either<ExceptionError, ReadonlyArray<User>>> => {
       const either = await this._usersRepository.all();
       return either;
     },
+    /**
+     * Fetch one user from the repository by ID
+     *
+     * @param id - The {@link ID} from the {@link User} that we wanna find
+     * @returns The user found, otherwise the error that happened
+     */
     one: async (id: ID): Promise<Either<ExceptionError, User>> => {
       const userOption = await this._usersRepository.findByID(id);
 
@@ -68,6 +91,13 @@ export class UsersService implements IUsersService {
         fromOption(() => createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found)),
       );
     },
+
+    /**
+     * Fetch the repository to find the user with the given token
+     *
+     * @param token - The token to use to find the {@link User}
+     * @returns The {@link User} that belongs to the token, otherwise the error that happened
+     */
     me: async (token: AuthToken): Promise<Either<ExceptionError, User>> => {
       const userOption = await this._usersRepository.findByToken(token);
 
@@ -79,6 +109,12 @@ export class UsersService implements IUsersService {
   };
 
   public update = {
+    /**
+     * Update an existing {@link User} and save on the repository
+     *
+     * @param data - The data from the {@link User} that we wanna update
+     * @returns On success it'll be the updated {@link User}, otherwise the error that happened
+     */
     one: async (data: UpdatableUser): Promise<Either<ExceptionError, User>> => {
       const { password, ...updatableUser } = data;
       const userO = await this._usersRepository.findByID(updatableUser.id);
@@ -100,6 +136,13 @@ export class UsersService implements IUsersService {
   };
 
   public login = {
+    /**
+     * Validate the login information and generate a new token for the user
+     *
+     * @param param - The info that we need to validate the login
+     * @returns A {@link LoginResponse} with the token and the user that it belongs, otherwise
+     *   the error that happens
+     */
     one: async ({ email, password }: LoginRequest): Promise<Either<ExceptionError, LoginResponse>> => {
       // TODO: improve using pipe
       // Search the user using his email
@@ -128,6 +171,14 @@ export class UsersService implements IUsersService {
   };
 
   public readonly token = {
+    /**
+     * Generate a new token using the old one as base
+     *
+     * In case the token has expired it'll fails
+     *
+     * @param token - The old token to get the info
+     * @returns A new Token, otherwise the error that happened
+     */
     refresh: async (token: AuthToken): Promise<Either<ExceptionError, LoginResponse>> => {
       // TODO: improve using pipe
       // Search the user using his email
@@ -152,6 +203,12 @@ export class UsersService implements IUsersService {
         token: tokenE.right,
       });
     },
+    /**
+     * Check if the given token is valid
+     *
+     * @param token - The token to check
+     * @returns On success it'll be void, otherwise the error that happened
+     */
     validate: async (token: AuthToken): Promise<Either<ExceptionError, void>> => {
       const isValid = await this._usersRepository.isAuthTokenValid(token);
 

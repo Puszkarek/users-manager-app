@@ -68,7 +68,7 @@ export class UsersController {
     return executeTask(either);
   }
 
-  @Get(':id') // ? (dynamic paths (:id) should be the in the end)
+  @Get(':id') // ? dynamic paths (:id) should be the in the end to not override another path
   public async getOne(@Param('id') id: string): Promise<User> {
     const either = await this._usersService.get.one(id);
 

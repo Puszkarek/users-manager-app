@@ -14,7 +14,7 @@ describe(AppController.name, () => {
   describe(AppController.prototype.sendMessage.name, () => {
     it('should return the welcome message', () => {
       const appController = app.get<AppController>(AppController);
-      expect(appController.sendMessage()).toEqual('Welcome to the api!');
+      expect(appController.sendMessage()).toBe('Welcome to the api!');
     });
   });
 });

@@ -7,11 +7,18 @@ import { tryCatch } from 'fp-ts/lib/TaskEither';
 import { isError } from 'lodash';
 
 export class FakeMailProvider implements IMailProvider {
+  /** Fake transporter for demonstration */
   private readonly _transporter = {
     sendMail: async (message: IMessage): Promise<void> =>
       console.log(`sending email to ${message.to.email} from ${message.from.email}`),
   };
 
+  /**
+   * Send an email using an transporter
+   *
+   * @param message - The message to send
+   * @returns On success it'll be void, otherwise the error that happened
+   */
   public async sendMail(message: IMessage): Promise<Either<ExceptionError, void>> {
     /** Just a example of tryCatch use */
     const taskEither = tryCatch(

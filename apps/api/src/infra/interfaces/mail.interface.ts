@@ -1,6 +1,7 @@
 import { ExceptionError } from '@server/infra/interfaces/error.interface';
 import { Either } from 'fp-ts/lib/Either';
-type IAddress = {
+
+export type IAddress = {
   readonly email: string;
   readonly name: string;
 };

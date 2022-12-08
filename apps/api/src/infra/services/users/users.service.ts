@@ -20,7 +20,7 @@ export class UsersService implements IUsersService {
      * address
      *
      * @param data - The data for the {@link User} we wanna create
-     * @returns On success it'll be the created {@link User}, otherwise the error that happens
+     * @returns On success it'll be the created {@link User}, otherwise the error that happened
      */
     one: async (data: CreatableUser): Promise<Either<ExceptionError, User>> => {
       const { password, ...creatableUser } = data;
@@ -59,7 +59,7 @@ export class UsersService implements IUsersService {
      * Delete one {@link User} from the repository
      *
      * @param id - The {@link User} to delete
-     * @returns On success it'll be void, otherwise the error that happens
+     * @returns On success it'll be void, otherwise the error that happened
      */
     one: async (id: ID): Promise<Either<ExceptionError, void>> => {
       const either = await this._usersRepository.delete(id);
@@ -81,7 +81,7 @@ export class UsersService implements IUsersService {
      * Fetch one user from the repository by ID
      *
      * @param id - The {@link ID} from the {@link User} that we wanna find
-     * @returns The user found, otherwise the error that happens
+     * @returns The user found, otherwise the error that happened
      */
     one: async (id: ID): Promise<Either<ExceptionError, User>> => {
       const userOption = await this._usersRepository.findByID(id);
@@ -96,7 +96,7 @@ export class UsersService implements IUsersService {
      * Fetch the repository to find the user with the given token
      *
      * @param token - The token to use to find the {@link User}
-     * @returns The {@link User} that belongs to the token, otherwise the error that happens
+     * @returns The {@link User} that belongs to the token, otherwise the error that happened
      */
     me: async (token: AuthToken): Promise<Either<ExceptionError, User>> => {
       const userOption = await this._usersRepository.findByToken(token);
@@ -113,7 +113,7 @@ export class UsersService implements IUsersService {
      * Update an existing {@link User} and save on the repository
      *
      * @param data - The data from the {@link User} that we wanna update
-     * @returns On success it'll be the updated {@link User}, otherwise the error that happens
+     * @returns On success it'll be the updated {@link User}, otherwise the error that happened
      */
     one: async (data: UpdatableUser): Promise<Either<ExceptionError, User>> => {
       const { password, ...updatableUser } = data;
@@ -177,7 +177,7 @@ export class UsersService implements IUsersService {
      * In case the token has expired it'll fails
      *
      * @param token - The old token to get the info
-     * @returns A new Token, otherwise the error that happens
+     * @returns A new Token, otherwise the error that happened
      */
     refresh: async (token: AuthToken): Promise<Either<ExceptionError, LoginResponse>> => {
       // TODO: improve using pipe

@@ -4,6 +4,7 @@ import { Option } from 'fp-ts/lib/Option';
 
 import { ExceptionError } from './error.interface';
 
+/** An abstract interface that all our users repository should follow */
 export type IUsersRepository = {
   readonly findByEmail: (email: string) => Promise<Option<User>>;
   readonly findByToken: (token: AuthToken) => Promise<Option<User>>;
@@ -22,6 +23,7 @@ export type IUsersRepository = {
   readonly addToken: (user: User['id']) => Promise<Either<ExceptionError, AuthToken>>;
 };
 
+/** An abstract interface that all our users handler should follow */
 export type IUsersService = {
   readonly create: {
     readonly one: (data: CreatableUser) => Promise<Either<ExceptionError, User>>;

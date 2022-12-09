@@ -134,7 +134,7 @@ export class UsersStore implements Store<User, UpdatableUser, CreatableUser>, On
    *
    * PS: Only an admin can create another user
    *
-   * @param creatableUser The user's data to update
+   * @param creatableUser - The user's data to update
    * @returns A either containing the error or the updated user
    */
   public async create(creatableUser: CreatableUser): Promise<Either<Error, User>> {
@@ -152,7 +152,7 @@ export class UsersStore implements Store<User, UpdatableUser, CreatableUser>, On
   /**
    * Update a user in the database and when returns success also update in local cache.
    *
-   * @param updatableUser The user's data to update
+   * @param updatableUser - The user's data to update
    * @returns A either containing the error or the updated user
    */
   public async update(updatableUser: UpdatableUser): Promise<Either<Error, User>> {
@@ -172,7 +172,7 @@ export class UsersStore implements Store<User, UpdatableUser, CreatableUser>, On
    *
    * PS: Only an admin can delete another user
    *
-   * @param assetID The user ID to delete
+   * @param assetID - The user ID to delete
    * @returns A either containing the error or void on success
    */
   public async delete(assetID: string): Promise<Either<Error, void>> {

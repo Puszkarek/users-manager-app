@@ -42,7 +42,7 @@ export class UsersListComponent {
   /**
    * Validate if the user can be deleted by the current user
    *
-   * @param user The user to check if can be deleted
+   * @param user - The user to check if can be deleted
    * @returns True if the `loggedUser` be able to delete
    */
   public canDeleteUser(user: User): Observable<boolean> {

@@ -18,8 +18,8 @@ export const fromSome = <T>(value: Option<T>): T => {
  *
  * (It's only used for testing purposes)
  *
- * @param value The value to assert
- * @param guardFN The guard method to use to check if the value is expected
+ * @param value - The value to assert
+ * @param guardFN - The guard method to use to check if the value is expected
  */
 export const fromRight = <A, B>(value: Either<A, B>): B => {
   if (isRight(value)) {

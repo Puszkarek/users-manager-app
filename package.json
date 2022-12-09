@@ -45,6 +45,7 @@
     "@ngrx/store-devtools": "^14.3.2",
     "@nrwl/angular": "15.0.4",
     "eslint-plugin-jest": "^27.1.6",
+    "eslint-plugin-tsdoc": "^0.2.17",
     "fp-ts": "^2.13.1",
     "i": "^0.3.7",
     "immutable": "^4.1.0",

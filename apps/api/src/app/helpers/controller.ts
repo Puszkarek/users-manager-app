@@ -6,11 +6,12 @@ import { pipe } from 'fp-ts/lib/function';
 
 // TODO: rename to `executeEither`
 /**
- * On FP patterns we don't throw errors, but Nest depends of that to send the correct HTTP Status code to the front-end, so we are doing this little abstraction to handle the errors
+ * On FP patterns we don't throw errors, but Nest depends of that to send the correct HTTP
+ * Status code to the front-end, so we are doing this little abstraction to handle the errors
  *
  * P.S: should be called only on nest controllers, guards, etc...
  *
- * @param either The either to execute and get the response
+ * @param either - The either to execute and get the response
  * @returns `T` if is a Right, otherwise throw an `HttpException` error with left
  */
 export const executeTask = <T>(either: Either<ExceptionError, T>): T => {

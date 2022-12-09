@@ -109,8 +109,8 @@ export class UsersClient {
    * When the request returns without errors it'll update the {@link authAction$} with the
    * received user
    *
-   * @param email User's email
-   * @param password User's password
+   * @param email - User's email
+   * @param password - User's password
    * @returns An `Either` with the api response
    */
   public async loginOne(email: string, password: string): Promise<Either<Error, LoginResponse>> {

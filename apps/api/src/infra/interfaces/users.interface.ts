@@ -10,7 +10,6 @@ export type UsersRepository = {
   readonly findByToken: (token: AuthToken) => Promise<Option<User>>;
   readonly findByID: (id: string) => Promise<Option<User>>;
 
-  // TODO: rename these methods to specify that we are doing actions in the user
   readonly save: (user: User, password: string) => Promise<Either<ExceptionError, void>>;
   readonly update: (user: User, password?: string) => Promise<Either<ExceptionError, void>>;
   readonly delete: (userID: ID) => Promise<Either<ExceptionError, void>>;
@@ -18,9 +17,10 @@ export type UsersRepository = {
   readonly all: () => Promise<Either<ExceptionError, ReadonlyArray<User>>>;
 
   readonly isUserPasswordValid: (email: string, password: string) => Promise<boolean>;
-  readonly isAuthTokenValid: (token: AuthToken) => Promise<boolean>;
 
-  readonly addToken: (user: User['id']) => Promise<Either<ExceptionError, AuthToken>>;
+  // TODO: may need to move to their own repository
+  readonly isAuthTokenValid: (token: AuthToken) => Promise<boolean>;
+  readonly generateToken: (user: User['id']) => Promise<Either<ExceptionError, AuthToken>>;
 };
 
 /** An abstract interface that all our users handler should follow */

@@ -158,7 +158,7 @@ export class UsersService implements UsersOperations {
       }
 
       // Create the Token
-      const tokenE = await this._usersRepository.addToken(userO.value.id);
+      const tokenE = await this._usersRepository.generateToken(userO.value.id);
       if (isLeft(tokenE)) {
         return tokenE;
       }
@@ -194,7 +194,7 @@ export class UsersService implements UsersOperations {
       }
 
       // Create the Token
-      const tokenE = await this._usersRepository.addToken(token);
+      const tokenE = await this._usersRepository.generateToken(token);
       if (isLeft(tokenE)) {
         return tokenE;
       }

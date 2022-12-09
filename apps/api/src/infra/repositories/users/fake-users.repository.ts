@@ -160,7 +160,7 @@ export class FakeUsersRepository implements UsersRepository {
    * @param userID - The id
    * @returns The token that was generated
    */
-  public async addToken(userID: User['id']): Promise<Either<ExceptionError, AuthToken>> {
+  public async generateToken(userID: User['id']): Promise<Either<ExceptionError, AuthToken>> {
     // Verify if the user exists
     if (!this._users.some(user => user.id === userID)) {
       return left(createExceptionError('Given user ID is invalid', REQUEST_STATUS.bad));

@@ -7,15 +7,14 @@ import { map, switchMap } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
-
-/**
- * LoggedGuard check if the logged user.
- *
- * If logged, it will redirect to the main page, this extra validation to avoid to access the login page when the user is not logged
- */
 export class LoggedGuard implements CanActivate {
   constructor(private readonly _usersClient: UsersClient, private readonly _router: Router) {}
 
+  /**
+   * If the user is already logged, then redirect to the main page
+   *
+   * P.S: It's an validation to avoid the access to the `Login` page when already had logged
+   */
   public canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     return this._usersClient.authAction$.pipe(
       switchMap(loginStatus => {

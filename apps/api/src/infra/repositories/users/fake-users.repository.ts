@@ -152,6 +152,14 @@ export class FakeUsersRepository implements UsersRepository {
   }
 
   // * Tokens
+
+  /**
+   * Check if the given {@link ID} is valid, then generate a token linked with the respective
+   * {@link User}
+   *
+   * @param userID - The id
+   * @returns The token that was generated
+   */
   public async addToken(userID: User['id']): Promise<Either<ExceptionError, AuthToken>> {
     // Verify if the user exists
     if (!this._users.some(user => user.id === userID)) {

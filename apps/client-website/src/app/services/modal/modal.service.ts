@@ -6,7 +6,7 @@ import { Observable, Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'any',
 })
 export class ModalService implements OnDestroy {
   /** It's initialize in the `AppComponent` initialization */

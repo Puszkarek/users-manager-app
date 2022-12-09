@@ -8,7 +8,7 @@ import { firstValueFrom } from 'rxjs';
 import { timer } from 'rxjs/internal/observable/timer';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'any',
 })
 export class NotificationService {
   private _viewContainerReference: ViewContainerRef | null = null;

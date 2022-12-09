@@ -10,7 +10,7 @@ export type StoreLoadOptions = {
   readonly clearCache?: boolean;
 };
 
-export type IStore<Asset = unknown, UpdatableAsset = unknown, CreatableAsset = unknown> = {
+export type Store<Asset, UpdatableAsset, CreatableAsset> = {
   // * Helpers
   readonly count$: Observable<number>;
 
@@ -36,7 +36,7 @@ export type IStore<Asset = unknown, UpdatableAsset = unknown, CreatableAsset = u
  * library, so to avoid mistakes this interface will remove the non-implemented methods from
  * the EntityCollection
  */
-export type TypedEntityCollectionServiceBase<T> = Omit<
+export type TypedEntityCollectionService<T> = Omit<
   EntityCollectionServiceBase<T, EntitySelectors$<T>>,
   'update' | 'add' | 'delete' | 'getAll' | 'getByKey' | 'getWithQuery'
 >;

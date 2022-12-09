@@ -4,16 +4,16 @@ import { AuthToken, CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUse
 import { createExceptionError } from '@server/infra/helpers';
 import {
   ExceptionError,
-  IMailProvider,
-  IUsersRepository,
-  IUsersService,
+  MailProvider,
   REQUEST_STATUS,
+  UsersOperations,
+  UsersRepository,
 } from '@server/infra/interfaces';
 import { Either, fromOption, isLeft, left, right } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { isNone, isSome } from 'fp-ts/lib/Option';
 
-export class UsersService implements IUsersService {
+export class UsersService implements UsersOperations {
   public create = {
     /**
      * Create a new {@link User} and save on the repository, then send an message to his email
@@ -220,5 +220,5 @@ export class UsersService implements IUsersService {
     },
   };
 
-  constructor(private readonly _usersRepository: IUsersRepository, private readonly _mailProvider: IMailProvider) {}
+  constructor(private readonly _usersRepository: UsersRepository, private readonly _mailProvider: MailProvider) {}
 }

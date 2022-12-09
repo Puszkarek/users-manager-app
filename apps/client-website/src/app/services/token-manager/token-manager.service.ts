@@ -6,7 +6,11 @@ import { isEmpty, isString } from 'lodash-es';
   providedIn: 'root',
 })
 export class TokenManagerService {
-  /** Update the token in {@link localStorage} */
+  /**
+   * Update the token in {@link localStorage}
+   *
+   * @param authToken - The new token to save
+   */
   public setToken(authToken: AuthToken | null): void {
     if (authToken) {
       localStorage.setItem('token', authToken);
@@ -15,7 +19,11 @@ export class TokenManagerService {
     }
   }
 
-  /** Load the token saved in {@link localStorage} */
+  /**
+   * Load the token saved in {@link localStorage}
+   *
+   * @returns If existing, the {@link AuthToken}, otherwise `null`
+   */
   public getToken(): AuthToken | null {
     const authToken = localStorage.getItem('token');
 

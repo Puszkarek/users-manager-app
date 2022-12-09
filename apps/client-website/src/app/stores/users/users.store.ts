@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { CreatableUser, UpdatableUser, User, USER_ROLE } from '@api-interfaces';
 import { UsersClient } from '@front/app/clients/users';
 import { STORE_REFRESH_INTERVAL_TIME } from '@front/app/constants/store';
-import { IStore, StoreLoadOptions, TypedEntityCollectionServiceBase } from '@front/app/interfaces/store';
+import { Store, StoreLoadOptions, TypedEntityCollectionService } from '@front/app/interfaces/store';
 import { USER_ENTITY_NAME } from '@front/app/stores/root';
 import { isTrue } from '@front/app/utils';
 import { EntityCollectionServiceBase, EntityCollectionServiceElementsFactory } from '@ngrx/data';
@@ -14,9 +14,9 @@ import { combineLatest, firstValueFrom, Observable, Subject, timer } from 'rxjs'
 import { distinctUntilChanged, filter, first, map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
-export class UsersStore implements IStore<User, UpdatableUser, CreatableUser>, OnDestroy {
+export class UsersStore implements Store<User, UpdatableUser, CreatableUser>, OnDestroy {
   /** The service that will handle the cache */
-  private readonly _entityCollection: TypedEntityCollectionServiceBase<User> = new EntityCollectionServiceBase<User>(
+  private readonly _entityCollection: TypedEntityCollectionService<User> = new EntityCollectionServiceBase<User>(
     USER_ENTITY_NAME,
     this._serviceElementsFactory,
   );

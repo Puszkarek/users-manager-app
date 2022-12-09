@@ -1,7 +1,7 @@
 import { Overlay } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { Directive, ElementRef, HostListener, Input, OnDestroy, ViewContainerRef } from '@angular/core';
-import { IDropdownComponent } from '@front/app/interfaces/dropdown';
+import { DropdownPanel } from '@front/app/interfaces/dropdown';
 import { isFalse } from '@front/app/utils/functional';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { filter, first, takeUntil } from 'rxjs/operators';
@@ -14,7 +14,7 @@ export class DropdownTriggerDirective implements OnDestroy {
 
   private _isDropdownOpen$ = new BehaviorSubject(false);
 
-  @Input('appDropdownTrigger') public dropdownPanel!: IDropdownComponent;
+  @Input('appDropdownTrigger') public dropdownPanel!: DropdownPanel;
 
   @HostListener('click') public toggleDropdown(): void {
     if (this._isDropdownOpen$.getValue()) {

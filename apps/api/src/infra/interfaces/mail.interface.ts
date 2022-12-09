@@ -2,7 +2,7 @@ import { ExceptionError } from '@server/infra/interfaces/error.interface';
 import { Either } from 'fp-ts/lib/Either';
 
 /** Address to send some message */
-export type IAddress = {
+export type Address = {
   /** Contact's email */
   readonly email: string;
   /** Contact's name */
@@ -10,11 +10,11 @@ export type IAddress = {
 };
 
 /** A message to send by email */
-export type IMessage = {
+export type Message = {
   /** Who's receiving */
-  readonly to: IAddress;
+  readonly to: Address;
   /** Who's sending */
-  readonly from: IAddress;
+  readonly from: Address;
   /** The title */
   readonly subject: string;
   /** The message itself */
@@ -22,6 +22,6 @@ export type IMessage = {
 };
 
 /** An abstract interface that all our email providers should follow */
-export type IMailProvider = {
-  readonly sendMail: (message: IMessage) => Promise<Either<ExceptionError, void>>;
+export type MailProvider = {
+  readonly sendMail: (message: Message) => Promise<Either<ExceptionError, void>>;
 };

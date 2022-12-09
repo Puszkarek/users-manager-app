@@ -1,12 +1,12 @@
 import { createExceptionError } from '@server/infra/helpers/error.helper';
 import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
-import { IUsersService } from '@server/infra/interfaces/users.interface';
+import { UsersService } from '@server/infra/interfaces/users.interface';
 import { Request } from 'express';
 import { Either, left } from 'fp-ts/lib/Either';
 import { isEmpty, isUndefined } from 'lodash';
 
 type MakeIsRequestAuthenticated = (
-  usersService: IUsersService,
+  usersService: UsersService,
 ) => (request: Request) => Promise<Either<ExceptionError, void>>;
 export const makeIsRequestAuthenticated: MakeIsRequestAuthenticated = ({ token: { validate } }) => {
   return async request => {

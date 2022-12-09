@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { createExceptionError } from '@server/infra/helpers/error.helper';
-import { IMailProvider, IMessage, REQUEST_STATUS } from '@server/infra/interfaces';
+import { MailProvider, Message, REQUEST_STATUS } from '@server/infra/interfaces';
 import { ExceptionError } from '@server/infra/interfaces/error.interface';
 import { Either } from 'fp-ts/lib/Either';
 import { tryCatch } from 'fp-ts/lib/TaskEither';
 import { isError } from 'lodash';
 
-export class FakeMailProvider implements IMailProvider {
+export class FakeMailProvider implements MailProvider {
   /** Fake transporter for demonstration */
   private readonly _transporter = {
-    sendMail: async (message: IMessage): Promise<void> =>
+    sendMail: async (message: Message): Promise<void> =>
       console.log(`sending email to ${message.to.email} from ${message.from.email}`),
   };
 
@@ -19,7 +19,7 @@ export class FakeMailProvider implements IMailProvider {
    * @param message - The message to send
    * @returns On success it'll be void, otherwise the error that happened
    */
-  public async sendMail(message: IMessage): Promise<Either<ExceptionError, void>> {
+  public async sendMail(message: Message): Promise<Either<ExceptionError, void>> {
     /** Just a example of tryCatch use */
     const taskEither = tryCatch(
       async () => {

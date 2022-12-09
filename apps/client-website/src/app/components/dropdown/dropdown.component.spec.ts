@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DropdownComponent } from './dropdown.component';
+import { DropdownPanel } from './dropdown.component';
 
 describe(DropdownComponent.name, () => {
-  let component: DropdownComponent;
-  let fixture: ComponentFixture<DropdownComponent>;
+  let component: DropdownPanel;
+  let fixture: ComponentFixture<DropdownPanel>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

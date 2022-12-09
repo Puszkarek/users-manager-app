@@ -18,11 +18,12 @@ export class UsersListComponent {
 
   constructor(private readonly _usersStore: UsersStore, private readonly _modalService: ModalService) {}
 
-  public trackByID(_index: number, user: User): string {
-    return user.id;
-  }
-
-  public openUserForm(user: User | null = null): void {
+  /**
+   * Open a `Modal` to create a new {@link User} or edit the given one
+   *
+   * @param user - The user to edit, null if we want to update
+   */
+  public openForm(user: User | null = null): void {
     const userModalData: UserModalFormComponentData = {
       user: user,
     };
@@ -30,10 +31,16 @@ export class UsersListComponent {
     this._modalService.openModal(UserModalFormComponent, userModalData);
   }
 
+  /**
+   * Starts an action to delete the given user
+   *
+   * @param user - The user to delete
+   */
   public async deleteUser(user: User): Promise<void> {
     // TODO: show a confirmation dialog
     const either = await this._usersStore.delete(user.id);
 
+    // TODO: show notifications to the user
     if (isLeft(either)) {
       console.error('Error deleting user', either.left);
     }
@@ -49,5 +56,10 @@ export class UsersListComponent {
     return this._usersStore.loggedUser$.pipe(
       map(loggedUser => isNotNull(loggedUser) && loggedUser.role === USER_ROLE.admin && loggedUser.id !== user.id),
     );
+  }
+
+  /** To be used in `ngFor` to improve the performance */
+  public trackByID(_index: number, user: User): string {
+    return user.id;
   }
 }

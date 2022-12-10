@@ -1,6 +1,6 @@
-import { OverlayModule } from '@angular/cdk/overlay';
 import { TestBed } from '@angular/core/testing';
 
+import { NotificationModule } from './notification.module';
 import { NotificationService } from './notification.service';
 
 describe(NotificationService.name, () => {
@@ -8,7 +8,7 @@ describe(NotificationService.name, () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [OverlayModule],
+      imports: [NotificationModule],
     });
     service = TestBed.inject(NotificationService);
   });

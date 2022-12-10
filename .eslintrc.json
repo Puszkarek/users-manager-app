@@ -261,7 +261,7 @@
           "error",
           { "checkParameterProperties": false, "treatMethodsAsReadonly": false }
         ], */
-        "@typescript-eslint/prefer-readonly": ["error", { "onlyInlineLambdas": true }],
+        "@typescript-eslint/prefer-readonly": ["error"],
         "@typescript-eslint/prefer-string-starts-ends-with": "error",
         "@typescript-eslint/promise-function-async": [
           "error",

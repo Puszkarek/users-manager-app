@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 
 import { AuthToken, ID, User, USER_ROLE } from '@api-interfaces';
 import { createExceptionError, extractError } from '@server/infra/helpers/error.helper';
-import { IUsersRepository } from '@server/infra/interfaces';
+import { UsersRepository } from '@server/infra/interfaces';
 import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
 import { Either, isLeft, isRight, left, right } from 'fp-ts/lib/Either';
 import { fromNullable, Option } from 'fp-ts/lib/Option';
@@ -24,7 +24,7 @@ export const DEFAULT_USER: User = {
 export const DEFAULT_USER_PASSWORD = 'admin';
 
 /** This is a demo repository for testing */
-export class FakeUsersRepository implements IUsersRepository {
+export class FakeUsersRepository implements UsersRepository {
   /** A fake users list, in a real case it'd a database */
   private _users: List<User> = List([DEFAULT_USER]);
 
@@ -152,7 +152,15 @@ export class FakeUsersRepository implements IUsersRepository {
   }
 
   // * Tokens
-  public async addToken(userID: User['id']): Promise<Either<ExceptionError, AuthToken>> {
+
+  /**
+   * Check if the given {@link ID} is valid, then generate a token linked with the respective
+   * {@link User}
+   *
+   * @param userID - The id
+   * @returns The token that was generated
+   */
+  public async generateToken(userID: User['id']): Promise<Either<ExceptionError, AuthToken>> {
     // Verify if the user exists
     if (!this._users.some(user => user.id === userID)) {
       return left(createExceptionError('Given user ID is invalid', REQUEST_STATUS.bad));

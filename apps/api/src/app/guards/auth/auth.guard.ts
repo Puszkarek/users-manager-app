@@ -4,7 +4,7 @@ import { PUBLIC_ROUTE_KEY } from '@server/app/constants/guard';
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
 import { executeTask } from '@server/app/helpers/controller';
 import { makeIsRequestAuthenticated } from '@server/infra/guards/auth';
-import { IUsersService } from '@server/infra/interfaces';
+import { UsersOperations } from '@server/infra/interfaces';
 import { Request } from 'express';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class AuthGuard implements CanActivate {
   private readonly _validator = makeIsRequestAuthenticated(this._usersService);
 
   constructor(
-    @Inject(USERS_SERVICE_INJECTABLE_TOKEN) private readonly _usersService: IUsersService,
+    @Inject(USERS_SERVICE_INJECTABLE_TOKEN) private readonly _usersService: UsersOperations,
     private readonly _reflector: Reflector,
   ) {}
 

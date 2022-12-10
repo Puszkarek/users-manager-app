@@ -1,4 +1,4 @@
-import { IMessage } from '@server/infra/interfaces';
+import { Message } from '@server/infra/interfaces';
 import { isLeft, isRight } from 'fp-ts/lib/Either';
 
 import { FakeMailProvider } from './fake-mail.provider';
@@ -21,7 +21,7 @@ describe(FakeMailProvider.name, () => {
     expect.hasAssertions();
 
     // TODO: `generateMessage`
-    const message: IMessage = {
+    const message: Message = {
       body: '',
       from: {
         email: '',

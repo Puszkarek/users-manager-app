@@ -261,7 +261,7 @@
           "error",
           { "checkParameterProperties": false, "treatMethodsAsReadonly": false }
         ], */
-        "@typescript-eslint/prefer-readonly": ["error", { "onlyInlineLambdas": true }],
+        "@typescript-eslint/prefer-readonly": ["error"],
         "@typescript-eslint/prefer-string-starts-ends-with": "error",
         "@typescript-eslint/promise-function-async": [
           "error",
@@ -283,8 +283,8 @@
       "files": ["*.ts"],
       "excludedFiles": ["*.spec.ts"],
 
-      "plugins": ["unicorn", "functional", "lodash"],
-      "extends": ["plugin:lodash/canonical", "plugin:unicorn/recommended"],
+      "plugins": ["unicorn", "functional", "lodash", "eslint-plugin-tsdoc"],
+      "extends": ["plugin:lodash/canonical", "plugin:unicorn/recommended", "plugin:@typescript-eslint/recommended"],
       "rules": {
         // Disabled Rules
         "unicorn/no-null": "off",
@@ -312,7 +312,9 @@
         "functional/no-promise-reject": "error",
         "functional/no-throw-statement": "error",
         "functional/prefer-tacit": "error",
-        "no-var": "error"
+        "no-var": "error",
+
+        "tsdoc/syntax": "warn"
       }
     },
     // * Spec Rules

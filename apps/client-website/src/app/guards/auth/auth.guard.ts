@@ -10,10 +10,12 @@ import { map, switchMap } from 'rxjs/operators';
 export class AuthGuard implements CanActivate {
   constructor(private readonly _usersClient: UsersClient, private readonly _router: Router) {}
 
-  public canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+  /**
+   * If the user is already logged, keep navigating to the page that the he wants, otherwise
+   * redirect him to the `Login` page
+   */ public canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     return this._usersClient.authAction$.pipe(
       switchMap(loginStatus => {
-        console.log('loginStatus', loginStatus);
         // Load it in case ins't loaded yet
         if (loginStatus.status === 'undefined') {
           return from(this._usersClient.getMe()).pipe(switchMap(() => this._usersClient.authAction$));

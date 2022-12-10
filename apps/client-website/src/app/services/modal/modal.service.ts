@@ -6,7 +6,7 @@ import { Observable, Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'any',
 })
 export class ModalService implements OnDestroy {
   /** It's initialize in the `AppComponent` initialization */
@@ -85,8 +85,8 @@ export class ModalService implements OnDestroy {
   /**
    * Create a Injector and provide data to the given Token
    *
-   * @param token The token where the data will be injected
-   * @param data The data to be inject
+   * @param token - The token where the data will be injected
+   * @param data - The data to be inject
    * @returns An instance of `Injector` with the data injected
    */
   private _createInjector<T>(token: InjectionToken<string>, data: T): Injector {

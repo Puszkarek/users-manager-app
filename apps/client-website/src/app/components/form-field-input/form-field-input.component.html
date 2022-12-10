@@ -1,7 +1,8 @@
-<div class="field-container" *ngIf="formControl" appearance="fill">
-  <div class="header-container">
-    <label class="label" *ngIf="label">{{ label }}</label>
+<div class="field" appearance="fill">
+  <div class="header">
+    <ng-content select="label"></ng-content>
+
     <ng-content select=".error"></ng-content>
   </div>
-  <input matInput [formControl]="formControl" [type]="type" [placeholder]="placeholder" />
+  <ng-content select="input"></ng-content>
 </div>

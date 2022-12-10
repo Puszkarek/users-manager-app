@@ -7,10 +7,16 @@ import { FormStatus } from '@front/app/interfaces/form';
 import { NotificationService } from '@front/app/services/notification';
 import { UsersStore } from '@front/app/stores/users';
 import { CUSTOM_VALIDATORS } from '@front/app/utils';
+import {
+  getConfirmedPasswordError,
+  getEmailInputErrorMessage,
+  getNameInputErrorMessage,
+  getPasswordError,
+} from '@front/app/utils/auth-form-messages';
 import { foldW } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
-import { isNil, isNull } from 'lodash-es';
-import { Subject } from 'rxjs';
+import { isNull } from 'lodash-es';
+import { BehaviorSubject, filter, map, Subject } from 'rxjs';
 
 // TODO: rename to `user-form-modal`
 @Component({
@@ -21,9 +27,11 @@ import { Subject } from 'rxjs';
 })
 export class UserModalFormComponent implements OnInit {
   // TODO: Found a way to abstract this inside one factory
+  /** Emits when we wanna close the modal */
   private readonly _close$ = new Subject<User | null>();
   public readonly close$ = this._close$.asObservable();
 
+  /** The {@link User} that we wanna `edit`, If `null` means that we are `creating` a new user */
   public readonly user: User | null = null;
 
   public readonly form = this._formBuilder.group(
@@ -37,100 +45,60 @@ export class UserModalFormComponent implements OnInit {
     { validators: [CUSTOM_VALIDATORS.isPasswordEqual] },
   );
 
-  private _formStatus: FormStatus = 'creating';
+  /** The current status of the form */
+  private readonly _formStatus$ = new BehaviorSubject<FormStatus>('creating');
+  public readonly formStatus$ = this._formStatus$;
 
-  public get formStatus(): FormStatus {
-    return this._formStatus;
-  }
+  /** Tht title of the form */
+  public readonly formTitle$ = this._formStatus$.pipe(
+    /** We don't wanna update the title when the status change to `saving` */
+    filter(status => status !== 'saving'),
+    map(status => {
+      switch (status) {
+        case 'creating': {
+          return 'Creating User';
+        }
+        case 'editing': {
+          return 'Editing User';
+        }
+        default: {
+          return 'Loading...';
+        }
+      }
+    }),
+  );
 
-  public get emailError(): string | null {
-    const { errors, untouched } = this.form.controls.email;
+  /** The name of the button that we use to save the changes */
+  public readonly actionTitle$ = this._formStatus$.pipe(
+    map(status => {
+      switch (status) {
+        case 'creating': {
+          return 'Creating';
+        }
+        case 'editing': {
+          return 'Editing';
+        }
+        case 'saving': {
+          return 'Saving...';
+        }
+        default: {
+          return 'Loading...';
+        }
+      }
+    }),
+  );
 
-    if (untouched) {
-      return null;
-    }
-    if (isNil(errors)) {
-      return null;
-    }
+  /** Emits the input error if has one */
+  public readonly emailError$ = getEmailInputErrorMessage(this.form.controls.email);
 
-    if (errors['required']) {
-      return 'required';
-    }
-    if (errors['email']) {
-      return 'invalid';
-    }
+  /** Emits the input error if has one */
+  public readonly nameError$ = getNameInputErrorMessage(this.form.controls.name);
 
-    return null;
-  }
+  /** Emits the input error if has one */
+  public readonly passwordError$ = getPasswordError(this.form.controls.password);
 
-  public get nameError(): string | null {
-    const { errors, untouched } = this.form.controls.name;
-
-    if (untouched) {
-      return null;
-    }
-    if (isNil(errors)) {
-      return null;
-    }
-
-    if (errors['required']) {
-      return 'required';
-    }
-
-    if (errors['minLength']) {
-      return `must have at least ${USER_NAME_MIN_LENGTH} characters`;
-    }
-
-    return null;
-  }
-
-  private readonly _passwordErrors = {
-    confirm: 'please, confirm your password',
-    isPasswordEqual: 'passwords must be equal',
-    minLength: `must have at least ${USER_PASSWORD_MIN_LENGTH} characters`,
-    required: 'required',
-  };
-
-  public get passwordError(): string | null {
-    const { errors, untouched } = this.form.controls.password;
-    if (untouched) {
-      return null;
-    }
-    if (isNil(errors)) {
-      return null;
-    }
-
-    if (errors['required']) {
-      return this._passwordErrors.required;
-    }
-
-    if (errors['minLength']) {
-      return this._passwordErrors.minLength;
-    }
-
-    return null;
-  }
-
-  public get passwordConfirmedError(): string | null {
-    const { errors: controlErrors, untouched } = this.form.controls.passwordConfirmed;
-
-    if (untouched) {
-      return null;
-    }
-
-    const { errors: formErrors } = this.form;
-    const errors = { ...controlErrors, ...formErrors };
-
-    if (errors['required']) {
-      return this._passwordErrors.required;
-    }
-
-    if (errors['isPasswordEqual']) {
-      return this._passwordErrors.isPasswordEqual;
-    }
-
-    return null;
-  }
+  /** Emits the input error if has one */
+  public readonly confirmedPasswordError$ = getConfirmedPasswordError(this.form.controls.passwordConfirmed);
 
   constructor(
     @Inject(MODAL_DATA_TOKEN) data: UserModalFormComponentData,
@@ -143,21 +111,38 @@ export class UserModalFormComponent implements OnInit {
 
   public ngOnInit(): void {
     if (isUser(this.user)) {
-      this._formStatus = 'editing';
+      this._formStatus$.next('editing');
 
       this.form.patchValue(this.user);
     }
   }
 
-  public close(data?: User | null): void {
-    this._close$.next(data ?? null);
+  /**
+   * Triggers an action to close the modal
+   *
+   * @param user - The user just create / update, null if we had canceled the action
+   */
+  public close(user?: User | null): void {
+    this._close$.next(user ?? null);
     this._close$.complete();
   }
 
+  /**
+   * Save the {@link User} in `backend`, if success close the modal, otherwise show one
+   * notification to the user with the `Error`
+   */
   public async save(): Promise<void> {
     if (this.form.valid) {
+      /**
+       * Since this modal will close after change we don't need to care about change to the
+       * previous status after save
+       */
+      this._formStatus$.next('saving');
+
+      /** Get the new values from form */
       const updatedValues = this.form.getRawValue();
 
+      /** Make a request to the `backend` */
       const either = await (isNull(this.user)
         ? this._usersStore.create(updatedValues)
         : this._usersStore.update({
@@ -178,6 +163,7 @@ export class UserModalFormComponent implements OnInit {
   }
 }
 
+/** The data that we can inject in {@link UserModalFormComponent} while open the `modal` */
 export type UserModalFormComponentData = {
   readonly user: User | null;
 };

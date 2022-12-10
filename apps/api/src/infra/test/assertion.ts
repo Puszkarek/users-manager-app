@@ -3,8 +3,8 @@
  *
  * (It's only used for testing purposes)
  *
- * @param value The value to assert
- * @param guardFN The guard method to use to check if the value is expected
+ * @param value - The value to assert
+ * @param guardFN - The guard method to use to check if the value is expected
  */
 export const assertIs = <T>(value: unknown, guardFN: (value: unknown) => value is T): asserts value is T => {
   if (guardFN(value)) {

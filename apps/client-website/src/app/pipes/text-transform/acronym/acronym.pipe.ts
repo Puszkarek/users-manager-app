@@ -4,10 +4,16 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'acronym',
 })
 export class AcronymPipe implements PipeTransform {
+  /**
+   * Create an acronym with the given value (e.g: `Big Name` will becomes `BN`)
+   *
+   * @param value - The name to transform
+   * @returns An parsed name
+   */
   public transform(value: string): string {
     return (
       value
-        // Split compound name (e.g `Big Name` => `['Big','Name']`)
+        // Split compound name (e.g: `Big Name` => `['Big','Name']`)
         .split(' ')
         // Get the acronym from string
         .map(splittedValue => splittedValue.slice(0, 1))

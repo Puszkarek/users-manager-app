@@ -21,6 +21,14 @@ export class AuthService {
     private readonly _router: Router,
   ) {}
 
+  /**
+   * Make a request to login the user with the given data
+   *
+   * @param email - The supposed user's email
+   * @param password - The supposed user's password
+   * @returns An {@link Either} with the {@link User} on success, otherwise the {@link Error} that
+   *   happened
+   */
   public async login(email: string, password: string): Promise<Either<Error, User>> {
     const userEither = await this._usersClient.loginOne(email, password);
 
@@ -34,6 +42,7 @@ export class AuthService {
     return right(loginResponse.loggedUser);
   }
 
+  /** Logout the current user, and delete all his cached data */
   public async logout(): Promise<void> {
     const savedToken = this._tokenManager.getToken();
     const loggedUser = await firstValueFrom(this._usersStore.loggedUser$);

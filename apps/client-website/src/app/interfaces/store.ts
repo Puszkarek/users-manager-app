@@ -3,6 +3,7 @@ import { Either } from 'fp-ts/lib/Either';
 import { List } from 'immutable';
 import { Observable } from 'rxjs';
 
+/** Parameters that can be passed to the `load` method of a {@link Store} */
 export type StoreLoadOptions = {
   /** When true forces the store load ever if the store already has been initialized before */
   readonly force?: boolean;
@@ -10,7 +11,13 @@ export type StoreLoadOptions = {
   readonly clearCache?: boolean;
 };
 
-export type IStore<Asset = unknown, UpdatableAsset = unknown, CreatableAsset = unknown> = {
+/**
+ * An abstraction to all the methods that an store should have
+ *
+ * P.S: I'm starting to think that it's not necessary, may be deleted when I have to create a
+ * new store
+ */
+export type Store<Asset, UpdatableAsset, CreatableAsset> = {
   // * Helpers
   readonly count$: Observable<number>;
 
@@ -36,7 +43,7 @@ export type IStore<Asset = unknown, UpdatableAsset = unknown, CreatableAsset = u
  * library, so to avoid mistakes this interface will remove the non-implemented methods from
  * the EntityCollection
  */
-export type TypedEntityCollectionServiceBase<T> = Omit<
+export type TypedEntityCollectionService<T> = Omit<
   EntityCollectionServiceBase<T, EntitySelectors$<T>>,
   'update' | 'add' | 'delete' | 'getAll' | 'getByKey' | 'getWithQuery'
 >;

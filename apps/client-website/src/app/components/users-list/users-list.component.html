@@ -3,7 +3,7 @@
   <input class="search-input" type="text" placeholder="Search" />
 
   <div class="actions">
-    <app-button (click)="openUserForm()">New</app-button>
+    <app-button (click)="openForm()">New</app-button>
   </div>
 </div>
 
@@ -27,7 +27,7 @@
             <app-icon>delete</app-icon>
           </button>
 
-          <button (click)="openUserForm(user)" class="settings-btn">
+          <button (click)="openForm(user)" class="settings-btn">
             <app-icon>more_vert</app-icon>
           </button>
         </td>

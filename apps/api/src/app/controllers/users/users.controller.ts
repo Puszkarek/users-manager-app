@@ -3,13 +3,13 @@ import { Body, Controller, Delete, Get, HttpCode, HttpException, Inject, Param, 
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
 import { executeTask, IsPublic } from '@server/app/helpers/controller';
 import { REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
-import { IUsersService } from '@server/infra/interfaces/users.interface';
+import { UsersOperations } from '@server/infra/interfaces/users.interface';
 import { Request } from 'express';
 import { isEmpty, isUndefined } from 'lodash';
 
 @Controller('users')
 export class UsersController {
-  constructor(@Inject(USERS_SERVICE_INJECTABLE_TOKEN) private readonly _usersService: IUsersService) {}
+  constructor(@Inject(USERS_SERVICE_INJECTABLE_TOKEN) private readonly _usersService: UsersOperations) {}
 
   // * Login Stuffs
   @Post('login')

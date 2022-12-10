@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, UrlTree } from '@angular/router';
+import { CanActivate, UrlTree } from '@angular/router';
 import { USER_ROLE } from '@api-interfaces';
 import { UsersStore } from '@front/app/stores/users';
 import { map, Observable } from 'rxjs';
@@ -8,8 +8,12 @@ import { map, Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AdminGuard implements CanActivate {
-  constructor(private readonly _usersStore: UsersStore, private readonly _router: Router) {}
+  constructor(private readonly _usersStore: UsersStore) {}
 
+  /**
+   * If the user have `admin` permissions, keep navigating to the page that the he wants,
+   * otherwise keep him at the current page
+   */
   public canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     return this._usersStore.loggedUser$.pipe(
       map(user => {
@@ -17,7 +21,7 @@ export class AdminGuard implements CanActivate {
           return true;
         }
 
-        return this._router.createUrlTree(['/auth']);
+        return false;
       }),
     );
   }

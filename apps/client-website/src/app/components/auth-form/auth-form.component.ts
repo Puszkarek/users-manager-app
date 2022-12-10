@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { AuthFormEntries } from '@front/app/interfaces/auth';
-import { FormLink } from '@front/app/interfaces/form';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,8 +14,6 @@ export class AuthFormComponent {
 
   /** The submit button text to show to the user */
   @Input() public confirmButtonText = 'Confirm';
-
-  @Input() public link: FormLink | null = null;
 
   /** Emits the form value to the parent component when submitted */
   @Output() public readonly submitted = new EventEmitter<AuthFormEntries>();

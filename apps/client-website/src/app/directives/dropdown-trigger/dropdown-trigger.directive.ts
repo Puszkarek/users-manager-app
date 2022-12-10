@@ -17,7 +17,7 @@ export class DropdownTriggerDirective implements OnDestroy {
    *
    * @defaultValue false
    */
-  private _isDropdownOpen$ = new BehaviorSubject(false);
+  private readonly _isDropdownOpen$ = new BehaviorSubject(false);
 
   /** The `Template` to render inside the dropdown */
   @Input('appDropdownTrigger') public dropdownPanel!: DropdownPanel;

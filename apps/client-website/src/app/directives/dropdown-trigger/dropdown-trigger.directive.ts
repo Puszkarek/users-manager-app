@@ -12,8 +12,14 @@ import { filter, first, takeUntil } from 'rxjs/operators';
 export class DropdownTriggerDirective implements OnDestroy {
   private readonly _unsubscribe$ = new Subject<void>();
 
+  /**
+   * Emits when the dropdown state changes
+   *
+   * @defaultValue false
+   */
   private _isDropdownOpen$ = new BehaviorSubject(false);
 
+  /** The `Template` to render inside the dropdown */
   @Input('appDropdownTrigger') public dropdownPanel!: DropdownPanel;
 
   @HostListener('click') public toggleDropdown(): void {
@@ -39,6 +45,10 @@ export class DropdownTriggerDirective implements OnDestroy {
     this._unsubscribe$.complete();
   }
 
+  /**
+   * Create an {@link Overlay} and attach the given panel to show to the user, then subscribe to
+   * close event to close the dropdown when hit the `close` action
+   */
   private _openDropdown(): void {
     // Create an overlay in the DOM
     const overlayReference = this._overlay.create({

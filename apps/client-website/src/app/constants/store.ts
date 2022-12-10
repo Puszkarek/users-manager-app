@@ -1,1 +1,2 @@
-export const STORE_REFRESH_INTERVAL_TIME = 5000; // 5 seconds
+/** Value is in milliseconds */
+export const STORE_REFRESH_INTERVAL_TIME = 5000;

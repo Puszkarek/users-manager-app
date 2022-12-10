@@ -8,6 +8,9 @@ import { DropdownPanel } from '@front/app/interfaces/dropdown';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DropdownComponent implements DropdownPanel {
+  /** The container that will be rendered the dropdown elements */
   @ViewChild(TemplateRef) public templateRef!: TemplateRef<unknown>;
+
+  /** Emits when we wanna close the dropdown */
   @Output() public readonly closed = new EventEmitter<void>();
 }

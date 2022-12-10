@@ -20,6 +20,10 @@ export class LoginPageComponent {
     private readonly _notificationService: NotificationService,
   ) {}
 
+  /**
+   * Init an action to login the user, then if success redirect him to the main page, otherwise
+   * show a notification with the error
+   */
   public async loginUser({ email, password }: Readonly<AuthFormEntries>): Promise<void> {
     const tokenEither = await this._authService.login(email, password);
 

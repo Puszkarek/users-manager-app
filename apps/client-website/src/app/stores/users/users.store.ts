@@ -33,6 +33,7 @@ export class UsersStore implements Store<User, UpdatableUser, CreatableUser>, On
   /** The current user cached */
   public readonly loggedUser$: Observable<User | null> = this._usersClient.authAction$.pipe(
     distinctUntilChanged(),
+    filter(auth => auth.status !== 'undefined'),
     map(auth => (auth.status === 'logged' ? auth.user : null)),
     shareReplay(1),
   );

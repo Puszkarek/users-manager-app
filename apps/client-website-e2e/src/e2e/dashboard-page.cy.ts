@@ -1,4 +1,4 @@
-describe('Dashboard', () => {
+describe('Dashboard Page', () => {
   beforeEach(() => {
     cy.login('admin@admin', 'admin');
 

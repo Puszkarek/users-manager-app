@@ -1,5 +1,18 @@
 import { AuthToken, CreatableUser, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
-import { Body, Controller, Delete, Get, HttpCode, HttpException, Inject, Param, Post, Put, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpCode,
+  HttpException,
+  Inject,
+  Param,
+  Post,
+  Put,
+  Req,
+} from '@nestjs/common';
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
 import { executeTask, IsPublic } from '@server/app/helpers/controller';
 import { REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
@@ -45,8 +58,20 @@ export class UsersController {
   }
 
   @Delete(':id')
-  public async deleteOne(@Param('id') id: string): Promise<void> {
-    const either = await this._usersService.delete.one(id);
+  public async deleteOne(@Param('id') id: string, @Headers('authorization') rawToken: AuthToken): Promise<void> {
+    // TODO: abstract this
+    const [tokenType, authToken] = rawToken.split(' '); // TODO: move to a helper
+
+    // TODO: improve it with a pipe or some guard
+    if (isUndefined(authToken) || isEmpty(authToken) || tokenType !== 'Bearer') {
+      // eslint-disable-next-line functional/no-throw-statement
+      throw new HttpException('Missing authentication token', REQUEST_STATUS.unauthorized);
+    }
+
+    const either = await this._usersService.delete.one({
+      idToDelete: id,
+      currentUserToken: authToken,
+    });
 
     executeTask(either);
   }

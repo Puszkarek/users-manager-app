@@ -1,9 +1,6 @@
 <div class="toolbar">
-  <!-- TODO (search-input): create a component for search -->
-  <input class="search-input" type="text" placeholder="Search" />
-
   <div class="actions">
-    <app-button (click)="openForm()">New</app-button>
+    <app-button data-test="new-user-button" (click)="openForm()">New</app-button>
   </div>
 </div>
 
@@ -17,13 +14,17 @@
       </tr>
     </thead>
     <tbody class="main">
-      <tr class="user-card" *ngFor="let user of users$ | async; trackBy: trackByID">
+      <tr data-test="user-card" class="user-card" *ngFor="let user of users$ | async; trackBy: trackByID">
         <td>
           {{ user.name }}
         </td>
         <td>{{ user.email }}</td>
         <td class="settings">
-          <button *ngIf="canDeleteUser(user) | async" (click)="deleteUser(user)" class="settings-btn delete-btn">
+          <button
+            data-test="delete-user-button"
+            *ngIf="canDeleteUser(user) | async"
+            (click)="deleteUser(user)"
+            class="settings-btn delete-btn">
             <app-icon>delete</app-icon>
           </button>
 

@@ -13,10 +13,8 @@ export const getEmailInputErrorMessage = (control: FormControl<string>): Observa
   return control.valueChanges.pipe(
     distinctUntilChanged(isEqual),
     map(() => {
-      const { errors, untouched } = control;
-      if (untouched) {
-        return null;
-      }
+      const { errors } = control;
+
       if (isNil(errors)) {
         return null;
       }
@@ -43,10 +41,8 @@ export const getNameInputErrorMessage = (control: FormControl<string>): Observab
   return control.valueChanges.pipe(
     distinctUntilChanged(isEqual),
     map(() => {
-      const { errors, untouched } = control;
-      if (untouched) {
-        return null;
-      }
+      const { errors } = control;
+
       if (isNil(errors)) {
         return null;
       }
@@ -84,10 +80,8 @@ export const getPasswordError = (control: FormControl<string>): Observable<strin
   return control.valueChanges.pipe(
     distinctUntilChanged(isEqual),
     map(() => {
-      const { errors, untouched } = control;
-      if (untouched) {
-        return null;
-      }
+      const { errors } = control;
+
       if (isNil(errors)) {
         return null;
       }
@@ -115,10 +109,7 @@ export const getConfirmedPasswordError = (control: FormControl<string>): Observa
   return control.valueChanges.pipe(
     distinctUntilChanged(isEqual),
     map(() => {
-      const { errors: controlErrors, untouched } = control;
-      if (untouched) {
-        return null;
-      }
+      const { errors: controlErrors } = control;
 
       const {
         root: { errors: formErrors },

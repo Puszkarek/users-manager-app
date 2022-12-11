@@ -24,7 +24,6 @@ export class AuthGuard implements CanActivate {
         return of(loginStatus);
       }),
       map(({ status }) => {
-        console.log('status', status);
         return status === 'logged' ? true : this._router.createUrlTree(['/auth']);
       }),
     );

@@ -4,6 +4,7 @@ declare namespace Cypress {
   interface Chainable<Subject> {
     readonly login: (email: string, password: string) => void;
     readonly logout: () => void;
+    readonly loggedRequest: <T>(options: Partial<RequestOptions>) => Chainable<Cypress.Response<T>>;
   }
 }
 
@@ -21,6 +22,22 @@ Cypress.Commands.add('login', (email, password) => {
     cy.wrap(localStorage).invoke('setItem', 'token', response.body.token);
   });
 });
+
+// * Add logged request command
+Cypress.Commands.add('loggedRequest', requestArguments =>
+  cy
+    .wrap(localStorage)
+    .invoke('getItem', 'token')
+    .then(token => {
+      return cy.request({
+        ...requestArguments,
+        auth: {
+          ...requestArguments.auth,
+          bearer: token,
+        },
+      });
+    }),
+);
 
 // * Add logout command
 Cypress.Commands.add('logout', () => {

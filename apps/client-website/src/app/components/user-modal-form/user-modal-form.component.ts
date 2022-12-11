@@ -34,7 +34,7 @@ export class UserModalFormComponent implements OnInit {
   /** The {@link User} that we wanna `edit`, If `null` means that we are `creating` a new user */
   public readonly user: User | null = null;
 
-  public readonly form = this._formBuilder.group(
+  public readonly form = this._fb.group(
     {
       email: ['', [Validators.required, CUSTOM_VALIDATORS.minLengthWithTrim(USER_NAME_MIN_LENGTH), Validators.email]],
       name: ['', [Validators.required, CUSTOM_VALIDATORS.minLengthWithTrim(USER_NAME_MIN_LENGTH)]],
@@ -102,7 +102,7 @@ export class UserModalFormComponent implements OnInit {
 
   constructor(
     @Inject(MODAL_DATA_TOKEN) data: UserModalFormComponentData,
-    private readonly _formBuilder: NonNullableFormBuilder,
+    private readonly _fb: NonNullableFormBuilder,
     private readonly _notificationService: NotificationService,
     private readonly _usersStore: UsersStore,
   ) {
@@ -114,6 +114,8 @@ export class UserModalFormComponent implements OnInit {
       this._formStatus$.next('editing');
 
       this.form.patchValue(this.user);
+      this.form.markAsTouched();
+      this.form.markAsDirty();
     }
   }
 

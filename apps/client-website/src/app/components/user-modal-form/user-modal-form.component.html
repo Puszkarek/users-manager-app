@@ -1,4 +1,4 @@
-<div class="container">
+<div data-test="user-form-modal" class="container">
   <div class="modal-header">
     <h2 class="title">{{ formTitle$ | async }}</h2>
     <hr />
@@ -7,33 +7,36 @@
     <div class="row">
       <app-form-field-input>
         <label>Email</label>
-        <input type="email" [formControl]="form.controls.email" />
+        <input data-test="user-email-input" type="email" [formControl]="form.controls.email" />
         <div class="error" *ngIf="emailError$ | async as errorMessage">{{ errorMessage }}</div>
       </app-form-field-input>
 
       <app-form-field-input>
         <label>Name</label>
-        <input [formControl]="form.controls.name" />
+        <input data-test="user-name-input" [formControl]="form.controls.name" />
         <div class="error" *ngIf="nameError$ | async as errorMessage">{{ errorMessage }}</div>
       </app-form-field-input>
     </div>
 
     <app-form-field-input>
       <label>Password</label>
-      <input type="password" [formControl]="form.controls.password" />
+      <input data-test="user-password-input" type="password" [formControl]="form.controls.password" />
       <div class="error" *ngIf="passwordError$ | async as errorMessage">{{ errorMessage }}</div>
     </app-form-field-input>
 
     <app-form-field-input>
       <label>Password Confirmation</label>
-      <input type="password" [formControl]="form.controls.passwordConfirmed" />
+      <input
+        data-test="user-confirmation-password-input"
+        type="password"
+        [formControl]="form.controls.passwordConfirmed" />
       <div class="error" *ngIf="confirmedPasswordError$ | async as errorMessage">{{ errorMessage }}</div>
     </app-form-field-input>
   </div>
 
   <div class="modal-actions">
     <app-button [type]="'warn'" (click)="close()">Cancel</app-button>
-    <app-button [type]="'primary'" (click)="save()" [disabled]="this.form.invalid">{{
+    <app-button data-test="form-submit-button" [type]="'primary'" (click)="save()" [disabled]="this.form.invalid">{{
       (formStatus$ | async) === 'creating' ? 'Create' : 'Update'
     }}</app-button>
   </div>

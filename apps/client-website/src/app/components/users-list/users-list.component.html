@@ -1,7 +1,4 @@
 <div class="toolbar">
-  <!-- TODO (search-input): create a component for search -->
-  <input class="search-input" type="text" placeholder="Search" />
-
   <div class="actions">
     <app-button data-test="new-user-button" (click)="openForm()">New</app-button>
   </div>
@@ -23,7 +20,11 @@
         </td>
         <td>{{ user.email }}</td>
         <td class="settings">
-          <button *ngIf="canDeleteUser(user) | async" (click)="deleteUser(user)" class="settings-btn delete-btn">
+          <button
+            data-test="delete-user-button"
+            *ngIf="canDeleteUser(user) | async"
+            (click)="deleteUser(user)"
+            class="settings-btn delete-btn">
             <app-icon>delete</app-icon>
           </button>
 

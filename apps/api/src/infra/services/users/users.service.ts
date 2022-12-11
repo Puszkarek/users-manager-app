@@ -61,8 +61,24 @@ export class UsersService implements UsersOperations {
      * @param id - The {@link User} to delete
      * @returns On success it'll be void, otherwise the error that happened
      */
-    one: async (id: ID): Promise<Either<ExceptionError, void>> => {
-      const either = await this._usersRepository.delete(id);
+    one: async ({
+      idToDelete,
+      currentUserToken,
+    }: {
+      readonly idToDelete: ID;
+      readonly currentUserToken: AuthToken;
+    }): Promise<Either<ExceptionError, void>> => {
+      // * Check if the user don't wanna delete himself
+      const userO = await this._usersRepository.findByToken(currentUserToken); // TODO: expose the `parseToken` method
+      if (isNone(userO)) {
+        return left(createExceptionError('None use with the given ID to delete', REQUEST_STATUS.bad));
+      }
+      if (userO.value.id === idToDelete) {
+        return left(createExceptionError("You can't delete yourself", REQUEST_STATUS.bad));
+      }
+
+      // * Delete the user
+      const either = await this._usersRepository.delete(idToDelete);
       return either;
     },
   };

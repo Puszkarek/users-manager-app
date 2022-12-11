@@ -29,7 +29,10 @@ export type UsersOperations = {
     readonly one: (data: CreatableUser) => Promise<Either<ExceptionError, User>>;
   };
   readonly delete: {
-    readonly one: (data: ID) => Promise<Either<ExceptionError, void>>;
+    readonly one: (data: {
+      readonly idToDelete: ID;
+      readonly currentUserToken: AuthToken;
+    }) => Promise<Either<ExceptionError, void>>;
   };
   readonly update: {
     readonly one: (data: UpdatableUser) => Promise<Either<ExceptionError, User>>;

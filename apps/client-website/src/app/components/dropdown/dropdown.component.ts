@@ -9,7 +9,4 @@ import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
 export class DropdownComponent {
   // Improve accessibility
   @HostBinding('role') public readonly role = 'listbox';
-
-  // Testing on cypress
-  @HostBinding('data-test') public readonly dataTest = 'dropdown-container';
 }

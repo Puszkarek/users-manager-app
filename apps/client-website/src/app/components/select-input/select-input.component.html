@@ -1,0 +1,18 @@
+<label aria-labelledby="dropdown-label">{{ inputLabel }}</label>
+<button class="trigger" #trigger aria-haspopup="listbox" [appDropdownTrigger]="dropdownList">{{
+  (selectedLabel$ | async) ?? 'Select One'
+}}</button>
+<ng-template #dropdownList>
+  <app-dropdown [style.width.px]="trigger.offsetWidth">
+    <div
+      *ngFor="let item of items; trackBy: trackByValue"
+      [attr.selected]="item.value === (selectedValue$ | async)"
+      (click)="updateSelectedValue(item.value)"
+      (keyup.enter)="updateSelectedValue(item.value)"
+      class="dropdown-item-input"
+      tabindex="0"
+      role="option"
+      >{{ item.label }}</div
+    >
+  </app-dropdown>
+</ng-template>

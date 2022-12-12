@@ -100,6 +100,22 @@ export class UserModalFormComponent implements OnInit {
   /** Emits the input error if has one */
   public readonly confirmedPasswordError$ = getConfirmedPasswordError(this.form.controls.passwordConfirmed);
 
+  /** The items to use in the user's `Rule` input */
+  public readonly dropdownRuleItems = [
+    {
+      label: 'Administrator',
+      value: USER_ROLE.admin,
+    },
+    {
+      label: 'Manager',
+      value: USER_ROLE.manager,
+    },
+    {
+      label: 'Employee',
+      value: USER_ROLE.employee,
+    },
+  ];
+
   constructor(
     @Inject(MODAL_DATA_TOKEN) data: UserModalFormComponentData,
     private readonly _fb: NonNullableFormBuilder,

@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, TemplateRef, ViewChild } from '@angular/core';
-import { DropdownPanel } from '@front/app/interfaces/dropdown';
+import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
 
 @Component({
   selector: 'app-dropdown',
@@ -7,10 +6,10 @@ import { DropdownPanel } from '@front/app/interfaces/dropdown';
   styleUrls: ['./dropdown.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DropdownComponent implements DropdownPanel {
-  /** The container that will be rendered the dropdown elements */
-  @ViewChild(TemplateRef) public templateRef!: TemplateRef<unknown>;
+export class DropdownComponent {
+  // Improve accessibility
+  @HostBinding('role') public readonly role = 'listbox';
 
-  /** Emits when we wanna close the dropdown */
-  @Output() public readonly closed = new EventEmitter<void>();
+  // Testing on cypress
+  @HostBinding('data-test') public readonly dataTest = 'dropdown-container';
 }

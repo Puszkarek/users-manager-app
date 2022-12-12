@@ -18,6 +18,11 @@
       </app-form-field-input>
     </div>
 
+    <app-select-input
+      [inputLabel]="'Role'"
+      [items]="dropdownRuleItems"
+      [formControl]="form.controls.role"></app-select-input>
+
     <app-form-field-input>
       <label>Password</label>
       <input data-test="user-password-input" type="password" [formControl]="form.controls.password" />

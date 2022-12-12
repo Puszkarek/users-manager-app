@@ -1,13 +1,9 @@
-import { OverlayModule } from '@angular/cdk/overlay';
-import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { ButtonModule } from '@front/app/components/button';
-import { FormFieldInputModule } from '@front/app/components/form-field-input';
 import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
 import { StoreTestingModule } from '@front/app/stores/root/store-testing.module';
 
 import { UserModalFormComponent } from './user-modal-form.component';
+import { UserModalFormModule } from './user-modal-form.module';
 
 describe(UserModalFormComponent.name, () => {
   let component: UserModalFormComponent;
@@ -16,14 +12,7 @@ describe(UserModalFormComponent.name, () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [UserModalFormComponent],
-      imports: [
-        StoreTestingModule,
-        OverlayModule,
-        CommonModule,
-        ReactiveFormsModule,
-        FormFieldInputModule,
-        ButtonModule,
-      ],
+      imports: [StoreTestingModule, UserModalFormModule],
       providers: [
         {
           provide: MODAL_DATA_TOKEN,

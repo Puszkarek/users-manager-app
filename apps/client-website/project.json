@@ -88,6 +88,5 @@
       }
     }
   },
-  "tags": [],
-  "implicitDependencies": ["api"]
+  "tags": []
 }

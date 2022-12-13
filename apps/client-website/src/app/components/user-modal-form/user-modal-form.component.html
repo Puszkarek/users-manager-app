@@ -41,7 +41,7 @@
 
   <div class="modal-actions">
     <app-button [type]="'warn'" (click)="close()">Cancel</app-button>
-    <app-button data-test="form-submit-button" [type]="'primary'" (click)="save()" [disabled]="this.form.invalid">{{
+    <app-button data-test="form-submit-button" [type]="'primary'" (click)="save()">{{
       (formStatus$ | async) === 'creating' ? 'Create' : 'Update'
     }}</app-button>
   </div>

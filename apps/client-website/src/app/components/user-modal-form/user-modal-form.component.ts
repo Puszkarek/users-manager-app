@@ -98,7 +98,10 @@ export class UserModalFormComponent implements OnInit {
   public readonly passwordError$ = getPasswordError(this.form.controls.password);
 
   /** Emits the input error if has one */
-  public readonly confirmedPasswordError$ = getConfirmedPasswordError(this.form.controls.passwordConfirmed);
+  public readonly confirmedPasswordError$ = getConfirmedPasswordError(
+    this.form.controls.password,
+    this.form.controls.passwordConfirmed,
+  );
 
   /** The items to use in the user's `Rule` input */
   public readonly dropdownRuleItems = [
@@ -150,34 +153,36 @@ export class UserModalFormComponent implements OnInit {
    * notification to the user with the `Error`
    */
   public async save(): Promise<void> {
-    if (this.form.valid) {
-      /**
-       * Since this modal will close after change we don't need to care about change to the
-       * previous status after save
-       */
-      this._formStatus$.next('saving');
-
-      /** Get the new values from form */
-      const updatedValues = this.form.getRawValue();
-
-      /** Make a request to the `backend` */
-      const either = await (isNull(this.user)
-        ? this._usersStore.create(updatedValues)
-        : this._usersStore.update({
-            ...this.user,
-            ...updatedValues,
-          }));
-
-      pipe(
-        either,
-        foldW(
-          async error => this._notificationService.error(error.message),
-          user => this.close(user),
-        ),
-      );
-    } else {
+    console.log('values', this.form.value);
+    if (this.form.invalid) {
       this._notificationService.error('Please, check the inputs and try again');
+      return;
     }
+
+    /**
+     * Since this modal will close after change we don't need to care about change to the
+     * previous status after save
+     */
+    this._formStatus$.next('saving');
+
+    /** Get the new values from form */
+    const updatedValues = this.form.getRawValue();
+
+    /** Make a request to the `backend` */
+    const either = await (isNull(this.user)
+      ? this._usersStore.create(updatedValues)
+      : this._usersStore.update({
+          ...this.user,
+          ...updatedValues,
+        }));
+
+    pipe(
+      either,
+      foldW(
+        async error => this._notificationService.error(error.message),
+        user => this.close(user),
+      ),
+    );
   }
 }
 

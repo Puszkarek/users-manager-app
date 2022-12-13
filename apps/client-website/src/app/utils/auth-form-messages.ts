@@ -1,7 +1,7 @@
 import { FormControl } from '@angular/forms';
 import { USER_NAME_MIN_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@front/app/constants/form-settings';
 import { isEqual, isNil } from 'lodash-es';
-import { distinctUntilChanged, map, Observable } from 'rxjs';
+import { combineLatest, distinctUntilChanged, map, Observable } from 'rxjs';
 
 /**
  * Listen to value changes in the {@link FormControl} then update the error message if has one
@@ -102,18 +102,21 @@ export const getPasswordError = (control: FormControl<string>): Observable<strin
 /**
  * Listen to value changes in the {@link FormControl} then update the error message if has one
  *
- * @param control - The form control to get the errors message
+ * @param passwordControl - The form control to get the errors message
  * @returns The error message, or `null` if doesn't exist
  */
-export const getConfirmedPasswordError = (control: FormControl<string>): Observable<string | null> => {
-  return control.valueChanges.pipe(
+export const getConfirmedPasswordError = (
+  passwordControl: FormControl<string>,
+  confirmPasswordControl: FormControl<string>,
+): Observable<string | null> => {
+  return combineLatest([passwordControl.valueChanges, confirmPasswordControl.valueChanges]).pipe(
     distinctUntilChanged(isEqual),
     map(() => {
-      const { errors: controlErrors } = control;
+      const { errors: controlErrors } = passwordControl;
 
       const {
         root: { errors: formErrors },
-      } = control;
+      } = passwordControl;
 
       const errors = { ...controlErrors, ...formErrors };
 
@@ -122,6 +125,7 @@ export const getConfirmedPasswordError = (control: FormControl<string>): Observa
       }
 
       if (errors['isPasswordEqual']) {
+        console.log('here');
         return PASSWORD_ERROR_MESSAGES.isPasswordEqual;
       }
 

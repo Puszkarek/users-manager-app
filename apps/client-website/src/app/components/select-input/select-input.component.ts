@@ -39,8 +39,8 @@ export class SelectInputComponent implements OnInit, ControlValueAccessor {
   );
 
   public ngOnInit(): void {
-    this.selectedValue$.subscribe(() => {
-      this._onChange();
+    this.selectedValue$.subscribe(selectedValue => {
+      this._onChange(selectedValue);
       this._onTouched();
     });
   }
@@ -50,8 +50,8 @@ export class SelectInputComponent implements OnInit, ControlValueAccessor {
     this._selectedValue$.next(value);
   }
 
-  private _onChange = (): void => void 0;
-  public registerOnChange(onChange: () => void): void {
+  private _onChange = (_value: string): void => void 0;
+  public registerOnChange(onChange: (value: string) => void): void {
     this._onChange = onChange;
   }
 

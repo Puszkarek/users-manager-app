@@ -246,7 +246,7 @@
         "no-unused-expressions": "off",
         "@typescript-eslint/no-unused-expressions": "error",
         "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": "error",
+        "@typescript-eslint/no-unused-vars": "off",
         "no-use-before-define": "off",
         "@typescript-eslint/no-use-before-define": ["error"],
         "@typescript-eslint/prefer-as-const": "error",
@@ -284,7 +284,7 @@
       "excludedFiles": ["*.spec.ts"],
 
       "plugins": ["unicorn", "functional", "lodash", "eslint-plugin-tsdoc"],
-      "extends": ["plugin:lodash/canonical", "plugin:unicorn/recommended", "plugin:@typescript-eslint/recommended"],
+      "extends": ["plugin:lodash/canonical", "plugin:unicorn/recommended"],
       "rules": {
         // Disabled Rules
         "unicorn/no-null": "off",

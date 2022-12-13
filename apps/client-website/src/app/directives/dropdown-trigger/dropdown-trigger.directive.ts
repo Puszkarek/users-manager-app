@@ -1,7 +1,6 @@
-import { Overlay } from '@angular/cdk/overlay';
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
-import { Directive, ElementRef, HostListener, Input, OnDestroy, ViewContainerRef } from '@angular/core';
-import { DropdownPanel } from '@front/app/interfaces/dropdown';
+import { Directive, ElementRef, HostListener, Input, OnDestroy, TemplateRef, ViewContainerRef } from '@angular/core';
 import { isFalse } from '@front/app/utils/functional';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { filter, first, takeUntil } from 'rxjs/operators';
@@ -20,7 +19,7 @@ export class DropdownTriggerDirective implements OnDestroy {
   private readonly _isDropdownOpen$ = new BehaviorSubject(false);
 
   /** The `Template` to render inside the dropdown */
-  @Input('appDropdownTrigger') public dropdownPanel!: DropdownPanel;
+  @Input('appDropdownTrigger') public dropdownTemplate!: TemplateRef<unknown>;
 
   @HostListener('click') public toggleDropdown(): void {
     if (this._isDropdownOpen$.getValue()) {
@@ -76,18 +75,54 @@ export class DropdownTriggerDirective implements OnDestroy {
     });
 
     // Create a Portal for the template
-    const templatePortal = new TemplatePortal(this.dropdownPanel.templateRef, this._viewContainerReference);
+    const templatePortal = new TemplatePortal(this.dropdownTemplate, this._viewContainerReference);
 
     // Attach the template in the DOM
     overlayReference.attach(templatePortal);
+
+    // Setup the close action
+    this._setupCloseEvent(overlayReference);
+  }
+
+  /**
+   * Subscribes to all actions that can close the dropdown, then when some of them emit close
+   * the dropdown
+   *
+   * @param overlayReference - The overlay to listen to the close actions
+   */
+  private _setupCloseEvent(overlayReference: OverlayRef): void {
+    // When it emits we'll close the dropdown
+    const clicked$ = new Subject<void>();
+
+    // Emits a value to the `clicked$` observable
+    const emitCloseAction = (): void => {
+      clicked$.next();
+      clicked$.complete();
+    };
+
+    // Emits the `clicked$` when clicks inside the dropdown
+    overlayReference.overlayElement.addEventListener('click', () => {
+      emitCloseAction();
+    });
+
+    // Emits the `clicked$` when press `Enter` with the dropdown opened
+    overlayReference.overlayElement.addEventListener('keyup', key => {
+      if (key.code === 'Enter') {
+        emitCloseAction();
+      }
+    });
+
+    overlayReference.attachments().subscribe(() => {
+      overlayReference.overlayElement.focus({});
+    });
 
     overlayReference
       .backdropClick()
       .pipe(
         // Completes when clicked on backdrop
         first(),
-        // Completes when clicked on an item inside dropdown
-        takeUntil(this.dropdownPanel.closed),
+        // Completes when click or press `Enter` inside the dropdown
+        takeUntil(clicked$),
         // Completes when clicked on trigger
         takeUntil(this._isDropdownOpen$.pipe(filter(isFalse))),
         // Completes if the component be destroyed and none of the actions above was trigged

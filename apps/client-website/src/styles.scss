@@ -41,17 +41,6 @@ a {
   color: var(--link);
 }
 
-.mat-snack-bar-container {
-  width: 320px;
-
-  padding: 1rem;
-  margin: 2rem;
-
-  border-radius: var(--radius);
-
-  color: var(--text-primary);
-}
-
 // * Default styles
 html,
 body {
@@ -70,6 +59,7 @@ body {
 }
 
 // * Dropdown
+// TODO: move these styles to directives
 .dropdown-item {
   font-size: var(--large);
   padding: 0.5rem 1rem;
@@ -77,5 +67,31 @@ body {
 
   &:hover {
     background-color: var(--hover);
+  }
+}
+
+.dropdown-item-input {
+  padding: var(--alley);
+  margin-bottom: 0;
+
+  border: none;
+  border-radius: var(--radius);
+
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+
+  width: 100%;
+
+  &:focus {
+    outline: none;
+    box-shadow: inset 0px 0px 0px 2px var(--accent);
+  }
+
+  &:hover {
+    background-color: var(--hover);
+  }
+
+  &[selected='true'] {
+    color: var(--accent);
   }
 }

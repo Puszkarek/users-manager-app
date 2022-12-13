@@ -1,63 +1,58 @@
 import { FormControl } from '@angular/forms';
 import { USER_NAME_MIN_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@front/app/constants/form-settings';
-import { isEqual, isNil } from 'lodash-es';
-import { distinctUntilChanged, map, Observable } from 'rxjs';
+import { isNil } from 'lodash-es';
 
 /**
- * Listen to value changes in the {@link FormControl} then update the error message if has one
+ * Check the errors inside the {@link FormControl} and get the error message if has one
  *
  * @param control - The form control to get the errors message
  * @returns The error message, or `null` if doesn't exist
  */
-export const getEmailInputErrorMessage = (control: FormControl<string>): Observable<string | null> => {
-  return control.valueChanges.pipe(
-    distinctUntilChanged(isEqual),
-    map(() => {
-      const { errors } = control;
+export const getEmailInputErrorMessage = (control: FormControl<string>): string | null => {
+  const { errors, untouched } = control;
 
-      if (isNil(errors)) {
-        return null;
-      }
+  if (untouched) {
+    return null;
+  }
 
-      if (errors['required']) {
-        return 'required';
-      }
-      if (errors['email']) {
-        return 'invalid';
-      }
+  if (isNil(errors)) {
+    return null;
+  }
 
-      return null;
-    }),
-  );
+  if (errors['required']) {
+    return 'required';
+  }
+  if (errors['email']) {
+    return 'invalid';
+  }
+
+  return null;
 };
 
 /**
- * Listen to value changes in the {@link FormControl} then update the error message if has one
+ * Check the errors inside the {@link FormControl} and get the error message if has one
  *
  * @param control - The form control to get the errors message
  * @returns The error message, or `null` if doesn't exist
  */
-export const getNameInputErrorMessage = (control: FormControl<string>): Observable<string | null> => {
-  return control.valueChanges.pipe(
-    distinctUntilChanged(isEqual),
-    map(() => {
-      const { errors } = control;
+export const getNameInputErrorMessage = ({ errors, untouched }: FormControl<string>): string | null => {
+  if (untouched) {
+    return null;
+  }
 
-      if (isNil(errors)) {
-        return null;
-      }
+  if (isNil(errors)) {
+    return null;
+  }
 
-      if (errors['required']) {
-        return 'required';
-      }
+  if (errors['required']) {
+    return 'required';
+  }
 
-      if (errors['minLength']) {
-        return `must have at least ${USER_NAME_MIN_LENGTH} characters`;
-      }
+  if (errors['minLength']) {
+    return `must have at least ${USER_NAME_MIN_LENGTH} characters`;
+  }
 
-      return null;
-    }),
-  );
+  return null;
 };
 
 // * Password inputs
@@ -71,61 +66,57 @@ const PASSWORD_ERROR_MESSAGES = {
 };
 
 /**
- * Listen to value changes in the {@link FormControl} then update the error message if has one
+ * Check the errors inside the {@link FormControl} and get the error message if has one
  *
  * @param control - The form control to get the errors message
  * @returns The error message, or `null` if doesn't exist
  */
-export const getPasswordError = (control: FormControl<string>): Observable<string | null> => {
-  return control.valueChanges.pipe(
-    distinctUntilChanged(isEqual),
-    map(() => {
-      const { errors } = control;
+export const getPasswordError = ({ errors, untouched }: FormControl<string>): string | null => {
+  if (untouched) {
+    return null;
+  }
 
-      if (isNil(errors)) {
-        return null;
-      }
+  if (isNil(errors)) {
+    return null;
+  }
 
-      if (errors['required']) {
-        return PASSWORD_ERROR_MESSAGES.required;
-      }
+  if (errors['required']) {
+    return PASSWORD_ERROR_MESSAGES.required;
+  }
 
-      if (errors['minLength']) {
-        return PASSWORD_ERROR_MESSAGES.minLength;
-      }
+  if (errors['minLength']) {
+    return PASSWORD_ERROR_MESSAGES.minLength;
+  }
 
-      return null;
-    }),
-  );
+  return null;
 };
 
 /**
- * Listen to value changes in the {@link FormControl} then update the error message if has one
+ * Check the errors inside the {@link FormControl} and get the error message if has one
  *
- * @param control - The form control to get the errors message
+ * @param passwordControl - The form control to get the errors message
  * @returns The error message, or `null` if doesn't exist
  */
-export const getConfirmedPasswordError = (control: FormControl<string>): Observable<string | null> => {
-  return control.valueChanges.pipe(
-    distinctUntilChanged(isEqual),
-    map(() => {
-      const { errors: controlErrors } = control;
+export const getConfirmedPasswordError = (passwordControl: FormControl<string>): string | null => {
+  const {
+    errors: controlErrors,
+    untouched,
+    root: { errors: formErrors },
+  } = passwordControl;
 
-      const {
-        root: { errors: formErrors },
-      } = control;
+  if (untouched) {
+    return null;
+  }
 
-      const errors = { ...controlErrors, ...formErrors };
+  const errors = { ...controlErrors, ...formErrors };
 
-      if (errors['required']) {
-        return PASSWORD_ERROR_MESSAGES.required;
-      }
+  if (errors['required']) {
+    return PASSWORD_ERROR_MESSAGES.required;
+  }
 
-      if (errors['isPasswordEqual']) {
-        return PASSWORD_ERROR_MESSAGES.isPasswordEqual;
-      }
+  if (errors['isPasswordEqual']) {
+    return PASSWORD_ERROR_MESSAGES.isPasswordEqual;
+  }
 
-      return null;
-    }),
-  );
+  return null;
 };

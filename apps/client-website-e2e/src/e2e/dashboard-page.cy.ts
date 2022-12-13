@@ -32,5 +32,5 @@ const openHeaderDropdown = (): void => {
   cy.get('button[data-test="dropdown-trigger"]').should('be.visible').click();
 
   // * Should display the dropdown items
-  cy.get('div[data-test="dropdown-container"]').should('be.visible');
+  cy.get('app-dropdown').should('be.visible');
 };

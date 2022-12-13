@@ -3,12 +3,14 @@
 
   <div *ngIf="user" class="user-info">
     <img class="avatar" src="/assets/images/avatar/avatar.svg" alt="User Profile" />
-    <button data-test="dropdown-trigger" [appDropdownTrigger]="userOptionDropdown"
-      ><app-icon>expand_more</app-icon></button
-    >
-    <app-dropdown #userOptionDropdown>
-      <!-- TODO: may it's better to do a directive for that -->
-      <button data-test="dropdown-item" class="dropdown-item" (click)="logoutUser()">Logout</button>
-    </app-dropdown>
+    <button data-test="dropdown-trigger" [appDropdownTrigger]="userOptionDropdown">
+      <app-icon>expand_more</app-icon>
+    </button>
+    <ng-template #userOptionDropdown>
+      <app-dropdown>
+        <!-- TODO: may it's better to do a directive for that -->
+        <button data-test="dropdown-item" class="dropdown-item" (click)="logoutUser()">Logout</button>
+      </app-dropdown>
+    </ng-template>
   </div>
 </div>

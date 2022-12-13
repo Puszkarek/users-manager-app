@@ -88,17 +88,41 @@ export class UserModalFormComponent implements OnInit {
     }),
   );
 
-  /** Emits the input error if has one */
-  public readonly emailError$ = getEmailInputErrorMessage(this.form.controls.email);
+  /** Shows the input error if has one */
+  public get emailError(): string | null {
+    return getEmailInputErrorMessage(this.form.controls.email);
+  }
 
-  /** Emits the input error if has one */
-  public readonly nameError$ = getNameInputErrorMessage(this.form.controls.name);
+  /** Shows the input error if has one */
+  public get nameError(): string | null {
+    return getNameInputErrorMessage(this.form.controls.name);
+  }
 
-  /** Emits the input error if has one */
-  public readonly passwordError$ = getPasswordError(this.form.controls.password);
+  /** Shows the input error if has one */
+  public get passwordError(): string | null {
+    return getPasswordError(this.form.controls.password);
+  }
 
-  /** Emits the input error if has one */
-  public readonly confirmedPasswordError$ = getConfirmedPasswordError(this.form.controls.passwordConfirmed);
+  /** Shows the input error if has one */
+  public get confirmedPasswordError(): string | null {
+    return getConfirmedPasswordError(this.form.controls.passwordConfirmed);
+  }
+
+  /** The items to use in the user's `Rule` input */
+  public readonly dropdownRuleItems = [
+    {
+      label: 'Administrator',
+      value: USER_ROLE.admin,
+    },
+    {
+      label: 'Manager',
+      value: USER_ROLE.manager,
+    },
+    {
+      label: 'Employee',
+      value: USER_ROLE.employee,
+    },
+  ];
 
   constructor(
     @Inject(MODAL_DATA_TOKEN) data: UserModalFormComponentData,
@@ -134,34 +158,36 @@ export class UserModalFormComponent implements OnInit {
    * notification to the user with the `Error`
    */
   public async save(): Promise<void> {
-    if (this.form.valid) {
-      /**
-       * Since this modal will close after change we don't need to care about change to the
-       * previous status after save
-       */
-      this._formStatus$.next('saving');
-
-      /** Get the new values from form */
-      const updatedValues = this.form.getRawValue();
-
-      /** Make a request to the `backend` */
-      const either = await (isNull(this.user)
-        ? this._usersStore.create(updatedValues)
-        : this._usersStore.update({
-            ...this.user,
-            ...updatedValues,
-          }));
-
-      pipe(
-        either,
-        foldW(
-          async error => this._notificationService.error(error.message),
-          user => this.close(user),
-        ),
-      );
-    } else {
+    console.log('values', this.form.value);
+    if (this.form.invalid) {
       this._notificationService.error('Please, check the inputs and try again');
+      return;
     }
+
+    /**
+     * Since this modal will close after change we don't need to care about change to the
+     * previous status after save
+     */
+    this._formStatus$.next('saving');
+
+    /** Get the new values from form */
+    const updatedValues = this.form.getRawValue();
+
+    /** Make a request to the `backend` */
+    const either = await (isNull(this.user)
+      ? this._usersStore.create(updatedValues)
+      : this._usersStore.update({
+          ...this.user,
+          ...updatedValues,
+        }));
+
+    pipe(
+      either,
+      foldW(
+        async error => this._notificationService.error(error.message),
+        user => this.close(user),
+      ),
+    );
   }
 }
 

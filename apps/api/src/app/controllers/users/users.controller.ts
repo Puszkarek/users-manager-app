@@ -8,6 +8,7 @@ import {
   HttpCode,
   HttpException,
   Inject,
+  Logger,
   Param,
   Post,
   Put,
@@ -29,6 +30,8 @@ export class UsersController {
   @HttpCode(REQUEST_STATUS.ok)
   @IsPublic()
   public async loginOne(@Body() loginRequest: LoginRequest): Promise<LoginResponse> {
+    Logger.log(`Login with email: ${loginRequest.email}`);
+
     const either = await this._usersService.login.one(loginRequest);
 
     return executeTask(either);
@@ -37,6 +40,8 @@ export class UsersController {
   @Post('token')
   @HttpCode(REQUEST_STATUS.accepted)
   public async refreshOneToken(@Body() authToken: AuthToken): Promise<LoginResponse> {
+    Logger.log(`Refresh token`);
+
     const either = await this._usersService.token.refresh(authToken);
 
     return executeTask(either);
@@ -45,6 +50,8 @@ export class UsersController {
   // * Crud Operations
   @Post()
   public async createOne(@Body() creatableUser: CreatableUser): Promise<User> {
+    Logger.log(`Creating user: ${creatableUser.email}`);
+
     const either = await this._usersService.create.one(creatableUser);
 
     return executeTask(either);
@@ -52,6 +59,8 @@ export class UsersController {
 
   @Put()
   public async updateOne(@Body() updatableUser: UpdatableUser): Promise<User> {
+    Logger.log(`Updating user: ${updatableUser.email}`);
+
     const either = await this._usersService.update.one(updatableUser);
 
     return executeTask(either);
@@ -59,6 +68,8 @@ export class UsersController {
 
   @Delete(':id')
   public async deleteOne(@Param('id') id: string, @Headers('authorization') rawToken: AuthToken): Promise<void> {
+    Logger.log(`Deleting user: ${id}`);
+
     // TODO: abstract this
     const [tokenType, authToken] = rawToken.split(' '); // TODO: move to a helper
 
@@ -80,6 +91,8 @@ export class UsersController {
   @Get('me')
   @HttpCode(REQUEST_STATUS.accepted)
   public async getUserByToken(@Req() request: Request): Promise<User> {
+    Logger.log(`Getting user with token`);
+
     const authToken = request.header('Authorization')?.split(' ')[1]; // TODO: move to a helper
 
     // TODO: improve it with a pipe or some guard
@@ -95,6 +108,8 @@ export class UsersController {
 
   @Get(':id') // ? dynamic paths (:id) should be the in the end to not override another path
   public async getOne(@Param('id') id: string): Promise<User> {
+    Logger.log(`Getting user with id: ${id}`);
+
     const either = await this._usersService.get.one(id);
 
     return executeTask(either);
@@ -102,6 +117,8 @@ export class UsersController {
 
   @Get()
   public async getAll(): Promise<ReadonlyArray<User>> {
+    Logger.log(`Getting all user`);
+
     const either = await this._usersService.get.all();
 
     return executeTask(either);

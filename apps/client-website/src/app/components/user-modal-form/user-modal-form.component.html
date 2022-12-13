@@ -8,13 +8,13 @@
       <app-form-field-input>
         <label>Email</label>
         <input data-test="user-email-input" type="email" [formControl]="form.controls.email" />
-        <div class="error" *ngIf="emailError$ | async as errorMessage">{{ errorMessage }}</div>
+        <div class="error" *ngIf="emailError as errorMessage">{{ errorMessage }}</div>
       </app-form-field-input>
 
       <app-form-field-input>
         <label>Name</label>
         <input data-test="user-name-input" [formControl]="form.controls.name" />
-        <div class="error" *ngIf="nameError$ | async as errorMessage">{{ errorMessage }}</div>
+        <div class="error" *ngIf="nameError as errorMessage">{{ errorMessage }}</div>
       </app-form-field-input>
     </div>
 
@@ -26,7 +26,7 @@
     <app-form-field-input>
       <label>Password</label>
       <input data-test="user-password-input" type="password" [formControl]="form.controls.password" />
-      <div class="error" *ngIf="passwordError$ | async as errorMessage">{{ errorMessage }}</div>
+      <div class="error" *ngIf="passwordError as errorMessage">{{ errorMessage }}</div>
     </app-form-field-input>
 
     <app-form-field-input>
@@ -35,7 +35,7 @@
         data-test="user-confirmation-password-input"
         type="password"
         [formControl]="form.controls.passwordConfirmed" />
-      <div class="error" *ngIf="confirmedPasswordError$ | async as errorMessage">{{ errorMessage }}</div>
+      <div class="error" *ngIf="confirmedPasswordError as errorMessage">{{ errorMessage }}</div>
     </app-form-field-input>
   </div>
 

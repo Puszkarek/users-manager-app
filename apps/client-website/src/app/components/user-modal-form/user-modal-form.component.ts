@@ -88,20 +88,25 @@ export class UserModalFormComponent implements OnInit {
     }),
   );
 
-  /** Emits the input error if has one */
-  public readonly emailError$ = getEmailInputErrorMessage(this.form.controls.email);
+  /** Shows the input error if has one */
+  public get emailError(): string | null {
+    return getEmailInputErrorMessage(this.form.controls.email);
+  }
 
-  /** Emits the input error if has one */
-  public readonly nameError$ = getNameInputErrorMessage(this.form.controls.name);
+  /** Shows the input error if has one */
+  public get nameError(): string | null {
+    return getNameInputErrorMessage(this.form.controls.name);
+  }
 
-  /** Emits the input error if has one */
-  public readonly passwordError$ = getPasswordError(this.form.controls.password);
+  /** Shows the input error if has one */
+  public get passwordError(): string | null {
+    return getPasswordError(this.form.controls.password);
+  }
 
-  /** Emits the input error if has one */
-  public readonly confirmedPasswordError$ = getConfirmedPasswordError(
-    this.form.controls.password,
-    this.form.controls.passwordConfirmed,
-  );
+  /** Shows the input error if has one */
+  public get confirmedPasswordError(): string | null {
+    return getConfirmedPasswordError(this.form.controls.passwordConfirmed);
+  }
 
   /** The items to use in the user's `Rule` input */
   public readonly dropdownRuleItems = [

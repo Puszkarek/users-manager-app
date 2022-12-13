@@ -1,4 +1,4 @@
-import { ID } from '../interfaces';
+import { ID } from '../interfaces/common.interface';
 
 export enum USER_ROLE {
   admin = 'admin',
@@ -28,7 +28,12 @@ export type CreatableUser = {
   readonly role: USER_ROLE;
 };
 
-export type UserToken = string;
+// TODO: rename to AuthToken
+export type AuthToken = string;
+export type AuthTokenMetadata = {
+  readonly expireAt: Date;
+  readonly userID: string;
+};
 
 export type LoginRequest = {
   readonly email: string;
@@ -37,5 +42,5 @@ export type LoginRequest = {
 
 export type LoginResponse = {
   readonly loggedUser: User;
-  readonly token: UserToken;
+  readonly token: AuthToken;
 };

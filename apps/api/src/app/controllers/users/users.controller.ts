@@ -1,114 +1,109 @@
-import { CreatableUser, UpdatableUser } from '@api-interfaces';
-import { Body, Controller, Delete, Get, Param, Post, Put, Res } from '@nestjs/common';
-import { REQUEST_STATUS } from '@server/infra/constants';
-import { UsersService } from '@server/infra/services';
-import { Response } from 'express';
-import { fold } from 'fp-ts/lib/Either';
-import { pipe } from 'fp-ts/lib/function';
-import { isString } from 'lodash';
+import { AuthToken, CreatableUser, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpCode,
+  HttpException,
+  Inject,
+  Param,
+  Post,
+  Put,
+  Req,
+} from '@nestjs/common';
+import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
+import { executeTask, IsPublic } from '@server/app/helpers/controller';
+import { REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
+import { UsersOperations } from '@server/infra/interfaces/users.interface';
+import { Request } from 'express';
+import { isEmpty, isUndefined } from 'lodash';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly _usersService: UsersService) {}
+  constructor(@Inject(USERS_SERVICE_INJECTABLE_TOKEN) private readonly _usersService: UsersOperations) {}
 
+  // * Login Stuffs
+  @Post('login')
+  @HttpCode(REQUEST_STATUS.ok)
+  @IsPublic()
+  public async loginOne(@Body() loginRequest: LoginRequest): Promise<LoginResponse> {
+    const either = await this._usersService.login.one(loginRequest);
+
+    return executeTask(either);
+  }
+
+  @Post('token')
+  @HttpCode(REQUEST_STATUS.accepted)
+  public async refreshOneToken(@Body() authToken: AuthToken): Promise<LoginResponse> {
+    const either = await this._usersService.token.refresh(authToken);
+
+    return executeTask(either);
+  }
+
+  // * Crud Operations
   @Post()
-  public async createOne(@Res() response: Response, @Body() creatableUser: CreatableUser): Promise<void> {
+  public async createOne(@Body() creatableUser: CreatableUser): Promise<User> {
     const either = await this._usersService.create.one(creatableUser);
 
-    pipe(
-      either,
-      fold(
-        // * On error
-        error => {
-          response.status(REQUEST_STATUS.unauthorized).send(error.message);
-        },
-        // * On success
-        user => {
-          response.status(REQUEST_STATUS.ok).send(user);
-        },
-      ),
-    );
+    return executeTask(either);
   }
 
   @Put()
-  public async updateOne(@Res() response: Response, @Body() updatableUser: UpdatableUser): Promise<void> {
+  public async updateOne(@Body() updatableUser: UpdatableUser): Promise<User> {
     const either = await this._usersService.update.one(updatableUser);
 
-    pipe(
-      either,
-      fold(
-        // * On error
-        error => {
-          response.status(REQUEST_STATUS.unauthorized).send(error.message);
-        },
-        // * On success
-        user => {
-          response.status(REQUEST_STATUS.ok).send(user);
-        },
-      ),
-    );
+    return executeTask(either);
   }
 
-  @Delete()
-  public async deleteOne(@Param('id') id: string, @Res() response: Response): Promise<void> {
-    const either = await this._usersService.delete.one(id);
+  @Delete(':id')
+  public async deleteOne(@Param('id') id: string, @Headers('authorization') rawToken: AuthToken): Promise<void> {
+    // TODO: abstract this
+    const [tokenType, authToken] = rawToken.split(' '); // TODO: move to a helper
 
-    pipe(
-      either,
-      fold(
-        // * On error
-        error => {
-          response.status(REQUEST_STATUS.unauthorized).send(error.message);
-        },
-        // * On success
-        user => {
-          response.status(REQUEST_STATUS.ok).send(user);
-        },
-      ),
-    );
-  }
-
-  @Get(':id')
-  public async getOne(@Param('id') id: string, @Res() response: Response): Promise<void> {
-    // TODO: move to pipe below
-    if (!isString(id)) {
-      // * On wrong data
-      response.status(REQUEST_STATUS.bad);
-      return;
+    // TODO: improve it with a pipe or some guard
+    if (isUndefined(authToken) || isEmpty(authToken) || tokenType !== 'Bearer') {
+      // eslint-disable-next-line functional/no-throw-statement
+      throw new HttpException('Missing authentication token', REQUEST_STATUS.unauthorized);
     }
 
+    const either = await this._usersService.delete.one({
+      idToDelete: id,
+      currentUserToken: authToken,
+    });
+
+    executeTask(either);
+  }
+
+  // * Getters
+  @Get('me')
+  @HttpCode(REQUEST_STATUS.accepted)
+  public async getUserByToken(@Req() request: Request): Promise<User> {
+    const authToken = request.header('Authorization')?.split(' ')[1]; // TODO: move to a helper
+
+    // TODO: improve it with a pipe or some guard
+    if (isUndefined(authToken) || isEmpty(authToken)) {
+      // eslint-disable-next-line functional/no-throw-statement
+      throw new HttpException('Missing authentication token', REQUEST_STATUS.unauthorized);
+    }
+
+    const either = await this._usersService.get.me(authToken);
+
+    return executeTask(either);
+  }
+
+  @Get(':id') // ? dynamic paths (:id) should be the in the end to not override another path
+  public async getOne(@Param('id') id: string): Promise<User> {
     const either = await this._usersService.get.one(id);
-    pipe(
-      either,
-      fold(
-        // * On error
-        error => {
-          response.status(REQUEST_STATUS.unauthorized).send(error.message);
-        },
-        // * On success
-        user => {
-          response.status(REQUEST_STATUS.ok).send(user);
-        },
-      ),
-    );
+
+    return executeTask(either);
   }
 
   @Get()
-  public async getAll(@Res() response: Response): Promise<void> {
+  public async getAll(): Promise<ReadonlyArray<User>> {
     const either = await this._usersService.get.all();
 
-    pipe(
-      either,
-      fold(
-        // * On error
-        error => {
-          response.status(REQUEST_STATUS.unauthorized).send(error.message);
-        },
-        // * On success
-        users => {
-          response.status(REQUEST_STATUS.ok).send(users);
-        },
-      ),
-    );
+    return executeTask(either);
   }
 }

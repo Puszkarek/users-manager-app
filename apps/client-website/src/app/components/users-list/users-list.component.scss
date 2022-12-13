@@ -1,0 +1,110 @@
+:host {
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-bottom: 20px;
+
+  /* TODO (search-input): move to the component */
+  .search-input {
+    padding: 0.5rem;
+
+    font-size: var(--large);
+
+    border: none;
+    border-radius: var(--radius);
+    border: 2px solid var(--text-secondary);
+
+    color: var(--text-secondary);
+    background: var(--bg-primary);
+  }
+}
+
+.container {
+  height: 70vh;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+
+  border-collapse: separate;
+  border-spacing: 0 1em;
+
+  .header {
+    .header-row {
+      font-size: var(--large);
+      th {
+        position: sticky;
+        top: 0;
+
+        background-color: var(--bg-secondary);
+        padding: 16px 0;
+
+        text-align: start;
+        text-indent: var(--alley);
+      }
+    }
+  }
+
+  .main {
+    color: var(--text-secondary);
+  }
+}
+
+.user-card {
+  margin: var(--alley) 0;
+  padding: 2rem;
+
+  font-size: var(--x-large);
+
+  background: var(--bg-primary);
+
+  td {
+    padding: 2rem;
+  }
+
+  .settings {
+    text-align: right;
+
+    .settings-btn {
+      padding: 1rem;
+      border-radius: 50%;
+
+      &:hover {
+        background: var(--hover);
+      }
+    }
+    .delete-btn {
+      color: var(--red);
+    }
+  }
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bg-tertiary-hover);
+}

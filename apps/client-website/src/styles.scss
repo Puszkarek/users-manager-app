@@ -1,0 +1,97 @@
+/* CDK Overlay styles */
+@import '~@angular/cdk/overlay-prebuilt.css';
+
+@import './styles/reset.scss';
+@import './styles/variables.scss';
+@import './styles/themes/dark-theme.scss';
+
+html,
+body {
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+button,
+input {
+  &:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 0.2rem;
+  }
+}
+
+a,
+button {
+  &:focus {
+    opacity: 0.8;
+  }
+}
+
+a {
+  color: var(--link);
+}
+
+// * Default styles
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+// * Modal Overlay
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.4);
+
+  backdrop-filter: blur(0.5rem);
+}
+
+// * Dropdown
+// TODO: move these styles to directives
+.dropdown-item {
+  font-size: var(--large);
+  padding: 0.5rem 1rem;
+  width: 100%;
+
+  &:hover {
+    background-color: var(--hover);
+  }
+}
+
+.dropdown-item-input {
+  padding: var(--alley);
+  margin-bottom: 0;
+
+  border: none;
+  border-radius: var(--radius);
+
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+
+  width: 100%;
+
+  &:focus {
+    outline: none;
+    box-shadow: inset 0px 0px 0px 2px var(--accent);
+  }
+
+  &:hover {
+    background-color: var(--hover);
+  }
+
+  &[selected='true'] {
+    color: var(--accent);
+  }
+}

@@ -1,0 +1,48 @@
+/* TODO: Needs to be abstract, maybe we can use directives */
+:host {
+  .container {
+    background: var(--bg-primary);
+    display: block;
+    position: absolute;
+
+    top: 50%;
+    right: 50%;
+
+    transform: translate(50%, -50%);
+
+    padding: 3rem 4rem;
+    border-radius: calc(var(--radius) * 3);
+  }
+}
+
+.modal-header {
+  margin: 0 0 2rem 0;
+  .title {
+    margin: 0;
+  }
+
+  hr {
+    border: 0;
+    height: 1px;
+    background: var(--text-primary);
+  }
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 5%;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+
+  gap: var(--alley);
+
+  app-form-field-input,
+  app-select-input {
+    max-width: 180px;
+  }
+}

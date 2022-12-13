@@ -1,0 +1,86 @@
+{
+  "root": true,
+  "ignorePatterns": ["**/*"],
+  "overrides": [
+    // * Angular Rules
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
+        "project": ["tsconfig.base.json"],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "plugin:@nrwl/nx/angular",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
+      "plugins": ["@angular-eslint", "@angular-eslint/template"],
+      "rules": {
+        // Angular rules
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "app",
+            "style": "kebab-case"
+          }
+        ],
+        "@angular-eslint/contextual-decorator": "error",
+        "@angular-eslint/contextual-lifecycle": "error",
+        "@angular-eslint/no-attribute-decorator": "error",
+        "@angular-eslint/no-lifecycle-call": "error",
+        "@angular-eslint/no-output-native": "error",
+        "@angular-eslint/no-pipe-impure": "error",
+        "@angular-eslint/prefer-on-push-component-change-detection": "error",
+
+        "@angular-eslint/use-injectable-provided-in": "error",
+        "@angular-eslint/use-lifecycle-interface": "error",
+        "@angular-eslint/component-max-inline-declarations": [
+          "error",
+          { "animations": 20, "styles": 8, "template": 5 }
+        ],
+        "@angular-eslint/no-conflicting-lifecycle": "error",
+        "@angular-eslint/no-input-prefix": "error",
+        "@angular-eslint/no-output-on-prefix": "error",
+        "@angular-eslint/no-output-rename": "error",
+        "@angular-eslint/prefer-output-readonly": "error",
+        "@angular-eslint/relative-url-prefix": "error",
+        "@angular-eslint/use-component-selector": "error",
+        "@angular-eslint/use-component-view-encapsulation": "error",
+        "@angular-eslint/use-pipe-transform-interface": "error",
+        "@angular-eslint/component-class-suffix": "error",
+        "@angular-eslint/no-host-metadata-property": "error",
+        "@angular-eslint/no-inputs-metadata-property": "error",
+        "@angular-eslint/no-outputs-metadata-property": "error",
+        "@angular-eslint/no-queries-metadata-property": "error"
+      }
+    },
+    // * HTML Rules
+    {
+      "files": ["*.html"],
+      "extends": ["plugin:@nrwl/nx/angular-template", "plugin:@angular-eslint/template/recommended"],
+      "rules": {
+        "@angular-eslint/template/accessibility-alt-text": "error",
+        "@angular-eslint/template/accessibility-elements-content": "error",
+        "@angular-eslint/template/accessibility-table-scope": "error",
+        "@angular-eslint/template/accessibility-valid-aria": "error",
+        "@angular-eslint/template/click-events-have-key-events": "error",
+        "@angular-eslint/template/no-any": "error",
+        "@angular-eslint/template/no-distracting-elements": "error",
+        "@angular-eslint/template/no-negated-async": "error",
+        "@angular-eslint/template/conditional-complexity": ["error"],
+        "@angular-eslint/template/cyclomatic-complexity": "error",
+        "@angular-eslint/template/no-call-expression": "off",
+        "@angular-eslint/template/use-track-by-function": "error"
+      }
+    }
+  ]
+}

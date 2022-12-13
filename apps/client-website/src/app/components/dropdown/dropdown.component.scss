@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  border-radius: var(--radius);
+
+  background-color: var(--bg-tertiary);
+  box-shadow: 0 10px 20px rgba(64, 64, 64, 0.15);
+
+  overflow: hidden;
+}

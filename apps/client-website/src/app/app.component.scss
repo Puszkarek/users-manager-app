@@ -1,0 +1,24 @@
+:host {
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+}
+
+.wrapper {
+  display: flex;
+
+  height: 100%;
+
+  overflow: hidden;
+
+  .app-container {
+    height: 100%;
+    width: 100%;
+
+    padding: var(--alley);
+  }
+}

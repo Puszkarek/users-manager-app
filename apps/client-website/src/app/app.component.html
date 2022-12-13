@@ -1,0 +1,13 @@
+<!-- * Header -->
+<app-header [user]="loggedUser$ | async" (logout)="logout()"></app-header>
+
+<!-- * Main -->
+<div class="wrapper">
+  <app-nav-bar *ngIf="isAuthenticated$ | async" class="nav-bar"></app-nav-bar>
+  <div class="app-container">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<!-- * Notification Portal -->
+<ng-template cdkPortal></ng-template>

@@ -1,0 +1,43 @@
+:host ::ng-deep {
+  .error {
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    font-size: var(--small);
+
+    color: var(--red);
+  }
+
+  label {
+    white-space: nowrap;
+    display: block;
+    font-size: var(--larger);
+  }
+
+  input {
+    padding: var(--alley);
+    margin-bottom: 0;
+
+    border: none;
+    border-radius: var(--radius);
+
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+
+  margin-bottom: 1rem;
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 5%;
+
+    margin-bottom: 0.25rem;
+  }
+}

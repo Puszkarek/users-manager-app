@@ -1,0 +1,8 @@
+<div class="container">
+  <a>
+    <app-icon [routerLink]="['/dashboard']" routerLinkActive="active">grid_view</app-icon>
+  </a>
+  <a *ngIf="isAdmin$ | async">
+    <app-icon [routerLink]="['/admin', 'users']" routerLinkActive="active">person</app-icon>
+  </a>
+</div>

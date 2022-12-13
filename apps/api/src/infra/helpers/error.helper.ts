@@ -1,3 +1,4 @@
+import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces';
 import { isError } from 'lodash';
 
 export const extractError = (value: unknown): Error => {
@@ -6,3 +7,8 @@ export const extractError = (value: unknown): Error => {
   }
   return new Error('Unknown Error');
 };
+
+export const createExceptionError = (message: string, statusCode: REQUEST_STATUS): ExceptionError => ({
+  message,
+  statusCode,
+});

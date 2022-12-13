@@ -1,10 +1,19 @@
 {
+  "semi": true,
   "arrowParens": "avoid",
   "useTabs": false,
   "bracketSpacing": true,
   "bracketSameLine": true,
   "singleQuote": true,
   "trailingComma": "all",
+  "quoteProps": "consistent",
   "printWidth": 120,
-  "htmlWhitespaceSensitivity": "strict"
+  "htmlWhitespaceSensitivity": "strict",
+  "tsdoc": true,
+  "jsdocPrintWidth": 95,
+  "jsdocCapitalizeDescription": true,
+  "jsdocPreferCodeFences": true,
+  "jsdocSingleLineComment": true,
+  "jsdocKeepUnParseAbleExampleIndent": true,
+  "jsdocLineWrappingStyle": "greedy"
 }

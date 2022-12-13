@@ -1,7 +1,0 @@
-<div class="field-container" *ngIf="formControl" appearance="fill">
-  <div class="header-container">
-    <label class="label" *ngIf="label">{{ label }}</label>
-    <ng-content select=".error"></ng-content>
-  </div>
-  <input matInput [formControl]="formControl" [type]="type" [placeholder]="placeholder" />
-</div>

@@ -158,7 +158,6 @@ export class UserModalFormComponent implements OnInit {
    * notification to the user with the `Error`
    */
   public async save(): Promise<void> {
-    console.log('values', this.form.value);
     if (this.form.invalid) {
       this._notificationService.error('Please, check the inputs and try again');
       return;

@@ -5,7 +5,7 @@ on:
     branches: [master]
 
 jobs:
-  deploy-prod:
+  deploy:
     runs-on: ubuntu-latest
     env:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}

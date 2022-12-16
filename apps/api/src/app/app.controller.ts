@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+
 import { IsPublic } from './helpers/controller';
 
 @Controller()

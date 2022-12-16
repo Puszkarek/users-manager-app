@@ -1,0 +1,27 @@
+name: Deploy API on Heroku
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    env:
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      APP_NAME: ${{ secrets.HEROKU_API_APP_NAME }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Docker's image
+        run: docker build -t registry.heroku.com/$APP_NAME/web -f Dockerfile.api .
+
+      - name: Login in Heroku
+        run: heroku container:login
+
+      - name: Push the Docker's image
+        run: docker push registry.heroku.com/$APP_NAME/web
+
+      - name: Release API
+        run: heroku container:release -a $APP_NAME web

@@ -1,0 +1,22 @@
+# P.S: This damn don't work when moved to `apps/api`, try to find out why and move there again
+
+# Install Node
+FROM node:18.12.1-alpine
+
+# Create app directory
+WORKDIR /usr/src/app
+
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json decorate-angular-cli.js ./
+
+# Install app dependencies
+RUN npm ci
+
+# Bundle app source
+COPY . .
+
+# Creates a "dist" folder with the production build
+RUN npm run build:api:prod
+
+# Start the server using the production build
+CMD [ "node", "dist/apps/api/main.js" ]

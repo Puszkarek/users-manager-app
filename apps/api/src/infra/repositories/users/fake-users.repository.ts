@@ -11,6 +11,7 @@ import { tryCatch } from 'fp-ts/lib/TaskEither';
 import { List, Map } from 'immutable';
 import * as jose from 'jose';
 import { isString } from 'lodash';
+import { timer } from 'rxjs';
 
 // TODO: replace `JWTVerifyResult` by a abstract interface
 
@@ -34,6 +35,18 @@ export class FakeUsersRepository implements UsersRepository {
   // * Token
   /** The key that we use to encrypt the token, so that it just can be read at our backend */
   private readonly _tokenSecret = new TextEncoder().encode('ADD-SECRET-KEY-LATER'); // TODO: move to `.env`
+
+  constructor() {
+    const MILLISECONDS_INTERVAL = 7_200_000; // 2 hours
+
+    // * Reset the repository each x seconds
+    timer(MILLISECONDS_INTERVAL, MILLISECONDS_INTERVAL).subscribe(() => {
+      // Re-init the user list
+      this._users = List([DEFAULT_USER]);
+      // Re-init the password list
+      this._passwords = Map<string, string>({ [DEFAULT_USER.id]: DEFAULT_USER_PASSWORD });
+    });
+  }
 
   /**
    * Fetch all the available users in our database

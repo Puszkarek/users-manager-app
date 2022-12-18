@@ -2,6 +2,15 @@
 
 This is a 'little' example of how an app constructed using Functional-reactive patterns (FRP)
 
+You can access the demo [here](https://users-manager-www.vercel.app/) using the following user:
+
+```
+Email: admin@admin
+Password: admin
+```
+
+**P.S: the users repository is cleaned each 2 hours**
+
 ## Development server
 
 Run `npm run serve:www` and `npm run serve:api` to be able to run locally. Navigate to `http://localhost:4200/`. The application will automatically reload if you change one of the source files.

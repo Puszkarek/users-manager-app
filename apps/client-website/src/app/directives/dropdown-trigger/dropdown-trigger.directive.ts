@@ -63,7 +63,7 @@ export class DropdownTriggerDirective implements OnDestroy {
         .withPositions([
           {
             // Set axis origin
-            originX: 'end',
+            originX: 'center',
             originY: 'bottom',
             // Set the overlay axis
             overlayX: 'center',

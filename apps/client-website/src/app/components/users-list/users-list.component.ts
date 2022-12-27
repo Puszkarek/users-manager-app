@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { User, USER_ROLE } from '@api-interfaces';
-import { UserModalFormComponent, UserModalFormComponentData } from '@front/app/components/user-modal-form';
+import { UserFormModalComponent, UserFormModalComponentData } from '@front/app/components/user-form-modal';
 import { ModalService } from '@front/app/services/modal';
 import { NotificationService } from '@front/app/services/notification';
 import { UsersStore } from '@front/app/stores/users';
@@ -29,11 +29,11 @@ export class UsersListComponent {
    * @param user - The user to edit, null if we want to update
    */
   public openForm(user: User | null = null): void {
-    const userModalData: UserModalFormComponentData = {
+    const userModalData: UserFormModalComponentData = {
       user: user,
     };
 
-    this._modalService.openModal(UserModalFormComponent, userModalData);
+    this._modalService.openModal(UserFormModalComponent, userModalData);
   }
 
   /**

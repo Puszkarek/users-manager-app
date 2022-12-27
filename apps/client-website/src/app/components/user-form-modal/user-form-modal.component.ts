@@ -18,15 +18,13 @@ import { foldW } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { isNull } from 'lodash-es';
 import { BehaviorSubject, filter, map } from 'rxjs';
-
-// TODO: rename to `user-form-modal`
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'app-user-modal-form',
-  styleUrls: ['./user-modal-form.component.scss'],
-  templateUrl: './user-modal-form.component.html',
+  selector: 'app-user-form-modal',
+  styleUrls: ['./user-form-modal.component.scss'],
+  templateUrl: './user-form-modal.component.html',
 })
-export class UserModalFormComponent implements OnInit {
+export class UserFormModalComponent implements OnInit {
   /** The {@link User} that we wanna `edit`, If `null` means that we are `creating` a new user */
   public readonly user: User | null = null;
 
@@ -121,7 +119,7 @@ export class UserModalFormComponent implements OnInit {
   ];
 
   constructor(
-    @Inject(MODAL_DATA_TOKEN) data: UserModalFormComponentData,
+    @Inject(MODAL_DATA_TOKEN) data: UserFormModalComponentData,
     private readonly _modalReference: ModalReference,
     private readonly _fb: NonNullableFormBuilder,
     private readonly _notificationService: NotificationService,
@@ -186,7 +184,7 @@ export class UserModalFormComponent implements OnInit {
   }
 }
 
-/** The data that we can inject in {@link UserModalFormComponent} while open the `modal` */
-export type UserModalFormComponentData = {
+/** The data that we can inject in {@link UserFormModalComponent} while open the `modal` */
+export type UserFormModalComponentData = {
   readonly user: User | null;
 };

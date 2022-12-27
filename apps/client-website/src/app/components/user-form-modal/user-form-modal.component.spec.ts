@@ -2,17 +2,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
 import { StoreTestingModule } from '@front/app/stores/root/store-testing.module';
 
-import { UserModalFormComponent } from './user-modal-form.component';
-import { UserModalFormModule } from './user-modal-form.module';
+import { UserFormModalComponent } from './user-form-modal.component';
+import { UserFormModalModule } from './user-form-modal.module';
 
-describe(UserModalFormComponent.name, () => {
-  let component: UserModalFormComponent;
-  let fixture: ComponentFixture<UserModalFormComponent>;
+describe(UserFormModalComponent.name, () => {
+  let component: UserFormModalComponent;
+  let fixture: ComponentFixture<UserFormModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [UserModalFormComponent],
-      imports: [StoreTestingModule, UserModalFormModule],
+      declarations: [UserFormModalComponent],
+      imports: [StoreTestingModule, UserFormModalModule],
       providers: [
         {
           provide: MODAL_DATA_TOKEN,
@@ -23,7 +23,7 @@ describe(UserModalFormComponent.name, () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(UserModalFormComponent);
+    fixture = TestBed.createComponent(UserFormModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

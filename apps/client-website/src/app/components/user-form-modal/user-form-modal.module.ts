@@ -6,11 +6,11 @@ import { FormFieldInputModule } from '@front/app/components/form-field-input';
 import { NotificationModule } from '@front/app/services/notification';
 
 import { SelectInputModule } from '../select-input/select-input.module';
-import { UserModalFormComponent } from './user-modal-form.component';
+import { UserFormModalComponent } from './user-form-modal.component';
 
 @NgModule({
-  declarations: [UserModalFormComponent],
-  exports: [UserModalFormComponent],
+  declarations: [UserFormModalComponent],
+  exports: [UserFormModalComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -20,4 +20,4 @@ import { UserModalFormComponent } from './user-modal-form.component';
     SelectInputModule,
   ],
 })
-export class UserModalFormModule {}
+export class UserFormModalModule {}

@@ -40,7 +40,7 @@ export class ModalService implements OnDestroy {
    * @param data - The optional data to inject inside modal
    * @returns A subscription that will emit after the the close action be triggered
    */
-  public openModal<ModalOutputData, ModalInputData>(
+  public open<ModalOutputData, ModalInputData>(
     component: Type<unknown>,
     data?: ModalInputData,
   ): {

@@ -33,7 +33,7 @@ export class UsersListComponent {
       user: user,
     };
 
-    this._modalService.openModal(UserFormModalComponent, userModalData);
+    this._modalService.open(UserFormModalComponent, userModalData);
   }
 
   /**

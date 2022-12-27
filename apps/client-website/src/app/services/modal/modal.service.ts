@@ -1,9 +1,28 @@
 import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { Injectable, InjectionToken, Injector, OnDestroy, Type, ViewContainerRef } from '@angular/core';
+import { Injectable, Injector, OnDestroy, Type, ViewContainerRef } from '@angular/core';
 import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
 import { Observable, Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
+
+@Injectable({
+  providedIn: 'platform',
+})
+export class ModalReference<T = unknown> {
+  /** Emits when we wanna close the modal */
+  private readonly _close$ = new Subject<T>();
+  public readonly close$ = this._close$.asObservable();
+
+  /**
+   * Triggers an action to close the modal
+   *
+   * @param data - The output data to send to emit when closed
+   */
+  public close(data: T): void {
+    this._close$.next(data);
+    this._close$.complete();
+  }
+}
 
 @Injectable({
   providedIn: 'any',
@@ -40,9 +59,7 @@ export class ModalService implements OnDestroy {
    * @returns A subscription that will emit after the the close action be triggered
    */
   public openModal<ModalOutputData, ModalInputData>(
-    component: Type<{
-      readonly close$: Observable<ModalOutputData>;
-    }>,
+    component: Type<unknown>,
     data?: ModalInputData,
   ): {
     readonly data$: Observable<ModalOutputData>;
@@ -51,8 +68,23 @@ export class ModalService implements OnDestroy {
     const overlayConfig = this._getOverlayConfig();
     const overlayReference = this._overlay.create(overlayConfig);
 
+    // * Inject the required data
+    const modalReference = new ModalReference<ModalOutputData>();
+    const injector = Injector.create({
+      providers: [
+        {
+          provide: MODAL_DATA_TOKEN,
+          useValue: data,
+        },
+        {
+          provide: ModalReference,
+          useValue: modalReference,
+        },
+      ],
+    });
+
     // * Create component portal
-    const injector = this._createInjector(MODAL_DATA_TOKEN, data);
+
     const containerPortal = new ComponentPortal(component, this._viewContainerReference, injector);
 
     // * Attach to the view
@@ -64,11 +96,12 @@ export class ModalService implements OnDestroy {
       .pipe(
         first(),
         // Completes when the close action be triggered
-        takeUntil(reference.instance.close$),
+        takeUntil(modalReference.close$),
         takeUntil(this._unsubscribe$),
       )
       .subscribe({
         complete: () => {
+          reference.destroy();
           overlayReference.detach();
           overlayReference.dispose();
         },
@@ -76,28 +109,8 @@ export class ModalService implements OnDestroy {
 
     // * Returns the data
     return {
-      data$: reference.instance.close$,
+      data$: modalReference.close$,
     };
-  }
-
-  // TODO: can be a helper
-  // TODO: rename to `injectData`
-  /**
-   * Create a Injector and provide data to the given Token
-   *
-   * @param token - The token where the data will be injected
-   * @param data - The data to be inject
-   * @returns An instance of `Injector` with the data injected
-   */
-  private _createInjector<T>(token: InjectionToken<string>, data: T): Injector {
-    return Injector.create({
-      providers: [
-        {
-          provide: token,
-          useValue: data,
-        },
-      ],
-    });
   }
 
   /**

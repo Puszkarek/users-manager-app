@@ -1,0 +1,26 @@
+// * Main Styles
+
+input {
+  background-color: var(--bg-accent);
+  color: var(--text-accent);
+}
+
+a {
+  color: var(--link);
+}
+
+// * States Styles
+button,
+input {
+  &:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 0.2rem;
+  }
+}
+
+a,
+button {
+  &:hover {
+    opacity: 0.8;
+  }
+}

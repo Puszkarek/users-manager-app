@@ -2,27 +2,9 @@ import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { Injectable, Injector, OnDestroy, Type, ViewContainerRef } from '@angular/core';
 import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
+import { ModalReference } from '@front/app/services/modal-reference';
 import { Observable, Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
-
-@Injectable({
-  providedIn: 'platform',
-})
-export class ModalReference<T = unknown> {
-  /** Emits when we wanna close the modal */
-  private readonly _close$ = new Subject<T>();
-  public readonly close$ = this._close$.asObservable();
-
-  /**
-   * Triggers an action to close the modal
-   *
-   * @param data - The output data to send to emit when closed
-   */
-  public close(data: T): void {
-    this._close$.next(data);
-    this._close$.complete();
-  }
-}
 
 @Injectable({
   providedIn: 'any',

@@ -4,7 +4,7 @@ import { isUser, User, USER_ROLE } from '@api-interfaces';
 import { USER_NAME_MIN_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@front/app/constants/form-settings';
 import { MODAL_DATA_TOKEN } from '@front/app/constants/modal';
 import { FormStatus } from '@front/app/interfaces/form';
-import { ModalReference } from '@front/app/services/modal';
+import { ModalReference } from '@front/app/services/modal-reference';
 import { NotificationService } from '@front/app/services/notification';
 import { UsersStore } from '@front/app/stores/users';
 import { CUSTOM_VALIDATORS } from '@front/app/utils';

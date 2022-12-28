@@ -110,7 +110,18 @@
         "no-useless-concat": "error",
         "no-useless-rename": "error",
         "no-useless-return": "error",
-        "prefer-destructuring": "error",
+        "prefer-destructuring": [
+          "error",
+          {
+            "VariableDeclarator": {
+              "array": false,
+              "object": true
+            }
+          },
+          {
+            "enforceForRenamedProperties": false
+          }
+        ],
         "prefer-object-spread": "error",
         "prefer-template": "error",
         "quote-props": ["error", "consistent-as-needed"],

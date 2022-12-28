@@ -15,7 +15,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
-import { executeTask, IsPublic } from '@server/app/helpers/controller';
+import { executeEither, IsPublic } from '@server/app/helpers/controller';
 import { REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
 import { UsersOperations } from '@server/infra/interfaces/users.interface';
 import { Request } from 'express';
@@ -34,7 +34,7 @@ export class UsersController {
 
     const either = await this._usersService.login.one(loginRequest);
 
-    return executeTask(either);
+    return executeEither(either);
   }
 
   @Post('token')
@@ -44,7 +44,7 @@ export class UsersController {
 
     const either = await this._usersService.token.refresh(authToken);
 
-    return executeTask(either);
+    return executeEither(either);
   }
 
   // * Crud Operations
@@ -54,7 +54,7 @@ export class UsersController {
 
     const either = await this._usersService.create.one(creatableUser);
 
-    return executeTask(either);
+    return executeEither(either);
   }
 
   @Put()
@@ -63,7 +63,7 @@ export class UsersController {
 
     const either = await this._usersService.update.one(updatableUser);
 
-    return executeTask(either);
+    return executeEither(either);
   }
 
   @Delete(':id')
@@ -84,7 +84,7 @@ export class UsersController {
       currentUserToken: authToken,
     });
 
-    executeTask(either);
+    executeEither(either);
   }
 
   // * Getters
@@ -103,7 +103,7 @@ export class UsersController {
 
     const either = await this._usersService.get.me(authToken);
 
-    return executeTask(either);
+    return executeEither(either);
   }
 
   @Get(':id') // ? dynamic paths (:id) should be the in the end to not override another path
@@ -112,7 +112,7 @@ export class UsersController {
 
     const either = await this._usersService.get.one(id);
 
-    return executeTask(either);
+    return executeEither(either);
   }
 
   @Get()
@@ -121,6 +121,6 @@ export class UsersController {
 
     const either = await this._usersService.get.all();
 
-    return executeTask(either);
+    return executeEither(either);
   }
 }

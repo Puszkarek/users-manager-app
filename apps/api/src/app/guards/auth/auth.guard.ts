@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/commo
 import { Reflector } from '@nestjs/core';
 import { PUBLIC_ROUTE_KEY } from '@server/app/constants/guard';
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
-import { executeTask } from '@server/app/helpers/controller';
+import { executeEither } from '@server/app/helpers/controller';
 import { makeIsRequestAuthenticated } from '@server/infra/guards/auth';
 import { UsersOperations } from '@server/infra/interfaces';
 import { Request } from 'express';
@@ -27,7 +27,7 @@ export class AuthGuard implements CanActivate {
     const either = await this._validator(request);
 
     /** Will throw a `HttpException` if invalid */
-    executeTask(either);
+    executeEither(either);
 
     return true;
   }

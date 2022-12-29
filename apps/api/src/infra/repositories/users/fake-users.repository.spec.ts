@@ -75,7 +75,7 @@ describe(FakeUsersRepository.name, () => {
       it('should NOT find the user when pass a INVALID token', async () => {
         expect.hasAssertions();
 
-        const userO = await repository.findByToken('this-is-a-token-trust-me-i-am-a-dolphin');
+        const userO = await repository.findByToken('this-is-a-token-trust-me-i-am-a-dolphin')();
 
         expect(isNone(userO)).toBe(true);
       });
@@ -170,7 +170,7 @@ describe(FakeUsersRepository.name, () => {
         const initialUsers = fromRight(await repository.all());
 
         // Delete the default user
-        const deleteE = await repository.delete(DEFAULT_USER.id);
+        const deleteE = await repository.delete(DEFAULT_USER.id)();
         expect(isRight(deleteE)).toBe(true);
 
         // Get the current list of user in the system

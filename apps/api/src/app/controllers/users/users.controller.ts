@@ -1,25 +1,12 @@
 import { AuthToken, CreatableUser, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Headers,
-  HttpCode,
-  HttpException,
-  Inject,
-  Logger,
-  Param,
-  Post,
-  Put,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, HttpCode, Inject, Logger, Param, Post, Put } from '@nestjs/common';
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
 import { executeEither, IsPublic } from '@server/app/helpers/controller';
+import { parseRawToken } from '@server/infra/helpers/token';
 import { REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
 import { UsersOperations } from '@server/infra/interfaces/users.interface';
-import { Request } from 'express';
-import { isEmpty, isUndefined } from 'lodash';
+import { taskEither } from 'fp-ts';
+import { pipe } from 'fp-ts/lib/function';
 
 @Controller('users')
 export class UsersController {
@@ -42,7 +29,7 @@ export class UsersController {
   public async refreshOneToken(@Body() authToken: AuthToken): Promise<LoginResponse> {
     Logger.log(`Refresh token`);
 
-    const either = await this._usersService.token.refresh(authToken);
+    const either = await this._usersService.token.refresh(authToken)();
 
     return executeEither(either);
   }
@@ -70,19 +57,22 @@ export class UsersController {
   public async deleteOne(@Param('id') id: string, @Headers('authorization') rawToken: AuthToken): Promise<void> {
     Logger.log(`Deleting user: ${id}`);
 
-    // TODO: abstract this
-    const [tokenType, authToken] = rawToken.split(' '); // TODO: move to a helper
+    const task = pipe(
+      // * Parse the raw token
+      rawToken,
+      parseRawToken,
+      taskEither.fromEither,
+      // * Delete the user
+      taskEither.chain(token =>
+        this._usersService.delete.one({
+          idToDelete: id,
+          currentUserToken: token,
+        }),
+      ),
+    );
 
-    // TODO: improve it with a pipe or some guard
-    if (isUndefined(authToken) || isEmpty(authToken) || tokenType !== 'Bearer') {
-      // eslint-disable-next-line functional/no-throw-statement
-      throw new HttpException('Missing authentication token', REQUEST_STATUS.unauthorized);
-    }
-
-    const either = await this._usersService.delete.one({
-      idToDelete: id,
-      currentUserToken: authToken,
-    });
+    // * Execute the task
+    const either = await task();
 
     executeEither(either);
   }
@@ -90,18 +80,18 @@ export class UsersController {
   // * Getters
   @Get('me')
   @HttpCode(REQUEST_STATUS.accepted)
-  public async getUserByToken(@Req() request: Request): Promise<User> {
+  public async getUserByToken(@Headers('authorization') rawToken: AuthToken): Promise<User> {
     Logger.log(`Getting user with token`);
 
-    const authToken = request.header('Authorization')?.split(' ')[1]; // TODO: move to a helper
-
-    // TODO: improve it with a pipe or some guard
-    if (isUndefined(authToken) || isEmpty(authToken)) {
-      // eslint-disable-next-line functional/no-throw-statement
-      throw new HttpException('Missing authentication token', REQUEST_STATUS.unauthorized);
-    }
-
-    const either = await this._usersService.get.me(authToken);
+    const task = pipe(
+      // * Parse the raw token
+      rawToken,
+      parseRawToken,
+      taskEither.fromEither,
+      // * Get the user that belongs to the user
+      taskEither.chain(this._usersService.get.me),
+    );
+    const either = await task();
 
     return executeEither(either);
   }

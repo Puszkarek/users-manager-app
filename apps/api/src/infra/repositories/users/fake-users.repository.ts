@@ -5,9 +5,11 @@ import { AuthToken, ID, User, USER_ROLE } from '@api-interfaces';
 import { createExceptionError, extractError } from '@server/infra/helpers/error.helper';
 import { UsersRepository } from '@server/infra/interfaces';
 import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
-import { Either, isLeft, isRight, left, right } from 'fp-ts/lib/Either';
+import { taskEither, taskOption } from 'fp-ts';
+import { Either, right } from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
 import { fromNullable, Option } from 'fp-ts/lib/Option';
-import { tryCatch } from 'fp-ts/lib/TaskEither';
+import { TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 import { List, Map } from 'immutable';
 import * as jose from 'jose';
 import { isString } from 'lodash';
@@ -88,20 +90,17 @@ export class FakeUsersRepository implements UsersRepository {
    * @param token - The token that belongs to the user
    * @returns An {@link Option} containing the found `User` or nothing
    */
-  public async findByToken(token: AuthToken): Promise<Option<User>> {
-    const tokenE = await this._parseToken(token);
-    if (isLeft(tokenE)) {
-      return fromNullable(null);
-    }
-
-    const { userID } = tokenE.right.payload;
-    if (!isString(userID)) {
-      return fromNullable(null);
-    }
-
-    const userFounded = this._users.find(user => user.id === userID);
-
-    return fromNullable(userFounded);
+  public findByToken(token: AuthToken): taskOption.TaskOption<User> {
+    return pipe(
+      // * Parse the token
+      token,
+      this.parseToken,
+      taskOption.fromTaskEither,
+      // * Extract the `userID` from payload
+      taskOption.chain(({ payload: { userID } }) => taskOption.fromNullable(isString(userID) ? userID : null)), // TODO: improve validation
+      // * Try to find the user
+      taskOption.chain(userID => taskOption.fromNullable(this._users.find(user => user.id === userID))),
+    );
   }
 
   // * Crud User Actions
@@ -112,9 +111,9 @@ export class FakeUsersRepository implements UsersRepository {
    * @param id - The {@link ID} from the user that we wanna delete
    * @returns On success it'll be void, otherwise the error that happened
    */
-  public async delete(id: ID): Promise<Either<ExceptionError, void>> {
+  public delete(id: ID): taskEither.TaskEither<ExceptionError, void> {
     this._users = this._users.filter(user => user.id !== id);
-    return right(void 0);
+    return taskEither.right(void 0);
   }
 
   /**
@@ -173,30 +172,17 @@ export class FakeUsersRepository implements UsersRepository {
    * @param userID - The id
    * @returns The token that was generated
    */
-  public async generateToken(userID: User['id']): Promise<Either<ExceptionError, AuthToken>> {
+  public generateToken(userID: User['id']): TaskEither<ExceptionError, AuthToken> {
     // Verify if the user exists
     if (!this._users.some(user => user.id === userID)) {
-      return left(createExceptionError('Given user ID is invalid', REQUEST_STATUS.bad));
+      return taskEither.left(createExceptionError('Given user ID is invalid', REQUEST_STATUS.bad));
     }
 
-    // Create the new token
-    const newToken = await this._createToken(userID);
-
-    // Returns the token ID
-    return right(newToken);
-  }
-
-  /**
-   * Parse the given token and validate
-   *
-   * @param token - The token to parse and validate
-   * @returns True if it's valid, otherwise false
-   */
-  public async isAuthTokenValid(token: AuthToken): Promise<boolean> {
-    // Get the real user password
-    const tokenMetadata = await this._parseToken(token);
-
-    return isRight(tokenMetadata);
+    return pipe(
+      // * Create the new token
+      userID,
+      this._createToken,
+    );
   }
 
   // TODO: move tokens methods to a single interface
@@ -207,16 +193,18 @@ export class FakeUsersRepository implements UsersRepository {
    * @param userID - The user {@link ID} to attach in the token
    * @returns The generated token
    */
-  private async _createToken(userID: string): Promise<AuthToken> {
-    const JWT = await new jose.SignJWT({ userID })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setIssuedAt()
-      .setIssuer('urn:example:issuer') // TODO: i don't know what really is it
-      .setAudience('urn:example:audience')
-      .setExpirationTime('1d')
-      .sign(this._tokenSecret);
-
-    return JWT;
+  private _createToken(userID: string): TaskEither<ExceptionError, AuthToken> {
+    return taskEither.tryCatch(
+      async () =>
+        await new jose.SignJWT({ userID })
+          .setProtectedHeader({ alg: 'HS256' })
+          .setIssuedAt()
+          .setIssuer('urn:example:issuer') // TODO: i don't know what really is it
+          .setAudience('urn:example:audience')
+          .setExpirationTime('1d')
+          .sign(this._tokenSecret),
+      error => createExceptionError(extractError(error).message, REQUEST_STATUS.bad),
+    );
   }
 
   /**
@@ -231,8 +219,8 @@ export class FakeUsersRepository implements UsersRepository {
    * @param JWT - The token to parse
    * @returns On success the parsed token, otherwise the error that happened
    */
-  private async _parseToken(JWT: AuthToken): Promise<Either<ExceptionError, jose.JWTVerifyResult>> {
-    const taskEither = tryCatch(
+  public parseToken(JWT: AuthToken): TaskEither<ExceptionError, jose.JWTVerifyResult> {
+    return tryCatch(
       async () => {
         const parsedJWT = await jose.jwtVerify(JWT, this._tokenSecret, {
           issuer: 'urn:example:issuer',
@@ -244,7 +232,5 @@ export class FakeUsersRepository implements UsersRepository {
         return createExceptionError(extractError(error).message, REQUEST_STATUS.bad);
       },
     );
-
-    return taskEither();
   }
 }

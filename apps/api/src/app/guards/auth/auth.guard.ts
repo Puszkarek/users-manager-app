@@ -24,7 +24,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
-    const either = await this._validator(request);
+    const either = await this._validator(request)();
 
     /** Will throw a `HttpException` if invalid */
     executeEither(either);

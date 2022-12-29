@@ -1,23 +1,23 @@
-import { createExceptionError } from '@server/infra/helpers/error.helper';
-import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
-import { UsersOperations } from '@server/infra/interfaces/users.interface';
+import { parseRawToken } from '@server/infra/helpers/token';
+import { ExceptionError, UsersOperations } from '@server/infra/interfaces';
 import { Request } from 'express';
-import { Either, left } from 'fp-ts/lib/Either';
-import { isEmpty, isUndefined } from 'lodash';
+import { taskEither } from 'fp-ts';
+import { pipe } from 'fp-ts/lib/function';
 
+// * Interface of the validate method
 type MakeIsRequestAuthenticated = (
   usersService: UsersOperations,
-) => (request: Request) => Promise<Either<ExceptionError, void>>;
+) => (request: Request) => taskEither.TaskEither<ExceptionError, void>;
+
 export const makeIsRequestAuthenticated: MakeIsRequestAuthenticated = ({ token: { validate } }) => {
-  return async request => {
-    const authToken = request.header('Authorization')?.split(' ')[1]; // TODO: move to another helper
-
-    // TODO: improve it with a pipe or some guard
-    if (isUndefined(authToken) || isEmpty(authToken)) {
-      return left(createExceptionError('Missing authentication token', REQUEST_STATUS.unauthorized));
-    }
-
-    const either = await validate(authToken);
-    return either;
+  // * Validate the request
+  return request => {
+    return pipe(
+      // * Parse the raw token
+      parseRawToken(request.header('Authorization')),
+      taskEither.fromEither,
+      // * Validate the token
+      taskEither.chain(validate),
+    );
   };
 };

@@ -9,9 +9,11 @@ import {
   UsersOperations,
   UsersRepository,
 } from '@server/infra/interfaces';
+import { taskEither } from 'fp-ts';
 import { Either, fromOption, isLeft, left, right } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import { isNone, isSome } from 'fp-ts/lib/Option';
+import { TaskEither } from 'fp-ts/lib/TaskEither';
 
 export class UsersService implements UsersOperations {
   public create = {
@@ -61,25 +63,24 @@ export class UsersService implements UsersOperations {
      * @param id - The {@link User} to delete
      * @returns On success it'll be void, otherwise the error that happened
      */
-    one: async ({
+    one: ({
       idToDelete,
       currentUserToken,
     }: {
       readonly idToDelete: ID;
       readonly currentUserToken: AuthToken;
-    }): Promise<Either<ExceptionError, void>> => {
-      // * Check if the user don't wanna delete himself
-      const userO = await this._usersRepository.findByToken(currentUserToken); // TODO: expose the `parseToken` method
-      if (isNone(userO)) {
-        return left(createExceptionError('None use with the given ID to delete', REQUEST_STATUS.bad));
-      }
-      if (userO.value.id === idToDelete) {
-        return left(createExceptionError("You can't delete yourself", REQUEST_STATUS.bad));
-      }
-
-      // * Delete the user
-      const either = await this._usersRepository.delete(idToDelete);
-      return either;
+    }): TaskEither<ExceptionError, void> => {
+      return pipe(
+        // * Check if the user don't wanna delete himself
+        currentUserToken,
+        this._usersRepository.findByToken,
+        // Convert to an `Either`
+        taskEither.fromTaskOption(() =>
+          createExceptionError('None use with the given ID to delete', REQUEST_STATUS.bad),
+        ),
+        // * Delete the user
+        taskEither.chain(() => this._usersRepository.delete(idToDelete)),
+      );
     },
   };
 
@@ -114,12 +115,14 @@ export class UsersService implements UsersOperations {
      * @param token - The token to use to find the {@link User}
      * @returns The {@link User} that belongs to the token, otherwise the error that happened
      */
-    me: async (token: AuthToken): Promise<Either<ExceptionError, User>> => {
-      const userOption = await this._usersRepository.findByToken(token);
-
+    me: (token: AuthToken): TaskEither<ExceptionError, User> => {
       return pipe(
-        userOption,
-        fromOption(() => createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found)),
+        // * Try to find the user by token
+        token,
+        this._usersRepository.findByToken,
+        taskEither.fromTaskOption(() =>
+          createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found),
+        ),
       );
     },
   };
@@ -174,7 +177,7 @@ export class UsersService implements UsersOperations {
       }
 
       // Create the Token
-      const tokenE = await this._usersRepository.generateToken(userO.value.id);
+      const tokenE = await this._usersRepository.generateToken(userO.value.id)(); // TODO: improve
       if (isLeft(tokenE)) {
         return tokenE;
       }
@@ -195,29 +198,36 @@ export class UsersService implements UsersOperations {
      * @param token - The old token to get the info
      * @returns A new Token, otherwise the error that happened
      */
-    refresh: async (token: AuthToken): Promise<Either<ExceptionError, LoginResponse>> => {
-      // TODO: improve using pipe
-      // Search the user using his email
-      const userO = await this._usersRepository.findByToken(token);
-      if (isNone(userO)) {
-        return left(createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found));
-      }
-
-      // Validate the password
-      const isTokenValid = await this._usersRepository.isAuthTokenValid(token);
-      if (!isTokenValid) {
-        return left(createExceptionError('Check your password and try again', REQUEST_STATUS.bad));
-      }
-
-      // Create the Token
-      const tokenE = await this._usersRepository.generateToken(token);
-      if (isLeft(tokenE)) {
-        return tokenE;
-      }
-      return right({
-        loggedUser: userO.value,
-        token: tokenE.right,
-      });
+    refresh: (rawToken: AuthToken): taskEither.TaskEither<ExceptionError, LoginResponse> => {
+      return pipe(
+        // Search by the user using his token
+        rawToken,
+        // * Parse the token to see if it's valid
+        this._usersRepository.parseToken,
+        // * Get the user from token
+        taskEither.chain(() =>
+          // TODO: improve that
+          pipe(
+            rawToken,
+            this._usersRepository.findByToken,
+            taskEither.fromTaskOption(() =>
+              createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found),
+            ),
+          ),
+        ),
+        // * Generate the new token
+        taskEither.chain(user =>
+          // TODO: improve that
+          pipe(
+            user.id,
+            this._usersRepository.generateToken,
+            taskEither.map(token => ({
+              loggedUser: user,
+              token,
+            })),
+          ),
+        ),
+      );
     },
     /**
      * Check if the given token is valid
@@ -225,14 +235,14 @@ export class UsersService implements UsersOperations {
      * @param token - The token to check
      * @returns On success it'll be void, otherwise the error that happened
      */
-    validate: async (token: AuthToken): Promise<Either<ExceptionError, void>> => {
-      const isValid = await this._usersRepository.isAuthTokenValid(token);
-
-      if (!isValid) {
-        return left(createExceptionError('The given token is invalid', REQUEST_STATUS.unauthorized));
-      }
-
-      return right(void 0);
+    validate: (token: AuthToken): taskEither.TaskEither<ExceptionError, void> => {
+      return pipe(
+        // * Parse the token
+        token,
+        this._usersRepository.parseToken,
+        // Map the `Right` value to `void`
+        taskEither.chain(() => taskEither.of(void 0)),
+      );
     },
   };
 

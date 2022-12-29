@@ -36,6 +36,7 @@
         "arrow-body-style": "off",
         "prefer-arrow-callback": "off",
         "require-await": "off",
+        "no-return-await": "off",
 
         // Avoid possible Problems
         "array-callback-return": "error",
@@ -102,7 +103,6 @@
         "no-param-reassign": "error",
         "no-plusplus": "error",
         "no-return-assign": "error",
-        "no-return-await": "error",
         "no-sequences": "error",
         "no-global-assign": "error",
         "no-shadow-restricted-names": "error",

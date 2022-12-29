@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { createExceptionError } from '@server/infra/helpers/error.helper';
+import { createExceptionError } from '@server/infra/helpers/error';
 import { MailProvider, Message, REQUEST_STATUS } from '@server/infra/interfaces';
 import { ExceptionError } from '@server/infra/interfaces/error.interface';
 import { Either } from 'fp-ts/lib/Either';

@@ -2,7 +2,7 @@
 import { randomUUID } from 'node:crypto';
 
 import { AuthToken, ID, User, USER_ROLE } from '@api-interfaces';
-import { createExceptionError, extractError } from '@server/infra/helpers/error.helper';
+import { createExceptionError, extractError } from '@server/infra/helpers/error';
 import { UsersRepository } from '@server/infra/interfaces';
 import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
 import { taskEither, taskOption } from 'fp-ts';

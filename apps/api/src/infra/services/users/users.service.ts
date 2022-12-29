@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import { AuthToken, CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
-import { createExceptionError } from '@server/infra/helpers';
+import { createExceptionError } from '@server/infra/helpers/error';
 import {
   ExceptionError,
   MailProvider,

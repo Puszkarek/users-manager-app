@@ -1,5 +1,5 @@
 import { AuthToken } from '@api-interfaces';
-import { createExceptionError } from '@server/infra/helpers/error.helper';
+import { createExceptionError } from '@server/infra/helpers/error';
 import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
 import { either } from 'fp-ts';
 import { isEmpty, isString, isUndefined } from 'lodash';

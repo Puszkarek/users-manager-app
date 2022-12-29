@@ -26,6 +26,7 @@ export const DEFAULT_USER: User = {
 };
 export const DEFAULT_USER_PASSWORD = 'admin';
 
+// TODO: may remove the class and use factory methods
 /** This is a demo repository for testing */
 export class FakeUsersRepository implements UsersRepository {
   /** A fake users list, in a real case it'd a database */
@@ -55,9 +56,9 @@ export class FakeUsersRepository implements UsersRepository {
    *
    * @returns On success a list of users, otherwise the error that happened
    */
-  public async all(): Promise<Either<ExceptionError, ReadonlyArray<User>>> {
+  public all = async (): Promise<Either<ExceptionError, ReadonlyArray<User>>> => {
     return right(this._users.toArray());
-  }
+  };
 
   // * Find Users
 
@@ -90,7 +91,7 @@ export class FakeUsersRepository implements UsersRepository {
    * @param token - The token that belongs to the user
    * @returns An {@link Option} containing the found `User` or nothing
    */
-  public findByToken(token: AuthToken): taskOption.TaskOption<User> {
+  public findByToken = (token: AuthToken): taskOption.TaskOption<User> => {
     return pipe(
       // * Parse the token
       token,
@@ -101,7 +102,7 @@ export class FakeUsersRepository implements UsersRepository {
       // * Try to find the user
       taskOption.chain(userID => taskOption.fromNullable(this._users.find(user => user.id === userID))),
     );
-  }
+  };
 
   // * Crud User Actions
 
@@ -111,10 +112,10 @@ export class FakeUsersRepository implements UsersRepository {
    * @param id - The {@link ID} from the user that we wanna delete
    * @returns On success it'll be void, otherwise the error that happened
    */
-  public delete(id: ID): taskEither.TaskEither<ExceptionError, void> {
+  public readonly delete = (id: ID): taskEither.TaskEither<ExceptionError, void> => {
     this._users = this._users.filter(user => user.id !== id);
     return taskEither.right(void 0);
-  }
+  };
 
   /**
    * Saves a new {@link User} in the repository
@@ -172,7 +173,7 @@ export class FakeUsersRepository implements UsersRepository {
    * @param userID - The id
    * @returns The token that was generated
    */
-  public generateToken(userID: User['id']): TaskEither<ExceptionError, AuthToken> {
+  public readonly generateToken = (userID: User['id']): TaskEither<ExceptionError, AuthToken> => {
     // Verify if the user exists
     if (!this._users.some(user => user.id === userID)) {
       return taskEither.left(createExceptionError('Given user ID is invalid', REQUEST_STATUS.bad));
@@ -183,7 +184,7 @@ export class FakeUsersRepository implements UsersRepository {
       userID,
       this._createToken,
     );
-  }
+  };
 
   // TODO: move tokens methods to a single interface
 
@@ -193,7 +194,7 @@ export class FakeUsersRepository implements UsersRepository {
    * @param userID - The user {@link ID} to attach in the token
    * @returns The generated token
    */
-  private _createToken(userID: string): TaskEither<ExceptionError, AuthToken> {
+  private readonly _createToken = (userID: string): TaskEither<ExceptionError, AuthToken> => {
     return taskEither.tryCatch(
       async () =>
         await new jose.SignJWT({ userID })
@@ -205,7 +206,7 @@ export class FakeUsersRepository implements UsersRepository {
           .sign(this._tokenSecret),
       error => createExceptionError(extractError(error).message, REQUEST_STATUS.bad),
     );
-  }
+  };
 
   /**
    * Parses the given {@link AuthToken} and returns the results
@@ -219,7 +220,7 @@ export class FakeUsersRepository implements UsersRepository {
    * @param JWT - The token to parse
    * @returns On success the parsed token, otherwise the error that happened
    */
-  public parseToken(JWT: AuthToken): TaskEither<ExceptionError, jose.JWTVerifyResult> {
+  public readonly parseToken = (JWT: AuthToken): TaskEither<ExceptionError, jose.JWTVerifyResult> => {
     return tryCatch(
       async () => {
         const parsedJWT = await jose.jwtVerify(JWT, this._tokenSecret, {
@@ -232,5 +233,5 @@ export class FakeUsersRepository implements UsersRepository {
         return createExceptionError(extractError(error).message, REQUEST_STATUS.bad);
       },
     );
-  }
+  };
 }

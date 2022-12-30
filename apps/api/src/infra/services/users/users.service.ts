@@ -9,10 +9,8 @@ import {
   UsersOperations,
   UsersRepository,
 } from '@server/infra/interfaces';
-import { taskEither } from 'fp-ts';
-import { Either, fromOption, isLeft, left, right } from 'fp-ts/lib/Either';
+import { boolean, task, taskEither, taskOption } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
-import { isNone, isSome } from 'fp-ts/lib/Option';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 
 export class UsersService implements UsersOperations {
@@ -24,35 +22,78 @@ export class UsersService implements UsersOperations {
      * @param data - The data for the {@link User} we wanna create
      * @returns On success it'll be the created {@link User}, otherwise the error that happened
      */
-    one: async (data: CreatableUser): Promise<Either<ExceptionError, User>> => {
-      const { password, ...creatableUser } = data;
-      const userO = await this._usersRepository.findByEmail(creatableUser.email);
-
-      if (isSome(userO)) {
-        return left(createExceptionError('User already exists', REQUEST_STATUS.not_found));
-      }
-
+    one: ({ password, ...creatableUserData }: CreatableUser): TaskEither<ExceptionError, User> => {
+      // Generate the new user
       const newUser: User = {
-        ...data,
+        ...creatableUserData,
         id: randomUUID(),
       };
 
-      await this._usersRepository.save(newUser, password);
+      // TODO: may can be a helper
+      const currentUserAlreadyExists: TaskEither<ExceptionError, void> = pipe(
+        // * Get the user with the given email
+        creatableUserData.email,
+        this._usersRepository.findByEmail,
+        // * Return `null` if `Some`
+        taskOption.match(
+          // TODO: improve that
+          // None: The user doesn't exists, we can create a new user
+          () => true,
+          // Some: The user already exists, so we don't wanna keep the creation process
+          () => null,
+        ),
+        taskEither.fromNullable(createExceptionError('User already exists', REQUEST_STATUS.not_found)),
+        taskEither.map(() => void 0),
+      );
 
-      await this._mailProvider.sendMail({
-        body: 'Welcome to App Team',
-        from: {
-          email: 'team@app.com',
-          name: 'App Team',
-        },
-        subject: 'Registering to App Team',
-        to: {
-          email: data.email,
-          name: data.name,
-        },
-      });
+      return pipe(
+        // * Check that the user doesn't exists yet
+        currentUserAlreadyExists,
+        // * Save the new `User` on the repository
+        taskEither.chain(() => this._usersRepository.save(newUser, password)),
+        // * Send the confirmation email to the user
+        taskEither.chain(() =>
+          this._mailProvider.sendMail({
+            body: 'Welcome to App Team',
+            from: {
+              email: 'team@app.com',
+              name: 'App Team',
+            },
+            subject: 'Registering to App Team',
+            to: {
+              email: creatableUserData.email,
+              name: creatableUserData.name,
+            },
+          }),
+        ),
+        taskEither.map(() => newUser),
+      );
+    },
+  };
 
-      return right(newUser);
+  public update = {
+    /**
+     * Update an existing {@link User} and save on the repository
+     *
+     * @param data - The data from the {@link User} that we wanna update
+     * @returns On success it'll be the updated {@link User}, otherwise the error that happened
+     */
+    one: ({ password, ...updatableUser }: UpdatableUser): TaskEither<ExceptionError, User> => {
+      return pipe(
+        updatableUser.id,
+        this._usersRepository.findByID,
+        taskEither.fromTaskOption(() =>
+          createExceptionError('No user found with the given email', REQUEST_STATUS.not_found),
+        ),
+        // TODO: validade the current password
+        taskEither.map(currentUser => ({ ...currentUser, ...updatableUser })),
+        taskEither.chain(updatedUser =>
+          pipe(
+            this._usersRepository.update(updatedUser, password),
+            taskEither.map(() => updatableUser as User),
+          ),
+        ),
+      );
     },
   };
 
@@ -90,9 +131,8 @@ export class UsersService implements UsersOperations {
      *
      * @returns List with the existing users
      */
-    all: async (): Promise<Either<ExceptionError, ReadonlyArray<User>>> => {
-      const either = await this._usersRepository.all();
-      return either;
+    all: (): TaskEither<ExceptionError, ReadonlyArray<User>> => {
+      return this._usersRepository.all();
     },
     /**
      * Fetch one user from the repository by ID
@@ -100,12 +140,12 @@ export class UsersService implements UsersOperations {
      * @param id - The {@link ID} from the {@link User} that we wanna find
      * @returns The user found, otherwise the error that happened
      */
-    one: async (id: ID): Promise<Either<ExceptionError, User>> => {
-      const userOption = await this._usersRepository.findByID(id);
-
+    one: (id: ID): TaskEither<ExceptionError, User> => {
       return pipe(
-        userOption,
-        fromOption(() => createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found)),
+        this._usersRepository.findByID(id),
+        taskEither.fromTaskOption(() =>
+          createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found),
+        ),
       );
     },
 
@@ -127,33 +167,6 @@ export class UsersService implements UsersOperations {
     },
   };
 
-  public update = {
-    /**
-     * Update an existing {@link User} and save on the repository
-     *
-     * @param data - The data from the {@link User} that we wanna update
-     * @returns On success it'll be the updated {@link User}, otherwise the error that happened
-     */
-    one: async (data: UpdatableUser): Promise<Either<ExceptionError, User>> => {
-      const { password, ...updatableUser } = data;
-      const userO = await this._usersRepository.findByID(updatableUser.id);
-      if (isNone(userO)) {
-        return left(createExceptionError('No user found with the given email', REQUEST_STATUS.not_found));
-      }
-
-      // TODO: validade the current password
-
-      const updatedUser: User = { ...userO.value, ...updatableUser };
-      const updateEither = await this._usersRepository.update(updatedUser, password);
-
-      if (isLeft(updateEither)) {
-        left(createExceptionError('Something gone wrong updating the user', REQUEST_STATUS.bad));
-      }
-
-      return right(updatedUser);
-    },
-  };
-
   public login = {
     /**
      * Validate the login information and generate a new token for the user
@@ -162,30 +175,38 @@ export class UsersService implements UsersOperations {
      * @returns A {@link LoginResponse} with the token and the user that it belongs, otherwise
      *   the error that happens
      */
-    one: async ({ email, password }: LoginRequest): Promise<Either<ExceptionError, LoginResponse>> => {
-      // TODO: improve using pipe
-      // Search the user using his email
-      const userO = await this._usersRepository.findByEmail(email);
-      if (isNone(userO)) {
-        return left(createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found));
-      }
+    one: ({ email, password }: LoginRequest): TaskEither<ExceptionError, LoginResponse> => {
+      const userTaskEither: TaskEither<ExceptionError, User> = pipe(
+        email,
+        this._usersRepository.findByEmail,
+        taskEither.fromTaskOption(() =>
+          createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found),
+        ),
+      );
 
-      // Validate the password
-      const isPasswordValid = await this._usersRepository.isUserPasswordValid(userO.value.id, password);
-      if (!isPasswordValid) {
-        return left(createExceptionError('Check your password and try again', REQUEST_STATUS.bad));
-      }
+      const filterValidUser = (user: User): TaskEither<ExceptionError, User> =>
+        pipe(
+          this._usersRepository.isUserPasswordValid(user.id, password),
+          task.chain(
+            boolean.fold(
+              // False
+              () => taskEither.left(createExceptionError('Check your password and try again', REQUEST_STATUS.bad)),
+              // Some
+              () => taskEither.right(user),
+            ),
+          ),
+        );
 
-      // Create the Token
-      const tokenE = await this._usersRepository.generateToken(userO.value.id)(); // TODO: improve
-      if (isLeft(tokenE)) {
-        return tokenE;
-      }
+      return pipe(
+        // * Search the user using the given email
+        userTaskEither,
+        // * Validate the password
+        taskEither.bind('loggedUser', filterValidUser),
+        // * Create the token
+        taskEither.bind('token', user => this._usersRepository.generateToken(user.id)),
 
-      return right({
-        loggedUser: userO.value,
-        token: tokenE.right,
-      });
+        taskEither.map(({ loggedUser, token }) => ({ loggedUser, token })),
+      );
     },
   };
 
@@ -198,7 +219,7 @@ export class UsersService implements UsersOperations {
      * @param token - The old token to get the info
      * @returns A new Token, otherwise the error that happened
      */
-    refresh: (rawToken: AuthToken): taskEither.TaskEither<ExceptionError, LoginResponse> => {
+    refresh: (rawToken: AuthToken): TaskEither<ExceptionError, LoginResponse> => {
       return pipe(
         // Search by the user using his token
         rawToken,
@@ -235,7 +256,7 @@ export class UsersService implements UsersOperations {
      * @param token - The token to check
      * @returns On success it'll be void, otherwise the error that happened
      */
-    validate: (token: AuthToken): taskEither.TaskEither<ExceptionError, void> => {
+    validate: (token: AuthToken): TaskEither<ExceptionError, void> => {
       return pipe(
         // * Parse the token
         token,

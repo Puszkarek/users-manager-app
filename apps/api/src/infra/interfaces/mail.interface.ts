@@ -1,5 +1,5 @@
 import { ExceptionError } from '@server/infra/interfaces/error.interface';
-import { Either } from 'fp-ts/lib/Either';
+import { TaskEither } from 'fp-ts/lib/TaskEither';
 
 /** Address to send some message */
 export type Address = {
@@ -23,5 +23,5 @@ export type Message = {
 
 /** An abstract interface that all our email providers should follow */
 export type MailProvider = {
-  readonly sendMail: (message: Message) => Promise<Either<ExceptionError, void>>;
+  readonly sendMail: (message: Message) => TaskEither<ExceptionError, void>;
 };

@@ -5,11 +5,11 @@ import { AuthToken, ID, User, USER_ROLE } from '@api-interfaces';
 import { createExceptionError, extractError } from '@server/infra/helpers/error';
 import { UsersRepository } from '@server/infra/interfaces';
 import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
-import { taskEither, taskOption } from 'fp-ts';
-import { Either, right } from 'fp-ts/lib/Either';
+import { task, taskEither, taskOption } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
-import { fromNullable, Option } from 'fp-ts/lib/Option';
-import { TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
+import { Task } from 'fp-ts/lib/Task';
+import { TaskEither } from 'fp-ts/lib/TaskEither';
+import { TaskOption } from 'fp-ts/lib/TaskOption';
 import { List, Map } from 'immutable';
 import * as jose from 'jose';
 import { isString } from 'lodash';
@@ -56,8 +56,8 @@ export class FakeUsersRepository implements UsersRepository {
    *
    * @returns On success a list of users, otherwise the error that happened
    */
-  public all = async (): Promise<Either<ExceptionError, ReadonlyArray<User>>> => {
-    return right(this._users.toArray());
+  public readonly all = (): TaskEither<ExceptionError, ReadonlyArray<User>> => {
+    return taskEither.right(this._users.toArray());
   };
 
   // * Find Users
@@ -68,11 +68,11 @@ export class FakeUsersRepository implements UsersRepository {
    * @param email - The email to fetch
    * @returns An {@link Option} containing the found `User` or nothing
    */
-  public async findByEmail(email: string): Promise<Option<User>> {
+  public readonly findByEmail = (email: string): TaskOption<User> => {
     const user = this._users.find(item => item.email === email);
 
-    return fromNullable(user);
-  }
+    return taskOption.fromNullable(user);
+  };
 
   /**
    * Try to find an {@link User} with the given {@link ID}
@@ -80,10 +80,10 @@ export class FakeUsersRepository implements UsersRepository {
    * @param id - The ID to fetch
    * @returns An {@link Option} containing the found `User` or nothing
    */
-  public async findByID(id: ID): Promise<Option<User>> {
+  public readonly findByID = (id: ID): TaskOption<User> => {
     const user = this._users.find(item => item.id === id);
-    return fromNullable(user);
-  }
+    return taskOption.fromNullable(user);
+  };
 
   /**
    * Parse the given token and try to find an {@link User} with that
@@ -91,7 +91,7 @@ export class FakeUsersRepository implements UsersRepository {
    * @param token - The token that belongs to the user
    * @returns An {@link Option} containing the found `User` or nothing
    */
-  public findByToken = (token: AuthToken): taskOption.TaskOption<User> => {
+  public readonly findByToken = (token: AuthToken): TaskOption<User> => {
     return pipe(
       // * Parse the token
       token,
@@ -112,7 +112,7 @@ export class FakeUsersRepository implements UsersRepository {
    * @param id - The {@link ID} from the user that we wanna delete
    * @returns On success it'll be void, otherwise the error that happened
    */
-  public readonly delete = (id: ID): taskEither.TaskEither<ExceptionError, void> => {
+  public readonly delete = (id: ID): TaskEither<ExceptionError, void> => {
     this._users = this._users.filter(user => user.id !== id);
     return taskEither.right(void 0);
   };
@@ -124,12 +124,12 @@ export class FakeUsersRepository implements UsersRepository {
    * @param password - The password to link with the new user
    * @returns On success it'll be void, otherwise the error that happened
    */
-  public async save(user: User, password: string): Promise<Either<ExceptionError, void>> {
+  public readonly save = (user: User, password: string): TaskEither<ExceptionError, void> => {
     this._users = this._users.push(user);
     this._passwords = this._passwords.set(user.id, password);
 
-    return right(void 0);
-  }
+    return taskEither.right(void 0);
+  };
 
   /**
    * Updates an existing {@link User} in the repository
@@ -138,14 +138,14 @@ export class FakeUsersRepository implements UsersRepository {
    * @param password - An optional value, if passed it'll update the user password
    * @returns On success it'll be void, otherwise the error that happened
    */
-  public async update(updatedUser: User, password?: string): Promise<Either<ExceptionError, void>> {
+  public readonly update = (updatedUser: User, password?: string): TaskEither<ExceptionError, void> => {
     this._users = this._users.map(user => (user.id === updatedUser.id ? updatedUser : user));
     if (password) {
       this._passwords = this._passwords.set(updatedUser.id, password);
     }
 
-    return right(void 0);
-  }
+    return taskEither.right(void 0);
+  };
 
   // * User Helpers
 
@@ -157,12 +157,12 @@ export class FakeUsersRepository implements UsersRepository {
    * @param passwordToCheck - May the user's password, it'll be validate
    * @returns True if passwords match, otherwise false
    */
-  public async isUserPasswordValid(id: ID, passwordToCheck: string): Promise<boolean> {
+  public readonly isUserPasswordValid = (id: ID, passwordToCheck: string): Task<boolean> => {
     // Get the real user password
     const userPassword = this._passwords.get(id);
 
-    return userPassword === passwordToCheck;
-  }
+    return task.of(userPassword === passwordToCheck);
+  };
 
   // * Tokens
 
@@ -221,7 +221,7 @@ export class FakeUsersRepository implements UsersRepository {
    * @returns On success the parsed token, otherwise the error that happened
    */
   public readonly parseToken = (JWT: AuthToken): TaskEither<ExceptionError, jose.JWTVerifyResult> => {
-    return tryCatch(
+    return taskEither.tryCatch(
       async () => {
         const parsedJWT = await jose.jwtVerify(JWT, this._tokenSecret, {
           issuer: 'urn:example:issuer',

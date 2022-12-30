@@ -1,7 +1,7 @@
 import { AuthToken, CreatableUser, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
 import { Body, Controller, Delete, Get, Headers, HttpCode, Inject, Logger, Param, Post, Put } from '@nestjs/common';
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
-import { executeEither, IsPublic } from '@server/app/helpers/controller';
+import { executeTaskEither, IsPublic } from '@server/app/helpers/controller';
 import { parseRawToken } from '@server/infra/helpers/token';
 import { REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
 import { UsersOperations } from '@server/infra/interfaces/users.interface';
@@ -19,9 +19,9 @@ export class UsersController {
   public async loginOne(@Body() loginRequest: LoginRequest): Promise<LoginResponse> {
     Logger.log(`Login with email: ${loginRequest.email}`);
 
-    const either = await this._usersService.login.one(loginRequest);
+    const task = pipe(loginRequest, this._usersService.login.one, executeTaskEither);
 
-    return executeEither(either);
+    return await task();
   }
 
   @Post('token')
@@ -29,9 +29,9 @@ export class UsersController {
   public async refreshOneToken(@Body() authToken: AuthToken): Promise<LoginResponse> {
     Logger.log(`Refresh token`);
 
-    const either = await this._usersService.token.refresh(authToken)();
+    const task = pipe(authToken, this._usersService.token.refresh, executeTaskEither);
 
-    return executeEither(either);
+    return await task();
   }
 
   // * Crud Operations
@@ -39,18 +39,17 @@ export class UsersController {
   public async createOne(@Body() creatableUser: CreatableUser): Promise<User> {
     Logger.log(`Creating user: ${creatableUser.email}`);
 
-    const either = await this._usersService.create.one(creatableUser);
+    const task = pipe(creatableUser, this._usersService.create.one, executeTaskEither);
 
-    return executeEither(either);
+    return await task();
   }
 
   @Put()
   public async updateOne(@Body() updatableUser: UpdatableUser): Promise<User> {
     Logger.log(`Updating user: ${updatableUser.email}`);
 
-    const either = await this._usersService.update.one(updatableUser);
-
-    return executeEither(either);
+    const task = pipe(updatableUser, this._usersService.update.one, executeTaskEither);
+    return await task();
   }
 
   @Delete(':id')
@@ -69,12 +68,11 @@ export class UsersController {
           currentUserToken: token,
         }),
       ),
+      executeTaskEither,
     );
 
     // * Execute the task
-    const either = await task();
-
-    executeEither(either);
+    await task();
   }
 
   // * Getters
@@ -90,27 +88,26 @@ export class UsersController {
       taskEither.fromEither,
       // * Get the user that belongs to the user
       taskEither.chain(this._usersService.get.me),
+      executeTaskEither,
     );
-    const either = await task();
 
-    return executeEither(either);
+    return await task();
   }
 
   @Get(':id') // ? dynamic paths (:id) should be the in the end to not override another path
   public async getOne(@Param('id') id: string): Promise<User> {
     Logger.log(`Getting user with id: ${id}`);
 
-    const either = await this._usersService.get.one(id);
+    const task = pipe(id, this._usersService.get.one, executeTaskEither);
 
-    return executeEither(either);
+    return await task();
   }
 
   @Get()
   public async getAll(): Promise<ReadonlyArray<User>> {
     Logger.log(`Getting all user`);
 
-    const either = await this._usersService.get.all();
-
-    return executeEither(either);
+    const task = pipe(this._usersService.get.all(), executeTaskEither);
+    return await task();
   }
 }

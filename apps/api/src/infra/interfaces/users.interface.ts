@@ -1,6 +1,5 @@
 import { AuthToken, CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUser, User } from '@api-interfaces';
-import { Either } from 'fp-ts/lib/Either';
-import { Option } from 'fp-ts/lib/Option';
+import { Task } from 'fp-ts/lib/Task';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 import { TaskOption } from 'fp-ts/lib/TaskOption';
 import * as jose from 'jose';
@@ -9,17 +8,17 @@ import { ExceptionError } from './error.interface';
 
 /** An abstract interface that all our users repository should follow */
 export type UsersRepository = {
-  readonly findByEmail: (email: string) => Promise<Option<User>>;
+  readonly findByEmail: (email: string) => TaskOption<User>;
   readonly findByToken: (token: AuthToken) => TaskOption<User>;
-  readonly findByID: (id: string) => Promise<Option<User>>;
+  readonly findByID: (id: string) => TaskOption<User>;
 
-  readonly save: (user: User, password: string) => Promise<Either<ExceptionError, void>>;
-  readonly update: (user: User, password?: string) => Promise<Either<ExceptionError, void>>;
+  readonly save: (user: User, password: string) => TaskEither<ExceptionError, void>;
+  readonly update: (user: User, password?: string) => TaskEither<ExceptionError, void>;
   readonly delete: (userID: ID) => TaskEither<ExceptionError, void>;
 
-  readonly all: () => Promise<Either<ExceptionError, ReadonlyArray<User>>>;
+  readonly all: () => TaskEither<ExceptionError, ReadonlyArray<User>>;
 
-  readonly isUserPasswordValid: (email: string, password: string) => Promise<boolean>;
+  readonly isUserPasswordValid: (email: string, password: string) => Task<boolean>;
 
   // TODO: may need to move to their own repository
   readonly parseToken: (rawToken: string) => TaskEither<ExceptionError, jose.JWTVerifyResult>;
@@ -29,7 +28,7 @@ export type UsersRepository = {
 /** An abstract interface that all our users handler should follow */
 export type UsersOperations = {
   readonly create: {
-    readonly one: (data: CreatableUser) => Promise<Either<ExceptionError, User>>;
+    readonly one: (data: CreatableUser) => TaskEither<ExceptionError, User>;
   };
   readonly delete: {
     readonly one: (data: {
@@ -38,16 +37,16 @@ export type UsersOperations = {
     }) => TaskEither<ExceptionError, void>;
   };
   readonly update: {
-    readonly one: (data: UpdatableUser) => Promise<Either<ExceptionError, User>>;
+    readonly one: (data: UpdatableUser) => TaskEither<ExceptionError, User>;
   };
   readonly get: {
-    readonly one: (data: ID) => Promise<Either<ExceptionError, User>>;
+    readonly one: (data: ID) => TaskEither<ExceptionError, User>;
     readonly me: (data: AuthToken) => TaskEither<ExceptionError, User>;
-    readonly all: () => Promise<Either<ExceptionError, ReadonlyArray<User>>>;
+    readonly all: () => TaskEither<ExceptionError, ReadonlyArray<User>>;
   };
   /** Create a token for the current logged user */
   readonly login: {
-    readonly one: (data: LoginRequest) => Promise<Either<ExceptionError, LoginResponse>>;
+    readonly one: (data: LoginRequest) => TaskEither<ExceptionError, LoginResponse>;
   };
 
   /** Update a token for the user */

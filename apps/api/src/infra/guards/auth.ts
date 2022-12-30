@@ -1,5 +1,5 @@
 import { parseRawToken } from '@server/infra/helpers/token';
-import { ExceptionError, UsersOperations } from '@server/infra/interfaces';
+import { ExceptionError, UsersService } from '@server/infra/interfaces';
 import { Request } from 'express';
 import { taskEither as TE } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
@@ -7,7 +7,7 @@ import { TaskEither } from 'fp-ts/lib/TaskEither';
 
 // * Interface of the validate method
 type MakeIsRequestAuthenticated = (
-  usersService: UsersOperations,
+  usersService: UsersService,
 ) => (request: Request) => TaskEither<ExceptionError, void>;
 
 export const makeIsRequestAuthenticated: MakeIsRequestAuthenticated = ({ token: { validate } }) => {

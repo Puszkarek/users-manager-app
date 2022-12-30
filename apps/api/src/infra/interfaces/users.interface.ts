@@ -20,7 +20,7 @@ export type UsersRepository = {
 };
 
 /** An abstract interface that all our users handler should follow */
-export type UsersOperations = {
+export type UsersService = {
   readonly create: {
     readonly one: (data: CreatableUser) => TaskEither<ExceptionError, User>;
   };
@@ -51,3 +51,5 @@ export type UsersOperations = {
 
   // TODO: logout
 };
+
+export type FindByToken = (token: AuthToken) => TaskOption<User>;

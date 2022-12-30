@@ -4,13 +4,13 @@ import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.const
 import { executeTaskEither, IsPublic } from '@server/app/helpers/controller';
 import { parseRawToken } from '@server/infra/helpers/token';
 import { REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
-import { UsersOperations } from '@server/infra/interfaces/users.interface';
+import { UsersService } from '@server/infra/interfaces/users.interface';
 import { taskEither as TE } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
 
 @Controller('users')
 export class UsersController {
-  constructor(@Inject(USERS_SERVICE_INJECTABLE_TOKEN) private readonly _usersService: UsersOperations) {}
+  constructor(@Inject(USERS_SERVICE_INJECTABLE_TOKEN) private readonly _usersService: UsersService) {}
 
   // * Login Stuffs
   @Post('login')

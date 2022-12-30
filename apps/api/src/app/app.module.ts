@@ -3,7 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
 import { UsersModule } from '@server/app/controllers/users';
 import { AuthGuard } from '@server/app/guards/auth/auth.guard';
-import { usersService } from '@server/app/services/user.service';
+import { usersService } from '@server/app/services/users.service';
 
 import { AppController } from './app.controller';
 
@@ -13,7 +13,7 @@ import { AppController } from './app.controller';
   providers: [
     {
       provide: USERS_SERVICE_INJECTABLE_TOKEN,
-      useValue: usersService(),
+      useValue: usersService,
     },
     {
       provide: APP_GUARD,

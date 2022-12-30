@@ -1,21 +1,15 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { randomUUID } from 'node:crypto';
 
-import { AuthToken, ID, User, USER_ROLE } from '@api-interfaces';
-import { createExceptionError, extractError } from '@server/infra/helpers/error';
+import {  ID, User, USER_ROLE } from '@api-interfaces';
 import { UsersRepository } from '@server/infra/interfaces';
-import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
+import { ExceptionError } from '@server/infra/interfaces/error.interface';
 import { task, taskEither, taskOption } from 'fp-ts';
-import { pipe } from 'fp-ts/lib/function';
 import { Task } from 'fp-ts/lib/Task';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 import { TaskOption } from 'fp-ts/lib/TaskOption';
 import { List, Map } from 'immutable';
-import * as jose from 'jose';
-import { isString } from 'lodash';
 import { timer } from 'rxjs';
-
-// TODO: replace `JWTVerifyResult` by a abstract interface
 
 /** The system should initialize with a default user */
 export const DEFAULT_USER: User = {
@@ -34,10 +28,6 @@ export class FakeUsersRepository implements UsersRepository {
 
   /** A fake password list, in a real case it'd a database */
   private _passwords = Map<string, string>({ [DEFAULT_USER.id]: DEFAULT_USER_PASSWORD });
-
-  // * Token
-  /** The key that we use to encrypt the token, so that it just can be read at our backend */
-  private readonly _tokenSecret = new TextEncoder().encode('ADD-SECRET-KEY-LATER'); // TODO: move to `.env`
 
   constructor() {
     const MILLISECONDS_INTERVAL = 7_200_000; // 2 hours
@@ -83,25 +73,6 @@ export class FakeUsersRepository implements UsersRepository {
   public readonly findByID = (id: ID): TaskOption<User> => {
     const user = this._users.find(item => item.id === id);
     return taskOption.fromNullable(user);
-  };
-
-  /**
-   * Parse the given token and try to find an {@link User} with that
-   *
-   * @param token - The token that belongs to the user
-   * @returns An {@link Option} containing the found `User` or nothing
-   */
-  public readonly findByToken = (token: AuthToken): TaskOption<User> => {
-    return pipe(
-      // * Parse the token
-      token,
-      this.parseToken,
-      taskOption.fromTaskEither,
-      // * Extract the `userID` from payload
-      taskOption.chain(({ payload: { userID } }) => taskOption.fromNullable(isString(userID) ? userID : null)), // TODO: improve validation
-      // * Try to find the user
-      taskOption.chain(userID => taskOption.fromNullable(this._users.find(user => user.id === userID))),
-    );
   };
 
   // * Crud User Actions
@@ -162,76 +133,5 @@ export class FakeUsersRepository implements UsersRepository {
     const userPassword = this._passwords.get(id);
 
     return task.of(userPassword === passwordToCheck);
-  };
-
-  // * Tokens
-
-  /**
-   * Check if the given {@link ID} is valid, then generate a token linked with the respective
-   * {@link User}
-   *
-   * @param userID - The id
-   * @returns The token that was generated
-   */
-  public readonly generateToken = (userID: User['id']): TaskEither<ExceptionError, AuthToken> => {
-    // Verify if the user exists
-    if (!this._users.some(user => user.id === userID)) {
-      return taskEither.left(createExceptionError('Given user ID is invalid', REQUEST_STATUS.bad));
-    }
-
-    return pipe(
-      // * Create the new token
-      userID,
-      this._createToken,
-    );
-  };
-
-  // TODO: move tokens methods to a single interface
-
-  /**
-   * Generates and encrypt a token for the related user
-   *
-   * @param userID - The user {@link ID} to attach in the token
-   * @returns The generated token
-   */
-  private readonly _createToken = (userID: string): TaskEither<ExceptionError, AuthToken> => {
-    return taskEither.tryCatch(
-      async () =>
-        await new jose.SignJWT({ userID })
-          .setProtectedHeader({ alg: 'HS256' })
-          .setIssuedAt()
-          .setIssuer('urn:example:issuer') // TODO: i don't know what really is it
-          .setAudience('urn:example:audience')
-          .setExpirationTime('1d')
-          .sign(this._tokenSecret),
-      error => createExceptionError(extractError(error).message, REQUEST_STATUS.bad),
-    );
-  };
-
-  /**
-   * Parses the given {@link AuthToken} and returns the results
-   *
-   * P.S: it'll catch an error when:
-   *
-   * 1. The format be wrong
-   * 2. When the token secret doesn't match
-   * 3. Or when it expire
-   *
-   * @param JWT - The token to parse
-   * @returns On success the parsed token, otherwise the error that happened
-   */
-  public readonly parseToken = (JWT: AuthToken): TaskEither<ExceptionError, jose.JWTVerifyResult> => {
-    return taskEither.tryCatch(
-      async () => {
-        const parsedJWT = await jose.jwtVerify(JWT, this._tokenSecret, {
-          issuer: 'urn:example:issuer',
-          audience: 'urn:example:audience',
-        });
-        return parsedJWT;
-      },
-      error => {
-        return createExceptionError(extractError(error).message, REQUEST_STATUS.bad);
-      },
-    );
   };
 }

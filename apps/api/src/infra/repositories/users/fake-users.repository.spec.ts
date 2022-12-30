@@ -67,19 +67,6 @@ describe(FakeUsersRepository.name, () => {
         expect(isNone(userO)).toBe(true);
       });
     });
-
-    describe(FakeUsersRepository.prototype.findByToken.name, () => {
-      // TODO: implement this
-      it.todo('should find the user when pass a VALID token');
-
-      it('should NOT find the user when pass a INVALID token', async () => {
-        expect.hasAssertions();
-
-        const userO = await repository.findByToken('this-is-a-token-trust-me-i-am-a-dolphin')();
-
-        expect(isNone(userO)).toBe(true);
-      });
-    });
   });
 
   describe('CRUD Methods', () => {

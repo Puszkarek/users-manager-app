@@ -9,9 +9,12 @@ import {
   UsersOperations,
   UsersRepository,
 } from '@server/infra/interfaces';
+import { TokenService } from '@server/infra/services/token';
 import { boolean, task, taskEither, taskOption } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
+import { TaskOption } from 'fp-ts/lib/TaskOption';
+import { isString } from 'lodash';
 
 export class UsersService implements UsersOperations {
   public create = {
@@ -114,7 +117,7 @@ export class UsersService implements UsersOperations {
       return pipe(
         // * Check if the user don't wanna delete himself
         currentUserToken,
-        this._usersRepository.findByToken,
+        this._findByToken,
         // Convert to an `Either`
         taskEither.fromTaskOption(() =>
           createExceptionError('None use with the given ID to delete', REQUEST_STATUS.bad),
@@ -159,7 +162,7 @@ export class UsersService implements UsersOperations {
       return pipe(
         // * Try to find the user by token
         token,
-        this._usersRepository.findByToken,
+        this._findByToken,
         taskEither.fromTaskOption(() =>
           createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found),
         ),
@@ -203,7 +206,7 @@ export class UsersService implements UsersOperations {
         // * Validate the password
         taskEither.bind('loggedUser', filterValidUser),
         // * Create the token
-        taskEither.bind('token', user => this._usersRepository.generateToken(user.id)),
+        taskEither.bind('token', user => this._tokenService.generateToken(user.id)),
 
         taskEither.map(({ loggedUser, token }) => ({ loggedUser, token })),
       );
@@ -224,13 +227,13 @@ export class UsersService implements UsersOperations {
         // Search by the user using his token
         rawToken,
         // * Parse the token to see if it's valid
-        this._usersRepository.parseToken,
+        this._tokenService.parseToken,
         // * Get the user from token
         taskEither.chain(() =>
           // TODO: improve that
           pipe(
             rawToken,
-            this._usersRepository.findByToken,
+            this._findByToken,
             taskEither.fromTaskOption(() =>
               createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found),
             ),
@@ -241,7 +244,7 @@ export class UsersService implements UsersOperations {
           // TODO: improve that
           pipe(
             user.id,
-            this._usersRepository.generateToken,
+            this._tokenService.generateToken,
             taskEither.map(token => ({
               loggedUser: user,
               token,
@@ -260,12 +263,35 @@ export class UsersService implements UsersOperations {
       return pipe(
         // * Parse the token
         token,
-        this._usersRepository.parseToken,
+        this._tokenService.parseToken,
         // Map the `Right` value to `void`
         taskEither.chain(() => taskEither.of(void 0)),
       );
     },
   };
 
-  constructor(private readonly _usersRepository: UsersRepository, private readonly _mailProvider: MailProvider) {}
+  constructor(
+    private readonly _usersRepository: UsersRepository,
+    private readonly _tokenService: TokenService,
+    private readonly _mailProvider: MailProvider,
+  ) {}
+
+  /**
+   * Parse the given token and try to find an {@link User} with that
+   *
+   * @param token - The token that belongs to the user
+   * @returns An {@link Option} containing the found `User` or nothing
+   */
+  private readonly _findByToken = (token: AuthToken): TaskOption<User> => {
+    return pipe(
+      // * Parse the token
+      token,
+      this._tokenService.parseToken,
+      taskOption.fromTaskEither,
+      // * Extract the `userID` from payload
+      taskOption.chain(({ payload: { userID } }) => taskOption.fromNullable(isString(userID) ? userID : null)), // TODO: improve validation
+      // * Try to find the user
+      taskOption.chain(this._usersRepository.findByID),
+    );
+  };
 }

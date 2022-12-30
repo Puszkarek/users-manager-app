@@ -2,14 +2,12 @@ import { AuthToken, CreatableUser, ID, LoginRequest, LoginResponse, UpdatableUse
 import { Task } from 'fp-ts/lib/Task';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 import { TaskOption } from 'fp-ts/lib/TaskOption';
-import * as jose from 'jose';
 
 import { ExceptionError } from './error.interface';
 
 /** An abstract interface that all our users repository should follow */
 export type UsersRepository = {
   readonly findByEmail: (email: string) => TaskOption<User>;
-  readonly findByToken: (token: AuthToken) => TaskOption<User>;
   readonly findByID: (id: string) => TaskOption<User>;
 
   readonly save: (user: User, password: string) => TaskEither<ExceptionError, void>;
@@ -19,10 +17,6 @@ export type UsersRepository = {
   readonly all: () => TaskEither<ExceptionError, ReadonlyArray<User>>;
 
   readonly isUserPasswordValid: (email: string, password: string) => Task<boolean>;
-
-  // TODO: may need to move to their own repository
-  readonly parseToken: (rawToken: string) => TaskEither<ExceptionError, jose.JWTVerifyResult>;
-  readonly generateToken: (userID: User['id']) => TaskEither<ExceptionError, AuthToken>;
 };
 
 /** An abstract interface that all our users handler should follow */

@@ -1,6 +1,11 @@
 import { AuthToken, User } from '@api-interfaces';
 import { parseToken } from '@server/infra/helpers/token';
 import { MailProvider, UsersRepository, UsersService } from '@server/infra/interfaces';
+import { taskOption as TO } from 'fp-ts';
+import { pipe } from 'fp-ts/lib/function';
+import { TaskOption } from 'fp-ts/lib/TaskOption';
+import { isString } from 'lodash';
+
 import {
   makeCreateOne,
   makeDeleteOne,
@@ -11,11 +16,7 @@ import {
   makeRefreshToken,
   makeUpdateOne,
   makeValidateToken,
-} from '@server/infra/services/users/operations';
-import { taskOption as TO } from 'fp-ts';
-import { pipe } from 'fp-ts/lib/function';
-import { TaskOption } from 'fp-ts/lib/TaskOption';
-import { isString } from 'lodash';
+} from './operations';
 
 export const generateUsersService = (usersRepository: UsersRepository, mailProvider: MailProvider): UsersService => {
   /**

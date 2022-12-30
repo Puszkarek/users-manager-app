@@ -17,7 +17,7 @@ import { pipe } from 'fp-ts/lib/function';
 import { TaskOption } from 'fp-ts/lib/TaskOption';
 import { isString } from 'lodash';
 
-export const makeUsersService = (usersRepository: UsersRepository, mailProvider: MailProvider): UsersService => {
+export const generateUsersService = (usersRepository: UsersRepository, mailProvider: MailProvider): UsersService => {
   /**
    * Parse the given token and try to find an {@link User} with that
    *

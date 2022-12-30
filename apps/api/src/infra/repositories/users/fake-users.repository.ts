@@ -3,7 +3,8 @@ import { randomUUID } from 'node:crypto';
 import { ID, User, USER_ROLE } from '@api-interfaces';
 import { UsersRepository } from '@server/infra/interfaces';
 import { ExceptionError } from '@server/infra/interfaces/error.interface';
-import { task as T, taskEither as TE, taskOption as TO } from 'fp-ts';
+import { array, task as T, taskEither as TE, taskOption as TO } from 'fp-ts';
+import { pipe } from 'fp-ts/lib/function';
 import { Task } from 'fp-ts/lib/Task';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 import { TaskOption } from 'fp-ts/lib/TaskOption';
@@ -127,10 +128,25 @@ export const generateFakeUsersRepository = (): UsersRepository => {
      * @returns True if passwords match, otherwise false
      */
     isUserPasswordValid: (id: ID, passwordToCheck: string): Task<boolean> => {
-      // Get the real user password
-      const userPassword = passwords.get(id);
+      // Compare the real user's password with the given one
+      const passwordMatch = passwords.get(id) === passwordToCheck;
 
-      return T.of(userPassword === passwordToCheck);
+      return pipe(passwordMatch, T.of);
+    },
+
+    /**
+     * Gets the user with the given ID, then check if the given password match with the current
+     * one
+     *
+     * @param email - The possible users's `email` to validate
+     * @returns True if the email is available, otherwise false
+     */
+    isEmailAvailable: (email: string): Task<boolean> => {
+      return pipe(
+        users.toArray(),
+        array.some(user => user.email === email),
+        T.of,
+      );
     },
   };
 };

@@ -5,7 +5,7 @@ import { createExceptionError } from '@server/infra/helpers/error';
 import { generateToken, parseToken } from '@server/infra/helpers/token';
 import { ExceptionError, FindByToken, REQUEST_STATUS, UsersRepository } from '@server/infra/interfaces';
 import { MailProvider } from '@server/infra/interfaces/mail.interface';
-import { boolean as B, task as T, taskEither as TE, taskOption as TO } from 'fp-ts';
+import { taskEither as TE } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 
@@ -25,26 +25,15 @@ export const makeCreateOne =
       id: randomUUID(),
     };
 
-    // TODO: may can be a helper
-    const currentUserAlreadyExists: TaskEither<ExceptionError, void> = pipe(
+    return pipe(
       // * Get the user with the given email
       creatableUserData.email,
-      usersRepository.findByEmail,
-      // * Return `null` if `Some`
-      TO.match(
-        // TODO: improve that
-        // None: The user doesn't exists, we can create a new user
-        () => true,
-        // Some: The user already exists, so we don't wanna keep the creation process
-        () => null,
+      usersRepository.isEmailAvailable,
+      TE.fromTask,
+      TE.filterOrElse(
+        isEmailAvailable => isEmailAvailable,
+        () => createExceptionError('Check your password and try again', REQUEST_STATUS.bad),
       ),
-      TE.fromNullable(createExceptionError('User already exists', REQUEST_STATUS.not_found)),
-      TE.map(() => void 0),
-    );
-
-    return pipe(
-      // * Check that the user doesn't exists yet
-      currentUserAlreadyExists,
       // * Save the new `User` on the repository
       TE.chain(() => usersRepository.save(newUser, password)),
       // * Send the confirmation email to the user
@@ -162,34 +151,31 @@ export const makeGetAll = (usersRepository: UsersRepository) => (): TaskEither<E
 export const makeLoginMe =
   (usersRepository: UsersRepository) =>
   ({ email, password }: LoginRequest): TaskEither<ExceptionError, LoginResponse> => {
-    const userTaskEither: TaskEither<ExceptionError, User> = pipe(
-      email,
-      usersRepository.findByEmail,
-      TE.fromTaskOption(() => createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found)),
-    );
-
-    const filterValidUser = (user: User): TaskEither<ExceptionError, User> =>
+    const validateUserPassword = (user: User): TaskEither<ExceptionError, User> =>
       pipe(
+        // * Check if the given password is correct
         usersRepository.isUserPasswordValid(user.id, password),
-        T.chain(
-          B.fold(
-            // False
-            () => TE.left(createExceptionError('Check your password and try again', REQUEST_STATUS.bad)),
-            // Some
-            () => TE.right(user),
-          ),
+        TE.fromTask,
+        TE.filterOrElse(
+          isPasswordValid => isPasswordValid,
+          () => createExceptionError('Check your password and try again', REQUEST_STATUS.bad),
         ),
+        // * Return the given user
+        TE.map(() => user),
       );
 
     return pipe(
       // * Search the user using the given email
-      userTaskEither,
-      // * Validate the password
-      TE.bind('loggedUser', filterValidUser),
+      email,
+      usersRepository.findByEmail,
+      TE.fromTaskOption(() => createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found)),
+      // * Return a left if the password is wrong
+      TE.chain(validateUserPassword),
       // * Create the token
-      TE.bind('token', user => generateToken(user.id)),
-
-      TE.map(({ loggedUser, token }) => ({ loggedUser, token })),
+      TE.map(user => ({ user })),
+      TE.bind('token', ({ user }) => generateToken(user.id)),
+      // * Map the result
+      TE.map(({ user, token }) => ({ loggedUser: user, token })),
     );
   };
 

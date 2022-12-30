@@ -17,6 +17,7 @@ export type UsersRepository = {
   readonly all: () => TaskEither<ExceptionError, ReadonlyArray<User>>;
 
   readonly isUserPasswordValid: (email: string, password: string) => Task<boolean>;
+  readonly isEmailAvailable: (email: string) => Task<boolean>;
 };
 
 /** An abstract interface that all our users handler should follow */

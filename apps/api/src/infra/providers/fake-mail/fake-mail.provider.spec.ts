@@ -34,7 +34,7 @@ describe(FakeMailProvider.name, () => {
       },
     };
 
-    const either = await provider.sendMail(message);
+    const either = await provider.sendMail(message)();
 
     expect(isRight(either)).toBe(true);
   });
@@ -44,7 +44,7 @@ describe(FakeMailProvider.name, () => {
 
     const nonValidMessage = null;
 
-    const either = await provider.sendMail(nonValidMessage as any);
+    const either = await provider.sendMail(nonValidMessage as any)();
 
     expect(isLeft(either)).toBe(true);
   });

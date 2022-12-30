@@ -1,7 +1,7 @@
 import { CustomDecorator, HttpException, SetMetadata } from '@nestjs/common';
 import { PUBLIC_ROUTE_KEY } from '@server/app/constants/guard';
 import { ExceptionError } from '@server/infra/interfaces';
-import { taskEither } from 'fp-ts';
+import { taskEither as TE } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
 import { Task } from 'fp-ts/lib/Task';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
@@ -18,7 +18,7 @@ import { TaskEither } from 'fp-ts/lib/TaskEither';
 export const executeTaskEither = <T>(taskE: TaskEither<ExceptionError, T>): Task<T> => {
   return pipe(
     taskE,
-    taskEither.getOrElse(error => {
+    TE.getOrElse(error => {
       // eslint-disable-next-line functional/no-throw-statement
       throw new HttpException(error.message, error.statusCode);
     }),

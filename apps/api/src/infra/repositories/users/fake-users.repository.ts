@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/require-await */
 import { randomUUID } from 'node:crypto';
 
-import {  ID, User, USER_ROLE } from '@api-interfaces';
+import { ID, User, USER_ROLE } from '@api-interfaces';
 import { UsersRepository } from '@server/infra/interfaces';
 import { ExceptionError } from '@server/infra/interfaces/error.interface';
-import { task, taskEither, taskOption } from 'fp-ts';
+import { task as T, taskEither as TE, taskOption as TO } from 'fp-ts';
 import { Task } from 'fp-ts/lib/Task';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 import { TaskOption } from 'fp-ts/lib/TaskOption';
@@ -47,7 +46,7 @@ export class FakeUsersRepository implements UsersRepository {
    * @returns On success a list of users, otherwise the error that happened
    */
   public readonly all = (): TaskEither<ExceptionError, ReadonlyArray<User>> => {
-    return taskEither.right(this._users.toArray());
+    return TE.right(this._users.toArray());
   };
 
   // * Find Users
@@ -61,7 +60,7 @@ export class FakeUsersRepository implements UsersRepository {
   public readonly findByEmail = (email: string): TaskOption<User> => {
     const user = this._users.find(item => item.email === email);
 
-    return taskOption.fromNullable(user);
+    return TO.fromNullable(user);
   };
 
   /**
@@ -72,7 +71,7 @@ export class FakeUsersRepository implements UsersRepository {
    */
   public readonly findByID = (id: ID): TaskOption<User> => {
     const user = this._users.find(item => item.id === id);
-    return taskOption.fromNullable(user);
+    return TO.fromNullable(user);
   };
 
   // * Crud User Actions
@@ -85,7 +84,7 @@ export class FakeUsersRepository implements UsersRepository {
    */
   public readonly delete = (id: ID): TaskEither<ExceptionError, void> => {
     this._users = this._users.filter(user => user.id !== id);
-    return taskEither.right(void 0);
+    return TE.right(void 0);
   };
 
   /**
@@ -99,7 +98,7 @@ export class FakeUsersRepository implements UsersRepository {
     this._users = this._users.push(user);
     this._passwords = this._passwords.set(user.id, password);
 
-    return taskEither.right(void 0);
+    return TE.right(void 0);
   };
 
   /**
@@ -115,7 +114,7 @@ export class FakeUsersRepository implements UsersRepository {
       this._passwords = this._passwords.set(updatedUser.id, password);
     }
 
-    return taskEither.right(void 0);
+    return TE.right(void 0);
   };
 
   // * User Helpers
@@ -132,6 +131,6 @@ export class FakeUsersRepository implements UsersRepository {
     // Get the real user password
     const userPassword = this._passwords.get(id);
 
-    return task.of(userPassword === passwordToCheck);
+    return T.of(userPassword === passwordToCheck);
   };
 }

@@ -1,7 +1,7 @@
 import { AuthToken, ID, User } from '@api-interfaces';
 import { createExceptionError, extractError } from '@server/infra/helpers/error';
 import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
-import { taskEither } from 'fp-ts';
+import { taskEither as TE } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 import * as jose from 'jose';
@@ -38,7 +38,7 @@ export class TokenService {
    * @returns On success the parsed token, otherwise the error that happened
    */
   public readonly parseToken = (JWT: AuthToken): TaskEither<ExceptionError, jose.JWTVerifyResult> => {
-    return taskEither.tryCatch(
+    return TE.tryCatch(
       async () => {
         const parsedJWT = await jose.jwtVerify(JWT, this._tokenSecret, {
           issuer: 'urn:example:issuer',
@@ -59,7 +59,7 @@ export class TokenService {
    * @returns The generated token
    */
   private readonly _createToken = (userID: string): TaskEither<ExceptionError, AuthToken> => {
-    return taskEither.tryCatch(
+    return TE.tryCatch(
       async () =>
         await new jose.SignJWT({ userID })
           .setProtectedHeader({ alg: 'HS256' })

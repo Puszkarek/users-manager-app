@@ -5,7 +5,7 @@ import { executeTaskEither, IsPublic } from '@server/app/helpers/controller';
 import { parseRawToken } from '@server/infra/helpers/token';
 import { REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
 import { UsersOperations } from '@server/infra/interfaces/users.interface';
-import { taskEither } from 'fp-ts';
+import { taskEither as TE } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
 
 @Controller('users')
@@ -60,9 +60,9 @@ export class UsersController {
       // * Parse the raw token
       rawToken,
       parseRawToken,
-      taskEither.fromEither,
+      TE.fromEither,
       // * Delete the user
-      taskEither.chain(token =>
+      TE.chain(token =>
         this._usersService.delete.one({
           idToDelete: id,
           currentUserToken: token,
@@ -85,9 +85,9 @@ export class UsersController {
       // * Parse the raw token
       rawToken,
       parseRawToken,
-      taskEither.fromEither,
+      TE.fromEither,
       // * Get the user that belongs to the user
-      taskEither.chain(this._usersService.get.me),
+      TE.chain(this._usersService.get.me),
       executeTaskEither,
     );
 

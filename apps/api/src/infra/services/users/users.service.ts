@@ -10,7 +10,7 @@ import {
   UsersRepository,
 } from '@server/infra/interfaces';
 import { TokenService } from '@server/infra/services/token';
-import { boolean, task, taskEither, taskOption } from 'fp-ts';
+import { boolean as B, task as T, taskEither as TE, taskOption as TO } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 import { TaskOption } from 'fp-ts/lib/TaskOption';
@@ -38,24 +38,24 @@ export class UsersService implements UsersOperations {
         creatableUserData.email,
         this._usersRepository.findByEmail,
         // * Return `null` if `Some`
-        taskOption.match(
+        TO.match(
           // TODO: improve that
           // None: The user doesn't exists, we can create a new user
           () => true,
           // Some: The user already exists, so we don't wanna keep the creation process
           () => null,
         ),
-        taskEither.fromNullable(createExceptionError('User already exists', REQUEST_STATUS.not_found)),
-        taskEither.map(() => void 0),
+        TE.fromNullable(createExceptionError('User already exists', REQUEST_STATUS.not_found)),
+        TE.map(() => void 0),
       );
 
       return pipe(
         // * Check that the user doesn't exists yet
         currentUserAlreadyExists,
         // * Save the new `User` on the repository
-        taskEither.chain(() => this._usersRepository.save(newUser, password)),
+        TE.chain(() => this._usersRepository.save(newUser, password)),
         // * Send the confirmation email to the user
-        taskEither.chain(() =>
+        TE.chain(() =>
           this._mailProvider.sendMail({
             body: 'Welcome to App Team',
             from: {
@@ -69,7 +69,7 @@ export class UsersService implements UsersOperations {
             },
           }),
         ),
-        taskEither.map(() => newUser),
+        TE.map(() => newUser),
       );
     },
   };
@@ -85,15 +85,13 @@ export class UsersService implements UsersOperations {
       return pipe(
         updatableUser.id,
         this._usersRepository.findByID,
-        taskEither.fromTaskOption(() =>
-          createExceptionError('No user found with the given email', REQUEST_STATUS.not_found),
-        ),
+        TE.fromTaskOption(() => createExceptionError('No user found with the given email', REQUEST_STATUS.not_found)),
         // TODO: validade the current password
-        taskEither.map(currentUser => ({ ...currentUser, ...updatableUser })),
-        taskEither.chain(updatedUser =>
+        TE.map(currentUser => ({ ...currentUser, ...updatableUser })),
+        TE.chain(updatedUser =>
           pipe(
             this._usersRepository.update(updatedUser, password),
-            taskEither.map(() => updatableUser as User),
+            TE.map(() => updatableUser as User),
           ),
         ),
       );
@@ -119,11 +117,9 @@ export class UsersService implements UsersOperations {
         currentUserToken,
         this._findByToken,
         // Convert to an `Either`
-        taskEither.fromTaskOption(() =>
-          createExceptionError('None use with the given ID to delete', REQUEST_STATUS.bad),
-        ),
+        TE.fromTaskOption(() => createExceptionError('None use with the given ID to delete', REQUEST_STATUS.bad)),
         // * Delete the user
-        taskEither.chain(() => this._usersRepository.delete(idToDelete)),
+        TE.chain(() => this._usersRepository.delete(idToDelete)),
       );
     },
   };
@@ -146,9 +142,7 @@ export class UsersService implements UsersOperations {
     one: (id: ID): TaskEither<ExceptionError, User> => {
       return pipe(
         this._usersRepository.findByID(id),
-        taskEither.fromTaskOption(() =>
-          createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found),
-        ),
+        TE.fromTaskOption(() => createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found)),
       );
     },
 
@@ -163,9 +157,7 @@ export class UsersService implements UsersOperations {
         // * Try to find the user by token
         token,
         this._findByToken,
-        taskEither.fromTaskOption(() =>
-          createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found),
-        ),
+        TE.fromTaskOption(() => createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found)),
       );
     },
   };
@@ -182,20 +174,18 @@ export class UsersService implements UsersOperations {
       const userTaskEither: TaskEither<ExceptionError, User> = pipe(
         email,
         this._usersRepository.findByEmail,
-        taskEither.fromTaskOption(() =>
-          createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found),
-        ),
+        TE.fromTaskOption(() => createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found)),
       );
 
       const filterValidUser = (user: User): TaskEither<ExceptionError, User> =>
         pipe(
           this._usersRepository.isUserPasswordValid(user.id, password),
-          task.chain(
-            boolean.fold(
+          T.chain(
+            B.fold(
               // False
-              () => taskEither.left(createExceptionError('Check your password and try again', REQUEST_STATUS.bad)),
+              () => TE.left(createExceptionError('Check your password and try again', REQUEST_STATUS.bad)),
               // Some
-              () => taskEither.right(user),
+              () => TE.right(user),
             ),
           ),
         );
@@ -204,11 +194,11 @@ export class UsersService implements UsersOperations {
         // * Search the user using the given email
         userTaskEither,
         // * Validate the password
-        taskEither.bind('loggedUser', filterValidUser),
+        TE.bind('loggedUser', filterValidUser),
         // * Create the token
-        taskEither.bind('token', user => this._tokenService.generateToken(user.id)),
+        TE.bind('token', user => this._tokenService.generateToken(user.id)),
 
-        taskEither.map(({ loggedUser, token }) => ({ loggedUser, token })),
+        TE.map(({ loggedUser, token }) => ({ loggedUser, token })),
       );
     },
   };
@@ -229,23 +219,23 @@ export class UsersService implements UsersOperations {
         // * Parse the token to see if it's valid
         this._tokenService.parseToken,
         // * Get the user from token
-        taskEither.chain(() =>
+        TE.chain(() =>
           // TODO: improve that
           pipe(
             rawToken,
             this._findByToken,
-            taskEither.fromTaskOption(() =>
+            TE.fromTaskOption(() =>
               createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found),
             ),
           ),
         ),
         // * Generate the new token
-        taskEither.chain(user =>
+        TE.chain(user =>
           // TODO: improve that
           pipe(
             user.id,
             this._tokenService.generateToken,
-            taskEither.map(token => ({
+            TE.map(token => ({
               loggedUser: user,
               token,
             })),
@@ -265,7 +255,7 @@ export class UsersService implements UsersOperations {
         token,
         this._tokenService.parseToken,
         // Map the `Right` value to `void`
-        taskEither.chain(() => taskEither.of(void 0)),
+        TE.chain(() => TE.of(void 0)),
       );
     },
   };
@@ -287,11 +277,11 @@ export class UsersService implements UsersOperations {
       // * Parse the token
       token,
       this._tokenService.parseToken,
-      taskOption.fromTaskEither,
+      TO.fromTaskEither,
       // * Extract the `userID` from payload
-      taskOption.chain(({ payload: { userID } }) => taskOption.fromNullable(isString(userID) ? userID : null)), // TODO: improve validation
+      TO.chain(({ payload: { userID } }) => TO.fromNullable(isString(userID) ? userID : null)), // TODO: improve validation
       // * Try to find the user
-      taskOption.chain(this._usersRepository.findByID),
+      TO.chain(this._usersRepository.findByID),
     );
   };
 }

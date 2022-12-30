@@ -1,5 +1,5 @@
 import { generateUsersService } from '@server/infra/factories/user';
-import { FakeMailProvider } from '@server/infra/providers';
-import { FakeUsersRepository } from '@server/infra/repositories';
+import { generateFakeMailProvider } from '@server/infra/providers';
+import { generateFakeUsersRepository } from '@server/infra/repositories';
 
-export const usersService = generateUsersService(new FakeUsersRepository(), new FakeMailProvider());
+export const usersService = generateUsersService(generateFakeUsersRepository(), generateFakeMailProvider());

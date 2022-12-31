@@ -70,12 +70,7 @@ export const makeUpdateOne =
       TE.fromTaskOption(() => createExceptionError('No user found with the given email', REQUEST_STATUS.not_found)),
       // TODO: validade the current password
       TE.map(currentUser => ({ ...currentUser, ...updatableUser })),
-      TE.chain(updatedUser =>
-        pipe(
-          usersRepository.update(updatedUser, password),
-          TE.map(() => updatableUser as User),
-        ),
-      ),
+      TE.chain(updatedUser => usersRepository.update(updatedUser, password)),
     );
   };
 
@@ -115,7 +110,8 @@ export const makeGetOne =
   (usersRepository: UsersRepository) =>
   (id: ID): TaskEither<ExceptionError, User> => {
     return pipe(
-      usersRepository.findByID(id),
+      id,
+      usersRepository.findByID,
       TE.fromTaskOption(() => createExceptionError('User not found with the given ID', REQUEST_STATUS.not_found)),
     );
   };
@@ -190,32 +186,23 @@ export const makeLoginMe =
 export const makeRefreshToken =
   (findByToken: FindByToken) =>
   (rawToken: AuthToken): TaskEither<ExceptionError, LoginResponse> => {
+    const getLoggedUser = pipe(
+      rawToken,
+      findByToken,
+      TE.fromTaskOption(() => createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found)),
+    );
+
     return pipe(
       // Search by the user using his token
       rawToken,
       // * Parse the token to see if it's valid
       parseToken,
       // * Get the user from token
-      TE.chain(() =>
-        // TODO: improve that
-        pipe(
-          rawToken,
-          findByToken,
-          TE.fromTaskOption(() => createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found)),
-        ),
-      ),
+      TE.bind('user', () => getLoggedUser),
       // * Generate the new token
-      TE.chain(user =>
-        // TODO: improve that
-        pipe(
-          user.id,
-          generateToken,
-          TE.map(token => ({
-            loggedUser: user,
-            token,
-          })),
-        ),
-      ),
+      TE.bind('token', ({ user }) => generateToken(user.id)),
+      // * Map the result
+      TE.map(({ user, token }) => ({ token, loggedUser: user })),
     );
   };
 

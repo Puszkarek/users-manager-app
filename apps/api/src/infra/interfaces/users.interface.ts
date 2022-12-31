@@ -10,8 +10,8 @@ export type UsersRepository = {
   readonly findByEmail: (email: string) => TaskOption<User>;
   readonly findByID: (id: string) => TaskOption<User>;
 
-  readonly save: (user: User, password: string) => TaskEither<ExceptionError, void>;
-  readonly update: (user: User, password?: string) => TaskEither<ExceptionError, void>;
+  readonly save: (user: User, password: string) => TaskEither<ExceptionError, User>;
+  readonly update: (user: User, password?: string) => TaskEither<ExceptionError, User>;
   readonly delete: (userID: ID) => TaskEither<ExceptionError, void>;
 
   readonly all: () => TaskEither<ExceptionError, ReadonlyArray<User>>;

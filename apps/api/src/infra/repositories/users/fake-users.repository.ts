@@ -46,7 +46,7 @@ export const generateFakeUsersRepository = (): UsersRepository => {
      * @returns On success a list of users, otherwise the error that happened
      */
     all: (): TaskEither<ExceptionError, ReadonlyArray<User>> => {
-      return TE.right(users.toArray());
+      return pipe(users.toArray(), TE.right);
     },
 
     // * Find Users
@@ -58,9 +58,10 @@ export const generateFakeUsersRepository = (): UsersRepository => {
      * @returns An {@link Option} containing the found `User` or nothing
      */
     findByEmail: (email: string): TaskOption<User> => {
-      const user = users.find(item => item.email === email);
-
-      return TO.fromNullable(user);
+      return pipe(
+        users.find(item => item.email === email),
+        TO.fromNullable,
+      );
     },
 
     /**
@@ -70,8 +71,10 @@ export const generateFakeUsersRepository = (): UsersRepository => {
      * @returns An {@link Option} containing the found `User` or nothing
      */
     findByID: (id: ID): TaskOption<User> => {
-      const user = users.find(item => item.id === id);
-      return TO.fromNullable(user);
+      return pipe(
+        users.find(item => item.id === id),
+        TO.fromNullable,
+      );
     },
 
     // * Crud User Actions
@@ -84,6 +87,7 @@ export const generateFakeUsersRepository = (): UsersRepository => {
      */
     delete: (id: ID): TaskEither<ExceptionError, void> => {
       users = users.filter(user => user.id !== id);
+
       return TE.right(void 0);
     },
 
@@ -94,11 +98,11 @@ export const generateFakeUsersRepository = (): UsersRepository => {
      * @param password - The password to link with the new user
      * @returns On success it'll be void, otherwise the error that happened
      */
-    save: (user: User, password: string): TaskEither<ExceptionError, void> => {
+    save: (user: User, password: string): TaskEither<ExceptionError, User> => {
       users = users.push(user);
       passwords = passwords.set(user.id, password);
 
-      return TE.right(void 0);
+      return TE.right(user);
     },
 
     /**
@@ -108,13 +112,13 @@ export const generateFakeUsersRepository = (): UsersRepository => {
      * @param password - An optional value, if passed it'll update the user password
      * @returns On success it'll be void, otherwise the error that happened
      */
-    update: (updatedUser: User, password?: string): TaskEither<ExceptionError, void> => {
+    update: (updatedUser: User, password?: string): TaskEither<ExceptionError, User> => {
       users = users.map(user => (user.id === updatedUser.id ? updatedUser : user));
       if (password) {
         passwords = passwords.set(updatedUser.id, password);
       }
 
-      return TE.right(void 0);
+      return TE.right(updatedUser);
     },
 
     // * User Helpers

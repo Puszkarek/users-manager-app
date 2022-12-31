@@ -1,8 +1,7 @@
-import { createExceptionError } from '@server/infra/helpers/error';
+import { createExceptionError, extractError } from '@server/infra/helpers/error';
 import { MailProvider, Message, REQUEST_STATUS } from '@server/infra/interfaces';
 import { ExceptionError } from '@server/infra/interfaces/error.interface';
 import { TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
-import { isError } from 'lodash';
 
 export const generateFakeMailProvider = (): MailProvider => {
   /** Fake transporter for demonstration */
@@ -28,10 +27,7 @@ export const generateFakeMailProvider = (): MailProvider => {
           return void 0;
         },
         (error: unknown) => {
-          if (isError(error)) {
-            return createExceptionError(error.message, REQUEST_STATUS.bad);
-          }
-          return createExceptionError('Unknown Error', REQUEST_STATUS.bad);
+          return createExceptionError(extractError(error).message, REQUEST_STATUS.bad);
         },
       );
     },

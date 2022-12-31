@@ -148,7 +148,7 @@ export const generateFakeUsersRepository = (): UsersRepository => {
     isEmailAvailable: (email: string): Task<boolean> => {
       return pipe(
         users.toArray(),
-        array.some(user => user.email === email),
+        array.every(user => user.email !== email),
         T.of,
       );
     },

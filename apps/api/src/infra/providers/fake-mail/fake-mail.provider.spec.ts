@@ -1,16 +1,17 @@
 import { Message } from '@server/infra/interfaces';
+import { MailProvider } from '@server/infra/interfaces/mail.interface';
 import { isLeft, isRight } from 'fp-ts/lib/Either';
 
-import { FakeMailProvider } from './fake-mail.provider';
+import { generateFakeMailProvider } from './fake-mail.provider';
 
 /**
  * If other mail provider start to be implemented we can abstract and just change update the
  * `beforeEach` since they will follow the same interface
  */
-describe(FakeMailProvider.name, () => {
-  let provider: FakeMailProvider;
+describe(generateFakeMailProvider.name, () => {
+  let provider: MailProvider;
   beforeEach(() => {
-    provider = new FakeMailProvider();
+    provider = generateFakeMailProvider();
   });
 
   it('should create', () => {

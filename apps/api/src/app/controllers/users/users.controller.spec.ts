@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
-import { FakeMailProvider } from '@server/infra/providers/fake-mail';
-import { FakeUsersRepository } from '@server/infra/repositories/users';
-import { makeUsersService } from '@server/infra/services';
+import { generateFakeMailProvider } from '@server/infra/providers/fake-mail';
+import { generateFakeUsersRepository } from '@server/infra/repositories/users';
+import { generateUsersService } from '@server/infra/services/users';
 
 import { UsersController } from './users.controller';
 
@@ -15,7 +15,7 @@ describe(UsersController.name, () => {
       providers: [
         {
           provide: USERS_SERVICE_INJECTABLE_TOKEN,
-          useValue: new makeUsersService(new FakeUsersRepository(), new FakeMailProvider()),
+          useValue: generateUsersService(generateFakeUsersRepository(), generateFakeMailProvider()),
         },
       ],
     }).compile();

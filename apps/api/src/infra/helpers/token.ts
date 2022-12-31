@@ -1,7 +1,7 @@
 import { AuthToken } from '@api-interfaces';
 import { createExceptionError, extractError } from '@server/infra/helpers/error';
 import { ExceptionError, REQUEST_STATUS } from '@server/infra/interfaces/error.interface';
-import { array as A, either as E, taskEither as TE } from 'fp-ts';
+import { either as E, taskEither as TE } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 import * as jose from 'jose';

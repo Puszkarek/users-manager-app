@@ -81,6 +81,18 @@
         "@angular-eslint/template/no-call-expression": "off",
         "@angular-eslint/template/use-track-by-function": "error"
       }
+    },
+    // * Unit Testing Rules
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
+        "project": ["tsconfig.base.json"],
+        "createDefaultProgram": true
+      },
+
+      "rules": {
+        "@typescript-eslint/no-non-null-assertion": "off"
+      }
     }
   ]
 }

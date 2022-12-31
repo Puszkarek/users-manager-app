@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { User, USER_ROLE } from '@api-interfaces';
-import { UserModalFormComponent, UserModalFormComponentData } from '@front/app/components/user-modal-form';
+import { UserFormModalComponent, UserFormModalComponentData } from '@front/app/components/user-form-modal';
 import { ModalService } from '@front/app/services/modal';
+import { NotificationService } from '@front/app/services/notification';
 import { UsersStore } from '@front/app/stores/users';
 import { isNotNull } from '@front/app/utils';
 import { isLeft } from 'fp-ts/lib/Either';
@@ -16,7 +17,11 @@ import { map, Observable } from 'rxjs';
 export class UsersListComponent {
   public readonly users$ = this._usersStore.getAll();
 
-  constructor(private readonly _usersStore: UsersStore, private readonly _modalService: ModalService) {}
+  constructor(
+    private readonly _usersStore: UsersStore,
+    private readonly _modalService: ModalService,
+    private readonly _notificationService: NotificationService,
+  ) {}
 
   /**
    * Open a `Modal` to create a new {@link User} or edit the given one
@@ -24,11 +29,11 @@ export class UsersListComponent {
    * @param user - The user to edit, null if we want to update
    */
   public openForm(user: User | null = null): void {
-    const userModalData: UserModalFormComponentData = {
+    const userModalData: UserFormModalComponentData = {
       user: user,
     };
 
-    this._modalService.openModal(UserModalFormComponent, userModalData);
+    this._modalService.open(UserFormModalComponent, userModalData);
   }
 
   /**
@@ -40,9 +45,10 @@ export class UsersListComponent {
     // TODO: show a confirmation dialog
     const either = await this._usersStore.delete(user.id);
 
-    // TODO: show notifications to the user
     if (isLeft(either)) {
       console.error('Error deleting user', either.left);
+
+      this._notificationService.error('Something gone wrong, try again later');
     }
   }
 

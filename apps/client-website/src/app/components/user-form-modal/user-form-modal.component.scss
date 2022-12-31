@@ -1,18 +1,8 @@
-/* TODO: Needs to be abstract, maybe we can use directives */
 :host {
-  .container {
-    background: var(--bg-primary);
-    display: block;
-    position: absolute;
+  background: var(--bg-primary);
 
-    top: 50%;
-    right: 50%;
-
-    transform: translate(50%, -50%);
-
-    padding: 3rem 4rem;
-    border-radius: calc(var(--radius) * 3);
-  }
+  padding: 3rem 4rem;
+  border-radius: calc(var(--radius) * 3);
 }
 
 .modal-header {

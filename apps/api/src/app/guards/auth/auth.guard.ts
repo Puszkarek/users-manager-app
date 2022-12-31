@@ -2,17 +2,18 @@ import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/commo
 import { Reflector } from '@nestjs/core';
 import { PUBLIC_ROUTE_KEY } from '@server/app/constants/guard';
 import { USERS_SERVICE_INJECTABLE_TOKEN } from '@server/app/constants/user.constant';
-import { executeTask } from '@server/app/helpers/controller';
+import { executeTaskEither } from '@server/app/helpers/controller';
 import { makeIsRequestAuthenticated } from '@server/infra/guards/auth';
-import { UsersOperations } from '@server/infra/interfaces';
+import { UsersService } from '@server/infra/interfaces';
 import { Request } from 'express';
+import { pipe } from 'fp-ts/lib/function';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   private readonly _validator = makeIsRequestAuthenticated(this._usersService);
 
   constructor(
-    @Inject(USERS_SERVICE_INJECTABLE_TOKEN) private readonly _usersService: UsersOperations,
+    @Inject(USERS_SERVICE_INJECTABLE_TOKEN) private readonly _usersService: UsersService,
     private readonly _reflector: Reflector,
   ) {}
 
@@ -24,10 +25,10 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
-    const either = await this._validator(request);
+    const task = pipe(request, this._validator, executeTaskEither);
 
     /** Will throw a `HttpException` if invalid */
-    executeTask(either);
+    await task();
 
     return true;
   }

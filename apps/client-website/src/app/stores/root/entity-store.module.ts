@@ -6,7 +6,6 @@ import { StoreModule } from '@ngrx/store';
 import { appEntityMetadata, entityPluralNames } from './app-entity-metadata';
 
 const defaultDataServiceConfig: DefaultDataServiceConfig = {
-  root: 'http://localhost:3333/api/', // TODO (env): get from environment.ts
   timeout: 3000, // Request timeout
 };
 

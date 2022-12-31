@@ -36,6 +36,7 @@
         "arrow-body-style": "off",
         "prefer-arrow-callback": "off",
         "require-await": "off",
+        "no-return-await": "off",
 
         // Avoid possible Problems
         "array-callback-return": "error",
@@ -102,7 +103,6 @@
         "no-param-reassign": "error",
         "no-plusplus": "error",
         "no-return-assign": "error",
-        "no-return-await": "error",
         "no-sequences": "error",
         "no-global-assign": "error",
         "no-shadow-restricted-names": "error",
@@ -110,7 +110,18 @@
         "no-useless-concat": "error",
         "no-useless-rename": "error",
         "no-useless-return": "error",
-        "prefer-destructuring": "error",
+        "prefer-destructuring": [
+          "error",
+          {
+            "VariableDeclarator": {
+              "array": false,
+              "object": true
+            }
+          },
+          {
+            "enforceForRenamedProperties": false
+          }
+        ],
         "prefer-object-spread": "error",
         "prefer-template": "error",
         "quote-props": ["error", "consistent-as-needed"],
@@ -274,7 +285,6 @@
           }
         ],
         "@typescript-eslint/require-array-sort-compare": "error",
-        "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/require-await": "error"
       }
     },
@@ -326,7 +336,6 @@
       "rules": {
         // * Disabled Rules
         "@typescript-eslint/init-declarations": "off",
-        "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/consistent-type-assertions": "off",
         "@typescript-eslint/no-use-before-define": "off",
         "@typescript-eslint/explicit-function-return-type": "off",

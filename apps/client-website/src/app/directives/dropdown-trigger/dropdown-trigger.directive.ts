@@ -21,6 +21,12 @@ export class DropdownTriggerDirective implements OnDestroy {
   /** The `Template` to render inside the dropdown */
   @Input('appDropdownTrigger') public dropdownTemplate!: TemplateRef<unknown>;
 
+  constructor(
+    private readonly _overlay: Overlay,
+    private readonly _elementReference: ElementRef<HTMLElement>,
+    private readonly _viewContainerReference: ViewContainerRef,
+  ) {}
+
   @HostListener('click') public toggleDropdown(): void {
     if (this._isDropdownOpen$.getValue()) {
       this._isDropdownOpen$.next(false);
@@ -32,12 +38,6 @@ export class DropdownTriggerDirective implements OnDestroy {
       this._openDropdown();
     }
   }
-
-  constructor(
-    private readonly _overlay: Overlay,
-    private readonly _elementReference: ElementRef<HTMLElement>,
-    private readonly _viewContainerReference: ViewContainerRef,
-  ) {}
 
   public ngOnDestroy(): void {
     this._unsubscribe$.next();

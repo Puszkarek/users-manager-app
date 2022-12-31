@@ -11,20 +11,6 @@
   align-items: center;
 
   padding-bottom: 20px;
-
-  /* TODO (search-input): move to the component */
-  .search-input {
-    padding: 0.5rem;
-
-    font-size: var(--large);
-
-    border: none;
-    border-radius: var(--radius);
-    border: 2px solid var(--text-secondary);
-
-    color: var(--text-secondary);
-    background: var(--bg-primary);
-  }
 }
 
 .container {

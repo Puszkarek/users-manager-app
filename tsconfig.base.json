@@ -34,10 +34,11 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@api-interfaces": ["libs/api-interfaces/src/index.ts"],
       "@front/*": ["apps/client-website/src/*"],
+      "@server/*": ["apps/api/src/*"],
+      "@api-interfaces": ["libs/api-interfaces/src/index.ts"],
       "@testing-utils": ["libs/testing-utils/src/index.ts"],
-      "@server/*": ["apps/api/src/*"]
+      "@utils": ["libs/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

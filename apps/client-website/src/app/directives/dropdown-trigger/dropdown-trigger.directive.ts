@@ -1,7 +1,7 @@
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { Directive, ElementRef, HostListener, Input, OnDestroy, TemplateRef, ViewContainerRef } from '@angular/core';
-import { isFalse } from '@front/app/utils/functional';
+import { isFalse } from '@utils';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { filter, first, takeUntil } from 'rxjs/operators';
 

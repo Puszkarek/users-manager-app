@@ -5,6 +5,7 @@ import { createExceptionError } from '@server/infra/helpers/error';
 import { generateToken, parseToken } from '@server/infra/helpers/token';
 import { ExceptionError, FindByToken, REQUEST_STATUS, UsersRepository } from '@server/infra/interfaces';
 import { MailProvider } from '@server/infra/interfaces/mail.interface';
+import { isTrue } from '@utils';
 import { taskEither as TE } from 'fp-ts';
 import { pipe } from 'fp-ts/lib/function';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
@@ -26,17 +27,15 @@ export const makeCreateOne =
     };
 
     return pipe(
-      // * Get the user with the given email
       creatableUserData.email,
+      // * Check if the given `email` is available
       usersRepository.isEmailAvailable,
       TE.fromTask,
-      TE.filterOrElse(
-        isEmailAvailable => isEmailAvailable,
-        () => createExceptionError('Check your password and try again', REQUEST_STATUS.bad),
-      ),
+      // Returns a `Left` if `isEmailAvailable` is equals to `false`
+      TE.filterOrElse(isTrue, () => createExceptionError('Check your password and try again', REQUEST_STATUS.bad)),
       // * Save the new `User` on the repository
       TE.chain(() => usersRepository.save(newUser, password)),
-      // * Send the confirmation email to the user
+      // * Send a confirmation email to the user
       TE.chain(() =>
         mailProvider.sendMail({
           body: 'Welcome to App Team',
@@ -51,6 +50,7 @@ export const makeCreateOne =
           },
         }),
       ),
+      // * Returns the created `User`
       TE.map(() => newUser),
     );
   };
@@ -189,7 +189,7 @@ export const makeRefreshToken =
     const getLoggedUser = pipe(
       rawToken,
       findByToken,
-      TE.fromTaskOption(() => createExceptionError('No user found with the given Email', REQUEST_STATUS.not_found)),
+      TE.fromTaskOption(() => createExceptionError('No user found with the given token', REQUEST_STATUS.not_found)),
     );
 
     return pipe(
